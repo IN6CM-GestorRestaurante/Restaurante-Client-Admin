@@ -14,11 +14,11 @@ export const MesasSection = ({ showCrud = true }) => {
       <div className="mt-5 grid grid-cols-2 gap-3">
         <article className="rounded-2xl border border-stone-200 bg-white/75 p-3">
           <p className="text-xs text-stone-500">Disponibles</p>
-          <p className="mt-1 text-lg font-bold text-emerald-700">12</p>
+          <p className="mt-1 text-lg font-bold text-emerald-700">0</p>
         </article>
         <article className="rounded-2xl border border-stone-200 bg-white/75 p-3">
           <p className="text-xs text-stone-500">Ocupadas</p>
-          <p className="mt-1 text-lg font-bold text-amber-700">7</p>
+          <p className="mt-1 text-lg font-bold text-amber-700">0</p>
         </article>
       </div>
     </section>

@@ -14,11 +14,11 @@ export const UsuariosSection = ({ showCrud = true }) => {
       <div className="mt-5 grid grid-cols-2 gap-3">
         <article className="rounded-2xl border border-stone-200 bg-white/75 p-3">
           <p className="text-xs text-stone-500">Administradores</p>
-          <p className="mt-1 text-lg font-bold text-stone-800">5</p>
+          <p className="mt-1 text-lg font-bold text-stone-800">0</p>
         </article>
         <article className="rounded-2xl border border-stone-200 bg-white/75 p-3">
           <p className="text-xs text-stone-500">Staff</p>
-          <p className="mt-1 text-lg font-bold text-stone-800">18</p>
+          <p className="mt-1 text-lg font-bold text-stone-800">0</p>
         </article>
       </div>
     </section>
