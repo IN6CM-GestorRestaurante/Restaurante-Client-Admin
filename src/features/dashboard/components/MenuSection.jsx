@@ -1,25 +1,28 @@
-export const MenuSection = ({ showCrud = true }) => {
+export const MenuSection = () => {
   return (
-    <section className="marble-surface rounded-3xl border border-stone-200/70 p-6 shadow-[0_18px_45px_-30px_rgba(80,62,43,0.45)] backdrop-blur-sm">
-      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-stone-500">Módulo</p>
-      <h3 className="mt-2 text-2xl font-bold text-stone-900">Menú</h3>
-      <p className="mt-2 text-sm text-stone-600">Administra categorías, productos y precios del restaurante.</p>
-      {showCrud && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          <button type="button" className="pressable rounded-xl bg-stone-800 px-3 py-2 text-xs font-semibold text-white">Agregar</button>
-          <button type="button" className="pressable rounded-xl border border-stone-300 bg-white/80 px-3 py-2 text-xs font-semibold text-stone-700">Editar</button>
-          <button type="button" className="pressable rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700">Eliminar</button>
+    <section className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h2 className="text-lg font-semibold text-stone-900">Menú</h2>
+          <p className="mt-1 text-sm text-stone-600">Resumen visual de productos y categorías.</p>
         </div>
-      )}
-      <div className="mt-5 grid grid-cols-2 gap-3">
-        <article className="rounded-2xl border border-stone-200 bg-white/75 p-3">
-          <p className="text-xs text-stone-500">Platillos</p>
-          <p className="mt-1 text-lg font-bold text-stone-800">0</p>
-        </article>
-        <article className="rounded-2xl border border-stone-200 bg-white/75 p-3">
-          <p className="text-xs text-stone-500">Categorías</p>
-          <p className="mt-1 text-lg font-bold text-stone-800">0</p>
-        </article>
+
+        <div className="rounded-full bg-stone-100 px-3 py-1 text-xs font-semibold text-stone-600">
+          18 items
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {[
+          ["Entradas", "4 platos activos"],
+          ["Platos fuertes", "8 platos activos"],
+          ["Bebidas", "6 bebidas activas"],
+        ].map(([title, detail]) => (
+          <article key={title} className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+            <p className="text-sm font-semibold text-stone-800">{title}</p>
+            <p className="mt-1 text-xs text-stone-500">{detail}</p>
+          </article>
+        ))}
       </div>
     </section>
   );

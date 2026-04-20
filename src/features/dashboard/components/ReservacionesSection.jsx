@@ -1,25 +1,20 @@
-export const ReservacionesSection = ({ showCrud = true }) => {
+export const ReservacionesSection = () => {
   return (
-    <section className="marble-surface rounded-3xl border border-stone-200/70 p-6 shadow-[0_18px_45px_-30px_rgba(80,62,43,0.45)] backdrop-blur-sm">
-      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-stone-500">Módulo</p>
-      <h3 className="mt-2 text-2xl font-bold text-stone-900">Reservaciones</h3>
-      <p className="mt-2 text-sm text-stone-600">Monitorea reservas del día y próximos horarios de llegada.</p>
-      {showCrud && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          <button type="button" className="pressable rounded-xl bg-stone-800 px-3 py-2 text-xs font-semibold text-white">Agregar</button>
-          <button type="button" className="pressable rounded-xl border border-stone-300 bg-white/80 px-3 py-2 text-xs font-semibold text-stone-700">Editar</button>
-          <button type="button" className="pressable rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700">Eliminar</button>
-        </div>
-      )}
-      <div className="mt-5 grid grid-cols-2 gap-3">
-        <article className="rounded-2xl border border-stone-200 bg-white/75 p-3">
-          <p className="text-xs text-stone-500">Hoy</p>
-          <p className="mt-1 text-lg font-bold text-stone-800">0</p>
-        </article>
-        <article className="rounded-2xl border border-stone-200 bg-white/75 p-3">
-          <p className="text-xs text-stone-500">Pendientes</p>
-          <p className="mt-1 text-lg font-bold text-stone-800">0</p>
-        </article>
+    <section className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+      <h2 className="text-lg font-semibold text-stone-900">Reservaciones</h2>
+      <p className="mt-1 text-sm text-stone-600">Reservas próximas y estado general del día.</p>
+
+      <div className="mt-5 space-y-3">
+        {[
+          ["12:30 - Mesa 02", "2 personas"],
+          ["13:15 - Mesa 04", "4 personas"],
+          ["15:00 - Terraza", "6 personas"],
+        ].map(([slot, detail]) => (
+          <article key={slot} className="flex items-center justify-between rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
+            <p className="text-sm font-semibold text-stone-800">{slot}</p>
+            <p className="text-xs text-stone-500">{detail}</p>
+          </article>
+        ))}
       </div>
     </section>
   );

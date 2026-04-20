@@ -1,6 +1,15 @@
+import { useNavigate } from "react-router-dom";
+
 export const LoginForm = () => {
+    const navigate = useNavigate();
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        navigate("/dashboard");
+    };
+
     return (
-        <form className="marble-surface space-y-5 rounded-3xl border border-stone-200/70 p-5 shadow-[0_18px_45px_-30px_rgba(80,62,43,0.45)] backdrop-blur-sm sm:p-6">
+        <form onSubmit={handleSubmit} className="marble-surface space-y-5 rounded-3xl border border-stone-200/70 p-5 shadow-[0_18px_45px_-30px_rgba(80,62,43,0.45)] backdrop-blur-sm sm:p-6">
             <div>
                 <label
                     htmlFor="emailOrUser"
@@ -30,6 +39,7 @@ export const LoginForm = () => {
             </div>
 
             <button
+                type="submit"
                 className="pressable w-full rounded-xl bg-gradient-to-r from-stone-800 to-stone-700 px-4 py-3 text-sm font-semibold text-stone-100 shadow-lg shadow-stone-900/25 transition duration-200 hover:translate-y-[-1px] hover:opacity-95"
             >
                 Iniciar sesión

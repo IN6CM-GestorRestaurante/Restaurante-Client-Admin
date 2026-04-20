@@ -34,10 +34,24 @@ export const DashboardContainer = ({}) => {
         <div className="min-h-screen text-stone-900">
             <Navbar />
 
-            <div className="flex flex-1 flex-col md:flex-row">
+            <div className="flex min-h-[calc(100vh-4rem)] flex-col md:flex-row">
                 <Sidebar activeItem={activeModule} onSelect={setActiveModule} />
 
                 <main className="flex-1 p-4 sm:p-6 lg:p-8">
+                    <div className="mb-6 rounded-3xl border border-stone-200/80 bg-white/75 p-5 shadow-[0_18px_45px_-34px_rgba(80,62,43,0.45)] backdrop-blur-sm">
+                        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-stone-500">
+                            Panel administrativo
+                        </p>
+                        <h2 className="mt-1 text-3xl font-semibold text-stone-900">
+                            {activeModule === "principal"
+                                ? "Resumen general"
+                                : activeModule.charAt(0).toUpperCase() + activeModule.slice(1)}
+                        </h2>
+                        <p className="mt-2 max-w-2xl text-sm text-stone-600 sm:text-base">
+                            Vista estática del módulo seleccionado, manteniendo el cambio de panel con el mismo flujo del sidebar.
+                        </p>
+                    </div>
+
                     {modules[activeModule]}
                 </main>
             </div>
