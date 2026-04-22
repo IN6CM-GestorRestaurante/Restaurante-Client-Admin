@@ -1,34 +1,43 @@
-export const ForgotPasswordForm = ({ onSwitch }) => {
-  return (
-    <form className="marble-surface space-y-5 rounded-3xl border border-stone-200/70 p-5 shadow-[0_18px_45px_-30px_rgba(80,62,43,0.45)] backdrop-blur-sm sm:p-6">
-      <div>
-        <label className="mb-1.5 block text-sm font-semibold text-stone-800">
-          Email
-        </label>
-        <input
-          type="email"
-          placeholder="correo@ejemplo.com"
-          className="w-full rounded-xl border border-stone-300 bg-white/75 px-4 py-2.5 text-sm text-stone-800 outline-none transition focus:border-stone-500 focus:ring-2 focus:ring-stone-300"
-        />
-      </div>
+import loginImg from "../../../assets/img/login.jpg"; // <-- Importar la imagen
 
-      <button
-        type="submit"
-        className="pressable w-full rounded-xl bg-gradient-to-r from-stone-800 to-stone-700 px-4 py-3 text-sm font-semibold text-stone-100 shadow-lg shadow-stone-900/25 transition duration-200 hover:translate-y-[-1px] hover:opacity-95"
-      >
-        Recuperar contraseña
-      </button>
+export const ForgotPasswordForm = ({ onNavigate }) => {
+    return (
+        <div className="recover-card">
+            <section className="panel panel-white">
+                <div className="white-content">
+                    <span className="welcome-text">Recuperar acceso</span>
+                    <div className="logo-container">
+                        <i className="fas fa-utensils"></i>
+                        <span>GESTOR RESTAURANTE</span>
+                    </div>
 
-      <p className="text-center text-sm text-stone-600">
-        ¿Recordaste tu contraseña?{" "}
-        <button
-          type="button"
-          onClick={onSwitch}
-          className="pressable font-semibold text-stone-800 hover:underline"
-        >
-          Iniciar sesión
-        </button>
-      </p>
-    </form>
-  );
+                    <p className="subtitle">Ingresa tu correo y te enviaremos un enlace para restablecer tu contrasena.</p>
+
+                    <form>
+                        <div className="input-group">
+                            <i className="far fa-envelope"></i>
+                            <input type="email" placeholder="Correo electronico" required />
+                        </div>
+
+                        <button type="button" className="auth-btn action-btn">Enviar enlace</button>
+                    </form>
+
+                    <p className="back-link">Volver al inicio de sesion <button type="button" onClick={() => onNavigate("login")}>Iniciar Sesion</button></p>
+                </div>
+            </section>
+
+            {/* Agregar estilo en línea aquí */}
+            <section 
+                className="panel panel-orange" 
+                aria-hidden="true"
+                style={{ backgroundImage: `linear-gradient(rgba(244, 48, 29, 0.55), rgba(180, 10, 10, 0.7)), url(${loginImg})` }}
+            >
+                <div className="orange-content">
+                    <i className="fas fa-key"></i>
+                    <h2>RECUPERAR</h2>
+                    <p>Tu operacion no se detiene. Recupera acceso rapido y continua gestionando reservas, inventario y equipos sin perder tiempo.</p>
+                </div>
+            </section>
+        </div>
+    );
 };

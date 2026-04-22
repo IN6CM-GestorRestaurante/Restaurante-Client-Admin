@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
+import loginImg from "../../../assets/img/login.jpg"; // <-- 1. Importar la imagen
 
-export const LoginForm = () => {
+export const LoginForm = ({ onNavigate }) => {
     const navigate = useNavigate();
 
     const handleSubmit = (event) => {
@@ -9,42 +10,52 @@ export const LoginForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="marble-surface space-y-5 rounded-3xl border border-stone-200/70 p-5 shadow-[0_18px_45px_-30px_rgba(80,62,43,0.45)] backdrop-blur-sm sm:p-6">
-            <div>
-                <label
-                    htmlFor="emailOrUser"
-                    className="mb-1.5 block text-sm font-semibold text-stone-800"
-                >
-                    Email o usuario
-                </label>
+        <div className="login-card">
+            <div className="login-left">
+                <span className="welcome-text">Bienvenido al</span>
+                <div className="logo-container">
+                    <i className="fas fa-utensils"></i>
+                    <span>GESTOR RESTAURANTE</span>
+                </div>
 
-                <input
-                    id="emailOrUser"
-                    className="w-full rounded-xl border border-stone-300 bg-white/75 px-4 py-2.5 text-sm text-stone-800 outline-none transition focus:border-stone-500 focus:ring-2 focus:ring-stone-300"
-                    placeholder="correo@restaurante.com"
-                />
+                <p className="subtitle">Inicia sesión para administrar reservas, pedidos, inventario y personal de tu restaurante desde un solo panel.</p>
+
+                <form onSubmit={handleSubmit}>
+                    <div className="input-group">
+                        <i className="far fa-user"></i>
+                        <input type="text" placeholder="Usuario o correo" required />
+                    </div>
+
+                    <div className="input-group">
+                        <i className="fas fa-lock"></i>
+                        <input type="password" placeholder="Contraseña" required />
+                    </div>
+
+                    <div className="forgot-pass">
+                        <button type="button" onClick={() => onNavigate("recover")}>¿Olvidaste tu contraseña?</button>
+                    </div>
+
+                    <button type="submit" className="sign-in-btn">Iniciar Sesión</button>
+                </form>
+
+                <p className="signup-link">
+                    ¿No tienes acceso? <button type="button" onClick={() => onNavigate("register")}>Registrarme</button>
+                </p>
             </div>
 
-            <div>
-                <label htmlFor="password" className="mb-1.5 block text-sm font-semibold text-stone-800">
-                    Contraseña
-                </label>
-
-                <input
-                    id="password"
-                    type="password"
-                    className="w-full rounded-xl border border-stone-300 bg-white/75 px-4 py-2.5 text-sm text-stone-800 outline-none transition focus:border-stone-500 focus:ring-2 focus:ring-stone-300"
-                    placeholder="Ingresa tu contraseña"
-                />
-            </div>
-
-            <button
-                type="submit"
-                className="pressable w-full rounded-xl bg-gradient-to-r from-stone-800 to-stone-700 px-4 py-3 text-sm font-semibold text-stone-100 shadow-lg shadow-stone-900/25 transition duration-200 hover:translate-y-[-1px] hover:opacity-95"
+            {/* 2. Agregar el backgroundImage por estilo en línea */}
+            <div 
+                className="login-right"
+                style={{ backgroundImage: `linear-gradient(rgba(244, 48, 29, 0.55), rgba(180, 10, 10, 0.7)), url(${loginImg})` }}
             >
-                Iniciar sesión
-            </button>
-        </form>
+                <div className="right-content">
+                    <div className="right-logo">
+                        <i className="fas fa-utensils"></i>
+                        <span>GESTOR RESTAURANTE</span>
+                    </div>
+                    <p>Controla en tiempo real las mesas, turnos, comandas, costos e inventario. Toma decisiones mas rapidas con reportes claros y mantén tu operación siempre en marcha.</p>
+                </div>
+            </div>
+        </div>
     );
 };
-
