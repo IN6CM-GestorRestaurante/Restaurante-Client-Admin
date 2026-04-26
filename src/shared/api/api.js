@@ -1,6 +1,6 @@
 import axios from 'axios';
  
-import { useAuthStore } from "../../features/auth/authStore.js";
+import { useAuthStore } from "../../features/auth/store/authStore.js";
  
 //Instacio de axios
 const axiosAuth = axios.create({
@@ -10,16 +10,33 @@ const axiosAuth = axios.create({
         "Content-Type": "application/json",
     }
 });
+
+const axiosAdmin = axios.create({
+  baseURL: import.meta.env.VITE_ADMIN_URL,
+  timeout: 8000,
+  headers: {
+    "Content-Type": "application/json",
+  }
+});
  
 // Configuración de interceptores
 axiosAuth.interceptors.request.use( (config)=>{
     config._axiosClient = "auth";
     const token = useAuthStore.getState().token;
     if(token){
-        config.headers.Authorization = `Bearer.${token}`;
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+} );
+
+axiosAdmin.interceptors.request.use((config) => {
+  config._axiosClient = "admin";
+  const token = useAuthStore.getState().token;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
-} );
+});
  
  
 // configuración de documentación axios

@@ -1,12 +1,24 @@
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import loginImg from "../../../assets/img/login.jpg"; // <-- 1. Importar la imagen
+import { useAuthStore } from "../store/authStore.js";
 
 export const LoginForm = ({ onNavigate }) => {
     const navigate = useNavigate();
+    const login = useAuthStore((state) => state.login);
+    const loading = useAuthStore((state) => state.loading);
+    const {
+        register,
+        handleSubmit,
+    } = useForm();
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        navigate("/dashboard");
+    const onSubmit = async (data) => {
+        const res = await login(data);
+        if (res.success) {
+            navigate("/dashboard");
+            toast.success("¡Inicio de sesión exitoso!");
+        }
     };
 
     return (
@@ -20,22 +32,34 @@ export const LoginForm = ({ onNavigate }) => {
 
                 <p className="subtitle">Inicia sesión para administrar reservas, pedidos, inventario y personal de tu restaurante desde un solo panel.</p>
 
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="input-group">
                         <i className="far fa-user"></i>
-                        <input type="text" placeholder="Usuario o correo" required />
+                        <input
+                            type="text"
+                            placeholder="Usuario o correo"
+                            required
+                            {...register("emailOrUsername", { required: "El email o usuario es requerido" })}
+                        />
                     </div>
 
                     <div className="input-group">
                         <i className="fas fa-lock"></i>
-                        <input type="password" placeholder="Contraseña" required />
+                        <input
+                            type="password"
+                            placeholder="Contraseña"
+                            required
+                            {...register("password", { required: "La contraseña es requerida" })}
+                        />
                     </div>
 
                     <div className="forgot-pass">
                         <button type="button" onClick={() => onNavigate("recover")}>¿Olvidaste tu contraseña?</button>
                     </div>
 
-                    <button type="submit" className="sign-in-btn">Iniciar Sesión</button>
+                    <button type="submit" className="sign-in-btn" disabled={loading}>
+                        {loading ? "Cargando..." : "Iniciar Sesión"}
+                    </button>
                 </form>
 
                 <p className="signup-link">
