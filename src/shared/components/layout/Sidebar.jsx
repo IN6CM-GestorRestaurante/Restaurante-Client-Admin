@@ -5,10 +5,12 @@ export const Sidebar = ({ activeItem, onSelect }) => {
 
     const items =[
         { id: "resumen", label: "Resumen", icon: "fas fa-chart-pie" },
-        { id: "administradores", label: "Administradores", icon: "fas fa-user-shield" },
-        { id: "roles", label: "Roles y permisos", icon: "fas fa-key" },
+        { id: "mesas", label: "Mesas", icon: "fas fa-chair" },
+        { id: "ordenes", label: "Ordenes", icon: "fas fa-receipt" },
+        { id: "menu", label: "Menu", icon: "fas fa-utensils" },
+        { id: "reservaciones", label: "Reservaciones", icon: "fas fa-calendar-check" },
         { id: "sucursales", label: "Sucursales", icon: "fas fa-store" },
-        { id: "configuracion", label: "Configuracion", icon: "fas fa-sliders-h" },
+        { id: "usuarios", label: "Usuarios", icon: "fas fa-users" },
     ];
 
     const handleLogout = () => {

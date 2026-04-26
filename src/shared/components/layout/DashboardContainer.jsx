@@ -1,20 +1,24 @@
 import { useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { ResumenSection } from "../../../features/dashboard/components/ResumenSection";
-import { AdministradoresSection } from "../../../features/dashboard/components/AdministradoresSection";
-import { RolesSection } from "../../../features/dashboard/components/RolesSection";
+import { MesasSection } from "../../../features/dashboard/components/MesasSection";
+import { OrdenesSection } from "../../../features/dashboard/components/OrdenesSection";
+import { MenuSection } from "../../../features/dashboard/components/MenuSection";
+import { ReservacionesSection } from "../../../features/dashboard/components/ReservacionesSection";
 import { SucursalesSection } from "../../../features/dashboard/components/SucursalesSection";
-import { ConfiguracionSection } from "../../../features/dashboard/components/ConfiguracionSection";
+import { UsuariosSection } from "../../../features/dashboard/components/UsuariosSection";
 
 export const DashboardContainer = () => {
     const [activeModule, setActiveModule] = useState("resumen");
 
     const modules = {
         resumen: <ResumenSection onNavigate={setActiveModule} />,
-        administradores: <AdministradoresSection />,
-        roles: <RolesSection />,
+        mesas: <MesasSection />,
+        ordenes: <OrdenesSection />,
+        menu: <MenuSection />,
+        reservaciones: <ReservacionesSection />,
         sucursales: <SucursalesSection />,
-        configuracion: <ConfiguracionSection />,
+        usuarios: <UsuariosSection />,
     };
 
     return (

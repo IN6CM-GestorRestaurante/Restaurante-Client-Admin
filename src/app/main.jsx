@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ThemeProvider } from "@material-tailwind/react";
 import { BrowserRouter } from "react-router-dom";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 import './../styles/index.css'
 import App from './App.jsx'
