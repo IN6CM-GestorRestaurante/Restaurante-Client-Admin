@@ -48,7 +48,7 @@ export const useAuthStore = create(
         try {
           set({ loading: true, error: null });
 
-          const { data } = await loginRequest({ emailOrUsername, password });
+          const { data } = await loginRequest({ email: emailOrUsername, password });
 
           const role = data?.userDetails?.role;
           if (role !== "ADMIN_ROLE") {
