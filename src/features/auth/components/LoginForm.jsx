@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import loginImg from "../../../assets/img/login.jpg"; // <-- 1. Importar la imagen
-import { useAuthStore } from "../store/authStore.js";
+import { useAuthStore } from "../store/authStore";
 
 export const LoginForm = ({ onNavigate }) => {
     const navigate = useNavigate();
@@ -15,9 +15,11 @@ export const LoginForm = ({ onNavigate }) => {
 
     const onSubmit = async (data) => {
         const res = await login(data);
-        if (res.success) {
+        if (res) {
             navigate("/dashboard");
             toast.success("¡Inicio de sesión exitoso!");
+        }else {
+            toast.error(res.error);
         }
     };
 

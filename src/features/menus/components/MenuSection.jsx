@@ -1,4 +1,29 @@
+import { useEffect, useState } from "react";
+import { useEffect as useToastEffect } from "react";
+
+import { useMenusStore } from "../../menus/store/adminStore";
+import { useUIStore } from "../../auth/store/uiStore";
+
+import { showError } from "../../../shared/utils/toast";
+import { spinner } from "@material-tailwind/react";
+import { MenuModal } from "./MenuModal";
+
 export const MenuSection = () => {
+    const { menus, loading, error, getMenus, deleteMenu } = useMenusStore();
+    const { openConfirm } = useUIStore();
+
+    const [openModal, setOpenModal] = useState(false);
+    const [selectedMenu, setSelectedMenu] = useState(null);
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+    useEffect(() => {
+        getMenus?.();
+    }, [getMenus]);
+
+    useToastEffect(() => {
+        if (error) showError(error);
+    }, [error]);
+
     return (
         <>
             <header className="header">
@@ -6,7 +31,7 @@ export const MenuSection = () => {
                     <h2>CRUD de Menu</h2>
                     <p>Organiza categorias, productos y disponibilidad de cocina.</p>
                 </div>
-                <button className="btn danger">Nuevo producto</button>
+                <button className="btn danger" type="button" onClick={() => setIsCreateOpen(true)}>Nuevo producto</button>
             </header>
 
             <section className="section">
@@ -20,80 +45,79 @@ export const MenuSection = () => {
                     <article className="kpi"><span>No disponibles</span><strong>Sin datos</strong></article>
                 </section>
 
-                <div style={{ overflowX: "auto" }}>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Restaurante (restaurant)</th>
-                                <th>Nombre (name)</th>
-                                <th>Descripcion (description)</th>
-                                <th>Ingredientes (ingredients)</th>
-                                <th>Precio (price)</th>
-                                <th>Categoria (category)</th>
-                                <th>Imagen (image)</th>
-                                <th>Activo (isActive)</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Sin datos</td>
-                                <td>Sin datos</td>
-                                <td>Sin datos</td>
-                                <td>Sin datos</td>
-                                <td>00.00</td>
-                                <td>Entrada</td>
-                                <td>Sin datos</td>
-                                <td>Activo</td>
-                                <td>
-                                    <div className="row-actions">
-                                        <button>Editar</button>
-                                        <button>Eliminar</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead className="bg-gradient-to-r from-blue-50 to-blue-100 border-b border-gray-200">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nombre</th>
+                                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Descripción</th>
+                                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Categoría</th>
+                                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Precio</th>
+                                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Estado</th>
+                                    <th className="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                                <tr className="hover:bg-blue-50 transition-colors duration-200">
+                                    <td className="px-6 py-4">
+                                        <p className="text-sm font-semibold text-gray-900">Pasta Alfredo</p>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <p className="text-sm text-gray-700">Pasta cremosa con salsa Alfredo</p>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            Entrada
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <p className="text-sm font-semibold text-green-600">$12.99</p>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            ✓ Activo
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex justify-center gap-2">
+                                            <button type="button" onClick={() => { setSelectedMenu({ name: "Pasta Alfredo" }); setOpenModal(true); }} className="inline-flex items-center px-3 py-1.5 bg-blue-500 text-white text-xs font-medium rounded-lg hover:bg-blue-600 transition-colors duration-200">
+                                                <i className="fa-solid fa-pencil mr-1.5"></i> Editar
+                                            </button>
+                                            <button type="button" onClick={() => setIsDeleteOpen(true)} className="inline-flex items-center px-3 py-1.5 bg-red-500 text-white text-xs font-medium rounded-lg hover:bg-red-600 transition-colors duration-200">
+                                                <i className="fa-solid fa-trash mr-1.5"></i> Eliminar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
-            <div className="modal">
-                <div className="modal-card">
-                    <h2 style={{ fontSize: "18px", marginBottom: "10px" }}>Nuevo producto</h2>
-                    <div className="field"><label>ID restaurante (restaurant)</label><input placeholder="MongoID" /></div>
-                    <div className="field"><label>Nombre (name)</label><input /></div>
-                    <div className="field"><label>Descripcion (description)</label><textarea /></div>
-                    <div className="field"><label>Ingredientes (ingredients)</label><input placeholder="tomate, queso, albahaca" /></div>
-                    <div className="field"><label>Precio (price)</label><input type="number" min="0" step="0.01" placeholder="00.00" /></div>
-                    <div className="field">
-                        <label>Categoria (category)</label>
-                        <select>
-                            <option>Entrada</option>
-                            <option>Plato Fuerte</option>
-                            <option>Postre</option>
-                            <option>Bebida</option>
-                            <option>Acompañamiento</option>
-                            <option>Otro</option>
-                        </select>
-                    </div>
-                    <div className="field"><label>Imagen (image)</label><input type="file" /></div>
-                    <div className="row">
-                        <button className="btn soft">Cancelar</button>
-                        <button className="btn danger">Guardar</button>
-                    </div>
-                </div>
-            </div>
+            {openModal ? (
+                <MenuModal
+                    initialData={selectedMenu}
+                    onClose={() => {
+                        setOpenModal(false);
+                        setSelectedMenu(null);
+                    }}
+                />
+            ) : null}
 
-            <div className="modal">
-                <div className="modal-card">
-                    <h2 style={{ fontSize: "18px", marginBottom: "10px" }}>Eliminar producto</h2>
-                    <p className="confirm-text">El producto seleccionado sera eliminado. ¿Deseas continuar?</p>
-                    <div className="row">
-                        <button className="btn soft">Cancelar</button>
-                        <button className="btn danger">Eliminar</button>
+            {isDeleteOpen ? (
+                <div className="modal">
+                    <div className="modal-card">
+                        <h2 style={{ fontSize: "18px", marginBottom: "10px" }}>Eliminar producto</h2>
+                        <p className="confirm-text">El producto seleccionado sera eliminado. ¿Deseas continuar?</p>
+                        <div className="row">
+                            <button className="btn soft" type="button" onClick={() => setIsDeleteOpen(false)}>Cancelar</button>
+                            <button className="btn danger" type="button" onClick={() => setIsDeleteOpen(false)}>Eliminar</button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            ) : null}
 
             <div className="toast-zone"></div>
         </>

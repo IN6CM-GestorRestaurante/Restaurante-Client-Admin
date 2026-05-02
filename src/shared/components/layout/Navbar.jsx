@@ -1,4 +1,5 @@
 import imgLogo from "../../../assets/img/Cafeteria.png";
+import { AvatarUser } from "../ui/AvatarUser";
 
 export const Navbar = () => {
   return (
@@ -17,6 +18,7 @@ export const Navbar = () => {
         </div>
 
         <div className="h-9 w-9 rounded-full border border-stone-200 bg-gradient-to-br from-stone-100 to-stone-200" />
+        <AvatarUser/>
       </div>
     </nav>
   );

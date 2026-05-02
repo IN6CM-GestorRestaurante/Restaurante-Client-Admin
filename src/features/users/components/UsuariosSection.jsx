@@ -1,4 +1,11 @@
+import { useState } from "react";
+import { UserModal } from "./UserModal";
+
 export const UsuariosSection = () => {
+    const [openModal, setOpenModal] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
     return (
         <>
             <header className="header">
@@ -6,7 +13,7 @@ export const UsuariosSection = () => {
                     <h2>CRUD de Usuarios</h2>
                     <p>Controla perfiles, accesos y estado de cuenta.</p>
                 </div>
-                <button className="btn danger">Nuevo usuario</button>
+                <button className="btn danger" type="button" onClick={() => setOpenModal(true)}>Nuevo usuario</button>
             </header>
 
             <section className="section">
@@ -20,75 +27,63 @@ export const UsuariosSection = () => {
                     <article className="kpi"><span>Inactivos</span><strong>Sin datos</strong></article>
                 </section>
 
-                <div style={{ overflowX: "auto" }}>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nombre (name)</th>
-                                <th>Apellido (surname)</th>
-                                <th>Usuario (username)</th>
-                                <th>Correo (email)</th>
-                                <th>Telefono (phone)</th>
-                                <th>Rol (role)</th>
-                                <th>Estado (status)</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Sin datos</td>
-                                <td>Sin datos</td>
-                                <td>Sin datos</td>
-                                <td>Sin datos</td>
-                                <td>Sin datos</td>
-                                <td>Administrador</td>
-                                <td>Activo</td>
-                                <td>
-                                    <div className="row-actions">
-                                        <button>Editar</button>
-                                        <button>Eliminar</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+                    {[
+                        { name: "Carlos López", username: "carlos.lopez", email: "carlos@restaurante.com", phone: "+502 1234 5678", role: "Administrador", status: "Activo", icon: "fa-user-tie" },
+                        { name: "María Pérez", username: "maria.perez", email: "maria@restaurante.com", phone: "+502 2234 5678", role: "Cajero", status: "Activo", icon: "fa-user" },
+                        { name: "Luis Gómez", username: "luis.gomez", email: "luis@restaurante.com", phone: "+502 3234 5678", role: "Soporte", status: "Inactivo", icon: "fa-user-gear" },
+                    ].map((user) => (
+                        <article key={user.username} className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:scale-[1.02]">
+                            <div className="w-full h-52 bg-gray-100 flex items-center justify-center">
+                                <i className={`fa-solid ${user.icon} text-5xl text-main-blue`}></i>
+                            </div>
+                            <div className="p-5">
+                                <h2 className="text-xl font-bold text-main-blue">{user.name}</h2>
+                                <div className="flex gap-2 mt-2 flex-wrap">
+                                    <span className="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-700 font-medium">{user.username}</span>
+                                    <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700 font-medium">{user.role}</span>
+                                </div>
+                                <p className="text-sm text-gray-400 mt-2 truncate">{user.email}</p>
+                                <p className="text-sm text-gray-400 mt-1 truncate">{user.phone}</p>
+                                <div className="flex gap-2 mt-2 flex-wrap">
+                                    <span className="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium">{user.status}</span>
+                                </div>
+                                <div className="flex gap-3 mt-5">
+                                    <button className="flex-1 py-2 rounded-lg bg-main-blue text-white font-medium hover:opacity-90 transition" onClick={() => { setSelectedUser(user); setOpenModal(true); }}>
+                                        ✏️ Editar
+                                    </button>
+                                    <button className="flex-1 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition" onClick={() => setIsDeleteOpen(true)}>
+                                        🗑️ Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </article>
+                    ))}
                 </div>
             </section>
 
-            <div className="modal">
-                <div className="modal-card">
-                    <h2 style={{ fontSize: "18px", marginBottom: "10px" }}>Nuevo usuario</h2>
-                    <div className="field"><label>Nombre (name)</label><input /></div>
-                    <div className="field"><label>Apellido (surname)</label><input /></div>
-                    <div className="field"><label>Usuario (username)</label><input /></div>
-                    <div className="field"><label>Correo (email)</label><input type="email" /></div>
-                    <div className="field"><label>Contraseña (password)</label><input type="password" /></div>
-                    <div className="field"><label>Telefono (phone)</label><input maxLength="8" /></div>
-                    <div className="field"><label>Rol (role)</label><input placeholder="ADMIN_ROLE" /></div>
-                    <div className="field">
-                        <label>Estado (status)</label>
-                        <select>
-                            <option>Activo</option>
-                            <option>Inactivo</option>
-                        </select>
-                    </div>
-                    <div className="row">
-                        <button className="btn soft">Cancelar</button>
-                        <button className="btn danger">Guardar</button>
-                    </div>
-                </div>
-            </div>
+            {openModal ? (
+                <UserModal 
+                    initialData={selectedUser}
+                    onClose={() => {
+                        setOpenModal(false);
+                        setSelectedUser(null);
+                    }}
+                />
+            ) : null}
 
-            <div className="modal">
-                <div className="modal-card">
-                    <h2 style={{ fontSize: "18px", marginBottom: "10px" }}>Eliminar usuario</h2>
-                    <p className="confirm-text">El usuario seleccionado sera eliminado. ¿Deseas continuar?</p>
-                    <div className="row">
-                        <button className="btn soft">Cancelar</button>
-                        <button className="btn danger">Eliminar</button>
+            {isDeleteOpen ? (
+                <div className="modal">
+                    <div className="modal-card">
+                        <h2 style={{ fontSize: "18px", marginBottom: "10px" }}>Eliminar usuario</h2>
+                        <p className="confirm-text">El usuario seleccionado sera eliminado. ¿Deseas continuar?</p>
+                        <div className="row">
+                            <button className="btn soft" type="button" onClick={() => setIsDeleteOpen(false)}>Cancelar</button>
+                            <button className="btn danger" type="button" onClick={() => setIsDeleteOpen(false)}>Eliminar</button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            ) : null}
 
             <div className="toast-zone"></div>
         </>
