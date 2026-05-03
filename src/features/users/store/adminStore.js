@@ -1,87 +1,59 @@
-/*
 import { create } from "zustand";
 import {
-  getFields as getFieldsRequest,
-  createField as createFieldRequest,
-  updateField as _updateFieldRequest,
-  deleteField as _deleteFieldRequest,
-  getAllReservations as getAllReservationsRequest,
-  confirmReservation as confirmReservationRequest,
-} from "../../../shared/api";
+  getUsers as getUsersRequest,
+  syncUserProfile as syncUserProfileRequest,
+} from "../../../shared/api/admin";
 
-export const useFieldsStore = create((set, get) => ({
-  fields: [],
-  reservations: [],
+const getErrorMessage = (error, fallback) =>
+  error?.response?.data?.message || error?.message || fallback;
+
+const normalizeList = (response) => response?.data?.data ?? response?.data ?? [];
+
+export const useUsersStore = create((set, get) => ({
+  users: [],
   loading: false,
   error: null,
 
-  getFields: async () => {
+  getUsers: async (params) => {
     try {
       set({ loading: true, error: null });
-
-      const response = await getFieldsRequest();
-
-      set({
-        fields: response.data.data,
-        loading: false,
-      });
+      const response = await getUsersRequest(params);
+      set({ users: normalizeList(response), loading: false });
     } catch (error) {
       set({
-        error: error.response?.data?.message || "Error al obtener canchas",
         loading: false,
+        error: getErrorMessage(error, "Error al obtener usuarios"),
       });
     }
   },
 
-  createField: async (formData) => {
+  createUser: async (data) => {
     try {
       set({ loading: true, error: null });
-
-      const response = await createFieldRequest(formData);
-
-      set({
-        fields: [response.data.data, ...get().fields],
-        loading: false,
-      });
-    } catch (error) {
-      set({
-        loading: false,
-        error: error.response?.data?.message || "Error al crear campo",
-      });
-    }
-  },
-  // ...rest of logic
-
-  getAllReservations: async () => {
-    try {
-      set({ loading: true, error: null });
-      const response = await getAllReservationsRequest();
-      set({
-        reservations: response.data.data,
-        loading: false,
-      });
-    } catch (error) {
-      set({
-        error:
-          error.response?.data?.message || "Error al obtener reservaciones",
-        loading: false,
-      });
-    }
-  },
-
-  confirmReservation: async (id) => {
-    try {
-      set({ loading: true, error: null });
-      await confirmReservationRequest(id);
-      // Refrescar lista después de confirmar
-      await get().getAllReservations();
+      await syncUserProfileRequest(data);
+      await get().getUsers();
       set({ loading: false });
     } catch (error) {
       set({
-        error:
-          error.response?.data?.message || "Error al confirmar reservación",
         loading: false,
+        error: getErrorMessage(error, "Error al crear usuario"),
       });
+      throw error;
+    }
+  },
+
+  updateUser: async (id, data) => {
+    try {
+      set({ loading: true, error: null });
+      await syncUserProfileRequest({ id, ...data });
+      await get().getUsers();
+      set({ loading: false });
+    } catch (error) {
+      set({
+        loading: false,
+        error: getErrorMessage(error, "Error al actualizar usuario"),
+      });
+      throw error;
     }
   },
 }));

@@ -34,7 +34,9 @@ export const RegisterForm = ({ onNavigate }) => {
                         <input className="w-full bg-transparent outline-none text-sm" type="password" placeholder="Crear contrasena" required />
                     </div>
 
-                    <button type="button" className="px-4 py-2 rounded-lg bg-main-blue text-white font-medium hover:opacity-90 transition w-full">Registrarme</button>
+                    <button type="submit" className="auth-btn action-btn" style={{ marginTop: "8px" }}>
+                        Registrarme
+                    </button>
                 </form>
 
                 <p className="signin-link">

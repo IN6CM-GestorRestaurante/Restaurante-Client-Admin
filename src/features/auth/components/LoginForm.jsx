@@ -15,7 +15,7 @@ export const LoginForm = ({ onNavigate }) => {
 
     const onSubmit = async (data) => {
         const res = await login(data);
-        if (res) {
+        if (res?.success) {
             navigate("/dashboard");
             toast.success("¡Inicio de sesión exitoso!");
         }else {

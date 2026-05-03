@@ -1,11 +1,4 @@
-import { useState } from "react";
-import { ReservationModal } from "./ReservationModal";
-
 export const ReservacionesSection = () => {
-    const [openModal, setOpenModal] = useState(false);
-    const [selectedReservation, setSelectedReservation] = useState(null);
-    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-
     return (
         <>
             <header className="header">
@@ -13,7 +6,7 @@ export const ReservacionesSection = () => {
                     <h2>CRUD de Reservaciones</h2>
                     <p>Administra agenda, disponibilidad y confirmaciones.</p>
                 </div>
-                <button className="btn danger" type="button" onClick={() => setIsCreateOpen(true)}>Nueva reservacion</button>
+                <button className="btn danger">Nueva reservacion</button>
             </header>
 
             <section className="section">
@@ -27,63 +20,89 @@ export const ReservacionesSection = () => {
                     <article className="kpi"><span>Pendientes</span><strong>Sin datos</strong></article>
                 </section>
 
-                <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-                    {[
-                        { user: "Juan García", type: "En mesa", table: "Mesa 5", date: "2024-05-02 19:00", status: "Pendiente", notes: "Preferencia de ubicación", icon: "fa-calendar-check" },
-                        { user: "María López", type: "Delivery", table: "No aplica", date: "2024-05-02 20:30", status: "Confirmada", notes: "Pedir sin picante", icon: "fa-truck" },
-                        { user: "Carlos Pérez", type: "En mesa", table: "Mesa 2", date: "2024-05-03 14:00", status: "Cancelada", notes: "Llega con niños", icon: "fa-clock" },
-                    ].map((reservation) => (
-                        <article key={reservation.user} className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:scale-[1.02]">
-                            <div className="w-full h-52 bg-gray-100 flex items-center justify-center">
-                                <i className={`fa-solid ${reservation.icon} text-5xl text-main-blue`}></i>
-                            </div>
-                            <div className="p-5">
-                                <h2 className="text-xl font-bold text-main-blue">{reservation.user}</h2>
-                                <div className="flex gap-2 mt-2 flex-wrap">
-                                    <span className="px-3 py-1 text-xs rounded-full bg-indigo-100 text-indigo-700 font-medium">{reservation.type}</span>
-                                    <span className="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-700 font-medium">{reservation.table}</span>
-                                </div>
-                                <p className="text-sm text-gray-400 mt-2 truncate">{reservation.date}</p>
-                                <div className="flex gap-2 mt-2 flex-wrap">
-                                    <span className="px-3 py-1 text-xs rounded-full bg-orange-100 text-orange-700 font-medium">{reservation.status}</span>
-                                    <span className="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium">{reservation.notes}</span>
-                                </div>
-                                <div className="flex gap-3 mt-5">
-                                    <button className="flex-1 py-2 rounded-lg bg-main-blue text-white font-medium hover:opacity-90 transition" onClick={() => { setSelectedReservation(reservation); setOpenModal(true); }}>
-                                        ✏️ Editar
-                                    </button>
-                                    <button className="flex-1 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition" onClick={() => setIsDeleteOpen(true)}>
-                                        🗑️ Eliminar
-                                    </button>
-                                </div>
-                            </div>
-                        </article>
-                    ))}
+                <div style={{ overflowX: "auto" }}>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Usuario (user)</th>
+                                <th>Restaurante (restaurant)</th>
+                                <th>Tipo (type)</th>
+                                <th>Mesa (table)</th>
+                                <th>Fecha y hora (date)</th>
+                                <th>Direccion entrega (deliveryAddress)</th>
+                                <th>Estado (status)</th>
+                                <th>Notas (notes)</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Sin datos</td>
+                                <td>Sin datos</td>
+                                <td>En mesa</td>
+                                <td>Mesa 5</td>
+                                <td>Sin datos</td>
+                                <td>No aplica</td>
+                                <td>Pendiente</td>
+                                <td>Sin datos</td>
+                                <td>
+                                    <div className="row-actions">
+                                        <button>Editar</button>
+                                        <button>Eliminar</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
 
-            {openModal ? (
-                <ReservationModal
-                    initialData={selectedReservation}
-                    onClose={() => {
-                        setOpenModal(false);
-                        setSelectedReservation(null);
-                    }}
-                />
-            ) : null}
-
-            {isDeleteOpen ? (
-                <div className="modal">
-                    <div className="modal-card">
-                        <h2 style={{ fontSize: "18px", marginBottom: "10px" }}>Eliminar reservacion</h2>
-                        <p className="confirm-text">La reservacion seleccionada sera eliminada. ¿Deseas continuar?</p>
-                        <div className="row">
-                            <button className="btn soft" type="button" onClick={() => setIsDeleteOpen(false)}>Cancelar</button>
-                            <button className="btn danger" type="button" onClick={() => setIsDeleteOpen(false)}>Eliminar</button>
-                        </div>
+            <div className="modal">
+                <div className="modal-card">
+                    <h2 style={{ fontSize: "18px", marginBottom: "10px" }}>Nueva reservacion</h2>
+                    <div className="field"><label>ID usuario (user)</label><input placeholder="MongoID" /></div>
+                    <div className="field"><label>ID restaurante (restaurant)</label><input placeholder="MongoID" /></div>
+                    <div className="field">
+                        <label>Tipo (type)</label>
+                        <select>
+                            <option>En Mesa</option>
+                            <option>Para llevar</option>
+                            <option>A domicilio</option>
+                        </select>
+                    </div>
+                    <div className="field"><label>Fecha y hora (date ISO8601)</label><input placeholder="2026-04-26T19:30:00.000Z" /></div>
+                    <div className="field"><label>ID mesa (table)</label><input placeholder="Requerido para En Mesa" /></div>
+                    <div className="field"><label>Direccion entrega (deliveryAddress)</label><input placeholder="Requerido para A domicilio" /></div>
+                    <div className="field"><label>Item menu (items.menuItem)</label><input placeholder="MongoID" /></div>
+                    <div className="field"><label>Cantidad item (items.quantity)</label><input type="number" min="1" /></div>
+                    <div className="field">
+                        <label>Estado (status)</label>
+                        <select>
+                            <option>Confirmada</option>
+                            <option>Pendiente</option>
+                            <option>En curso</option>
+                            <option>Completada</option>
+                            <option>Cancelada</option>
+                        </select>
+                    </div>
+                    <div className="field"><label>Notas (notes)</label><textarea /></div>
+                    <div className="row">
+                        <button className="btn soft">Cancelar</button>
+                        <button className="btn danger">Guardar</button>
                     </div>
                 </div>
-            ) : null}
+            </div>
+
+            <div className="modal">
+                <div className="modal-card">
+                    <h2 style={{ fontSize: "18px", marginBottom: "10px" }}>Eliminar reservacion</h2>
+                    <p className="confirm-text">La reservacion seleccionada sera eliminada. ¿Deseas continuar?</p>
+                    <div className="row">
+                        <button className="btn soft">Cancelar</button>
+                        <button className="btn danger">Eliminar</button>
+                    </div>
+                </div>
+            </div>
 
             <div className="toast-zone"></div>
         </>

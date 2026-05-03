@@ -30,8 +30,8 @@ export const AvatarUser = () => {
         navigate("/", { replace: true });
     };
 
-    const avatarSrc = user?.profilePincture && user.profilePincture.trim() !== ""
-        ? user.profilePincture
+    const avatarSrc = user?.profilePicture && user.profilePicture.trim() !== ""
+        ? user.profilePicture
         : defaultAvatarImg;
 
     return (
@@ -39,7 +39,7 @@ export const AvatarUser = () => {
             <img
                 onClick={toggleMenu}
                 src={avatarSrc}
-                alt={user?.username}
+                alt={user?.username || "avatar"}
                 className="w-10 h-10 rounded-full object-cover border cursor-pointer"
                 onError={(e) => {
                     e.target.onerror = null;

@@ -13,10 +13,10 @@ export const AppRoutes = () => {
 
     return (
         <Routes>
-            {/* RUTAS DE AUTENTICACIÓN */}
-            <Route path="/auth" element={<AuthPage />} />
+            {/* PUBLIC */}
+            <Route path="/" element={<AuthPage />} />
             
-            {/* RUTAS PROTEGIDAS DEL DASHBOARD */}
+            {/* PROTECTED + ROLE */}
             <Route path="/dashboard/*" element={<DashboardPage />}>
                 <Route path="locations" element={<SucursalesSection />} />
                 <Route path="menus" element={<MenuSection />} />
@@ -25,12 +25,10 @@ export const AppRoutes = () => {
                 <Route path="summaries" element={<ResumenSection />} />
                 <Route path="tables" element={<MesasSection />} />
                 <Route path="users" element={<UsuariosSection />} />
+                <Route index element={<Navigate to="summaries" replace />} />
             </Route>
 
-            {/* RUTA RAÍZ - Redirecciona a dashboard o auth */}
-            <Route path="/" element={<DashboardPage />} />
-
-            {/* Ruta para páginas no encontradas */}
+            {/* Ruta temporal para pruebas */}
             <Route path="*" element={<h1>Página no encontrada</h1>} />
         </Routes>
     );

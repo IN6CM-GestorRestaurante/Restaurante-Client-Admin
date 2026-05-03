@@ -22,7 +22,7 @@ export const getTeams = async () => {
     return await axiosAdmin.get("/teams");
 };
 
-export const createTeam = async (data) => {p
+export const createTeam = async (data) => {
     return await axiosAdmin.post("/teams", data, {
         headers: { "Content-Type": "multipart/form-data" },
     });

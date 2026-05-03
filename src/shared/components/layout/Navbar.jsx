@@ -17,8 +17,7 @@ export const Navbar = () => {
           </h1>
         </div>
 
-        <div className="h-9 w-9 rounded-full border border-stone-200 bg-gradient-to-br from-stone-100 to-stone-200" />
-        <AvatarUser/>
+        <AvatarUser />
       </div>
     </nav>
   );
