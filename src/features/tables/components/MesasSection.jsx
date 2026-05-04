@@ -3,12 +3,14 @@ import { useEffect as useToastEffect } from "react";
 import { useTablesStore } from "../../tables/store/adminStore";
 import { showError } from "../../../shared/utils/toast";
 import { TableModal } from "./TableModal";
+import { useModal } from "../../../shared/ui/hooks/useModal";
+import { Modal } from "../../../shared/ui/Modal";
 
 export const MesasSection = () => {
     const { tables, loading, error, getTables, deleteTable } = useTablesStore();
-    const [openModal, setOpenModal] = useState(false);
+    const { isOpen: openModal, openModal: setOpenModalTrue, closeModal: setOpenModalFalse } = useModal(false);
+    const { isOpen: isDeleteOpen, openModal: setDeleteOpenTrue, closeModal: setDeleteOpenFalse } = useModal(false);
     const [selectedTable, setSelectedTable] = useState(null);
-    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
     useEffect(() => {
         getTables?.();
@@ -24,7 +26,7 @@ export const MesasSection = () => {
                 await deleteTable?.(selectedTable._id);
             }
         } finally {
-            setIsDeleteOpen(false);
+            setDeleteOpenFalse();
             setSelectedTable(null);
         }
     };
@@ -49,7 +51,7 @@ export const MesasSection = () => {
                     <h2>CRUD de Mesas</h2>
                     <p>Configura zonas, estado y disponibilidad de mesas.</p>
                 </div>
-                <button className="btn danger" type="button" onClick={() => setOpenModal(true)}>Nueva mesa</button>
+                <button className="btn danger" type="button" onClick={() => { setSelectedTable(null); setOpenModalTrue(); }}>Nueva mesa</button>
             </header>
 
             <section className="section">
@@ -89,8 +91,8 @@ export const MesasSection = () => {
                                     <td>{table.description || "Sin datos"}</td>
                                     <td>
                                         <div className="row-actions">
-                                            <button type="button" onClick={() => { setSelectedTable(table); setOpenModal(true); }}>Editar</button>
-                                            <button type="button" onClick={() => { setSelectedTable(table); setIsDeleteOpen(true); }}>Eliminar</button>
+                                            <button type="button" onClick={() => { setSelectedTable(table); setOpenModalTrue(); }}>Editar</button>
+                                            <button type="button" onClick={() => { setSelectedTable(table); setDeleteOpenTrue(); }}>Eliminar</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -100,28 +102,29 @@ export const MesasSection = () => {
                 </div>
             </section>
 
-            {openModal ? (
-                <TableModal
-                    initialData={selectedTable}
-                    onClose={() => {
-                        setOpenModal(false);
-                        setSelectedTable(null);
-                    }}
-                />
-            ) : null}
+            <TableModal
+                isOpen={openModal}
+                initialData={selectedTable}
+                onClose={() => {
+                    setOpenModalFalse();
+                    setSelectedTable(null);
+                }}
+            />
 
-            {isDeleteOpen ? (
-            <div className="modal open">
-                <div className="modal-card">
-                    <h2 style={{ fontSize: "18px", marginBottom: "10px" }}>Eliminar mesa</h2>
-                    <p className="confirm-text">La mesa seleccionada sera eliminada. ¿Deseas continuar?</p>
-                    <div className="row">
-                        <button className="btn soft" type="button" onClick={() => setIsDeleteOpen(false)}>Cancelar</button>
-                        <button className="btn danger" type="button" onClick={handleDelete}>Eliminar</button>
+            <Modal
+                isOpen={isDeleteOpen}
+                onClose={() => setDeleteOpenFalse()}
+                title="Eliminar mesa"
+                subtitle="Confirmación de eliminación"
+            >
+                <div className="flex flex-col space-y-4">
+                    <p className="text-gray-700">La mesa seleccionada sera eliminada. ¿Deseas continuar?</p>
+                    <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t">
+                        <button type="button" onClick={() => setDeleteOpenFalse()} className="w-full sm:w-auto px-4 py-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Cancelar</button>
+                        <button type="button" onClick={handleDelete} className="w-full sm:w-auto px-5 py-2 rounded-lg text-white font-medium transition shadow bg-red-600 hover:bg-red-700 border-none">Eliminar</button>
                     </div>
                 </div>
-            </div>
-            ) : null}
+            </Modal>
 
             <div className="toast-zone"></div>
         </>

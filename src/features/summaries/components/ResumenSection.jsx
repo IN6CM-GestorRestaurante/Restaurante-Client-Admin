@@ -1,4 +1,8 @@
-export const ResumenSection = ({ onNavigate }) => {
+import { useNavigate } from "react-router-dom";
+
+export const ResumenSection = () => {
+    const navigate = useNavigate();
+
     return (
         <>
             <header className="topbar">
@@ -36,7 +40,7 @@ export const ResumenSection = ({ onNavigate }) => {
                     <i className="fas fa-chair"></i>
                     <h3>Gestion de Mesas</h3>
                     <p>Administra mesas, disponibilidad y ubicacion.</p>
-                    <button type="button" onClick={() => onNavigate("mesas")}>
+                    <button type="button" onClick={() => navigate("/dashboard/tables")}>
                         Ir a la vista <i className="fas fa-arrow-right"></i>
                     </button>
                 </article>
@@ -45,7 +49,7 @@ export const ResumenSection = ({ onNavigate }) => {
                     <i className="fas fa-receipt"></i>
                     <h3>Gestion de Ordenes</h3>
                     <p>Supervisa el flujo de ordenes desde cocina hasta entrega.</p>
-                    <button type="button" onClick={() => onNavigate("ordenes")}>
+                    <button type="button" onClick={() => navigate("/dashboard/orders")}>
                         Ir a la vista <i className="fas fa-arrow-right"></i>
                     </button>
                 </article>
@@ -54,7 +58,7 @@ export const ResumenSection = ({ onNavigate }) => {
                     <i className="fas fa-utensils"></i>
                     <h3>Gestion de Menu</h3>
                     <p>Controla categorias, platos y disponibilidad del menu.</p>
-                    <button type="button" onClick={() => onNavigate("menu")}>
+                    <button type="button" onClick={() => navigate("/dashboard/menus")}>
                         Ir a la vista <i className="fas fa-arrow-right"></i>
                     </button>
                 </article>
@@ -63,7 +67,7 @@ export const ResumenSection = ({ onNavigate }) => {
                     <i className="fas fa-calendar-check"></i>
                     <h3>Gestion de Reservaciones</h3>
                     <p>Organiza reservas, turnos y estados de atencion.</p>
-                    <button type="button" onClick={() => onNavigate("reservaciones")}>
+                    <button type="button" onClick={() => navigate("/dashboard/reservations")}>
                         Ir a la vista <i className="fas fa-arrow-right"></i>
                     </button>
                 </article>
@@ -72,7 +76,7 @@ export const ResumenSection = ({ onNavigate }) => {
                     <i className="fas fa-store"></i>
                     <h3>Gestion de Sucursales</h3>
                     <p>Administra sedes y datos operativos por restaurante.</p>
-                    <button type="button" onClick={() => onNavigate("sucursales")}>
+                    <button type="button" onClick={() => navigate("/dashboard/locations")}>
                         Ir a la vista <i className="fas fa-arrow-right"></i>
                     </button>
                 </article>
@@ -81,7 +85,7 @@ export const ResumenSection = ({ onNavigate }) => {
                     <i className="fas fa-users"></i>
                     <h3>Gestion de Usuarios</h3>
                     <p>Gestiona perfiles, roles y estado de cuenta de usuarios.</p>
-                    <button type="button" onClick={() => onNavigate("usuarios")}>
+                    <button type="button" onClick={() => navigate("/dashboard/users")}>
                         Ir a la vista <i className="fas fa-arrow-right"></i>
                     </button>
                 </article>

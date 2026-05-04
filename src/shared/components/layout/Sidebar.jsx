@@ -1,7 +1,10 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../../features/auth/store/authStore";
 
 export const Sidebar = () => {
     const location = useLocation();
+    const navigate = useNavigate();
+    const logout = useAuthStore(state => state.logout);
 
     const items = [
         { label: "Resumen", to: "/dashboard/summaries", icon: "fas fa-chart-pie" },
@@ -13,25 +16,41 @@ export const Sidebar = () => {
         { label: "Usuarios", to: "/dashboard/users", icon: "fas fa-users" },
     ];
 
+    const handleLogout = () => {
+        logout();
+        navigate("/");
+    };
+
     return (
-        <aside className="w-60 bg-white min-h-[calc(100vh-4rem)] p-4 shadow-sm">
-            <ul className="space-y-1">
+        <aside className="sidebar w-[290px] shrink-0 sticky top-[4rem] h-[calc(100vh-4rem)] overflow-y-auto">
+            <div className="brand">
+                <i className="fas fa-store"></i>
+                <h1>Restaurante Admin</h1>
+            </div>
+            
+            <p className="menu-title">Menu Principal</p>
+
+            <nav className="nav-links">
                 {items.map((item) => {
-                    const active = location.pathname === item.to;
+                    const active = location.pathname.startsWith(item.to);
                     return (
-                        <li key={item.label}>
-                            <Link 
-                                to={item.to} 
-                                className={`flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors sidebar-underline${active ? " active text-main-blue" : " text-gray-700 hover:bg-gray-100"}`}
-                                style={active ? { fontWeight: 700 } : {}}
-                            >
-                                <i className={item.icon}></i>
-                                {item.label}
-                            </Link>
-                        </li>
+                        <button 
+                            type="button" 
+                            key={item.label}
+                            className={active ? "active" : ""}
+                            onClick={() => navigate(item.to)}
+                        >
+                            <i className={item.icon}></i>
+                            {item.label}
+                        </button>
                     );
                 })}
-            </ul>
+            </nav>
+
+            <button type="button" className="logout" onClick={handleLogout}>
+                <i className="fas fa-sign-out-alt"></i>
+                Cerrar Sesión
+            </button>
         </aside>
     );
 };
