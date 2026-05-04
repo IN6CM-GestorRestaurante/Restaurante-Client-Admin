@@ -1,23 +1,28 @@
-import imgLogo from "../../../assets/img/Cafeteria.png";
 import { AvatarUser } from "../ui/AvatarUser";
+import { BuildingStorefrontIcon } from "@heroicons/react/24/outline";
 
 export const Navbar = () => {
   return (
-    <nav className="sticky top-0 z-50 border-b border-stone-200/80 bg-white/75 shadow-[0_10px_30px_-24px_rgba(80,62,43,0.6)] backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <div className="flex items-center gap-2">
-          <img
-            src={imgLogo}
-            alt="Restaurante logo"
-            className="h-9 w-9 rounded-lg border border-stone-200 object-cover md:h-10 md:w-10"
-          />
+    <nav className="sticky top-0 z-50 border-b border-stone-200/80 bg-white/90 backdrop-blur-xl shadow-[0_12px_34px_-26px_rgba(80,62,43,0.55)]">
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-6 sm:px-8 lg:px-12">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-orange-200 bg-orange-50 text-orange-500 shadow-sm">
+            <BuildingStorefrontIcon className="h-6 w-6" />
+          </div>
 
-          <h1 className="text-base font-bold text-[var(--primary-red)] sm:text-lg">
-            Restaurante Admin
-          </h1>
+          <div className="min-w-0">
+            <p className="text-sm font-extrabold tracking-wide text-stone-900 sm:text-base">
+              Gestor de Restaurante
+            </p>
+            <p className="hidden text-xs font-medium text-stone-500 sm:block">
+              Panel de administración
+            </p>
+          </div>
         </div>
 
-        <AvatarUser />
+        <div className="flex shrink-0 items-center justify-end">
+          <AvatarUser />
+        </div>
       </div>
     </nav>
   );

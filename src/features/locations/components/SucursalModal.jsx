@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { Modal } from "../../../shared/ui/Modal";
 
-export const SucursalModal = ({ initialData = null, onClose }) => {
+export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
     const [form, setForm] = useState({
         name: "",
         descripcion: "",
@@ -15,169 +16,89 @@ export const SucursalModal = ({ initialData = null, onClose }) => {
     });
 
     useEffect(() => {
-        if (initialData) setForm((s) => ({ ...s, ...initialData }));
+        if (initialData) {
+            setForm((current) => ({ ...current, ...initialData }));
+        }
     }, [initialData]);
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 px-3 sm:px-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg md:max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
-
-                <div
-                    className="p-4 sm:p-5 text-white sticky top-0 z-10"
-                    style={{
-                        background:
-                            "linear-gradient(135deg, var(--primary-red) 0%, var(--primary-orange) 100%)",
-                    }}
-                >
-                    <h2 className="text-xl sm:text-2xl font-bold">
-                        Nueva sucursal
-                    </h2>
-                    <p className="text-xs sm:text-sm opacity-80">
-                        Completa la información de la sucursal
-                    </p>
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title={initialData ? "Editar sucursal" : "Nueva sucursal"}
+            subtitle="Completa la información de la sucursal"
+        >
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
+                <div className="flex justify-center md:col-span-2">
+                    <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border bg-gray-100 shadow-inner sm:h-28 sm:w-28 md:h-32 md:w-32">
+                        <span className="text-xs text-gray-400 sm:text-sm">Sin imagen</span>
+                    </div>
                 </div>
 
-                <div className="p-4 sm:p-6 space-y-5 overflow-y-auto">
+                <div className="flex flex-col gap-2 md:col-span-2">
+                    <label className="app-modal-fieldLabel">Nombre</label>
+                    <input className="app-modal-input" placeholder="Sucursal Centro" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+                </div>
 
-                    <div className="flex justify-center">
-                            <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl bg-gray-100 border flex items-center justify-center overflow-hidden shadow-inner">
-                                <span className="text-gray-400 text-xs sm:text-sm">
-                                    Sin imagen
-                                </span>
-                            </div>
-                    </div>
+                <div className="flex flex-col gap-2 md:col-span-2">
+                    <label className="app-modal-fieldLabel">Descripción</label>
+                    <textarea className="app-modal-textarea" placeholder="Detalles de la sucursal..." value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} />
+                </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="flex flex-col md:col-span-2">
-                            <label className="text-sm font-semibold text-gray-700 mb-1">
-                                Nombre (name)
-                            </label>
-                            <input
-                                className="w-full px-3 py-2 rounded-lg border-2 border-gray-300 bg-gray-50 shadow-sm 
-                focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
-                                placeholder="Sucursal Centro"
-                                value={form.name}
-                                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                            />
-                        </div>
+                <div className="flex flex-col gap-2">
+                    <label className="app-modal-fieldLabel">Dirección</label>
+                    <input className="app-modal-input" placeholder="Avenida principal 123" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+                </div>
 
-                        <div className="flex flex-col md:col-span-2">
-                            <label className="text-sm font-semibold text-gray-700 mb-1">
-                                Descripción (descripcion)
-                            </label>
-                            <textarea
-                                className="w-full px-3 py-2 rounded-lg border-2 border-gray-300 bg-gray-50 shadow-sm 
-                focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
-                                placeholder="Detalles de la sucursal..."
-                                value={form.descripcion}
-                                onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
-                            />
-                        </div>
+                <div className="flex flex-col gap-2">
+                    <label className="app-modal-fieldLabel">Apertura</label>
+                    <input type="time" className="app-modal-input" value={form.openingTime} onChange={(e) => setForm({ ...form, openingTime: e.target.value })} />
+                </div>
 
-                        <div className="flex flex-col">
-                            <label className="text-sm font-semibold text-gray-700 mb-1">
-                                Dirección (address)
-                            </label>
-                            <input
-                                className="w-full px-3 py-2 rounded-lg border-2 border-gray-300 bg-gray-50 shadow-sm 
-                focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
-                                placeholder="Avenida principal 123"
-                                value={form.address}
-                                onChange={(e) => setForm({ ...form, address: e.target.value })}
-                            />
-                        </div>
+                <div className="flex flex-col gap-2">
+                    <label className="app-modal-fieldLabel">Cierre</label>
+                    <input type="time" className="app-modal-input" value={form.closingTime} onChange={(e) => setForm({ ...form, closingTime: e.target.value })} />
+                </div>
 
-                        <div className="flex flex-col md:col-span-2">
-                            <label className="text-sm font-semibold text-gray-700 mb-1">
-                                Apertura (openingTime)
-                            </label>
-                            <input
-                                type="time"
-                                className="w-full px-3 py-2 rounded-lg border-2 border-gray-300 bg-gray-50 shadow-sm 
-                focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
-                                value={form.openingTime}
-                                onChange={(e) => setForm({ ...form, openingTime: e.target.value })}
-                            />
-                        </div>
+                <div className="flex flex-col gap-2">
+                    <label className="app-modal-fieldLabel">Categoria</label>
+                    <input className="app-modal-input" placeholder="Italiana" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+                </div>
 
-                        <div className="flex flex-col">
-                            <label className="text-sm font-semibold text-gray-700 mb-1">
-                                Cierre (closingTime)
-                            </label>
-                            <input
-                                type="time"
-                                className="w-full px-3 py-2 rounded-lg border-2 border-gray-300 bg-gray-50 shadow-sm 
-                focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
-                                value={form.closingTime}
-                                onChange={(e) => setForm({ ...form, closingTime: e.target.value })}
-                            />
-                        </div>
+                <div className="flex flex-col gap-2">
+                    <label className="app-modal-fieldLabel">Precio promedio</label>
+                    <input type="number" min="0" step="0.01" className="app-modal-input" placeholder="00.00" value={form.averagePrice} onChange={(e) => setForm({ ...form, averagePrice: e.target.value })} />
+                </div>
 
-                        <div className="flex flex-col">
-                            <label className="text-sm font-semibold text-gray-700 mb-1">
-                                Categoria (category)
-                            </label>
-                            <input className="w-full px-3 py-2 rounded-lg border-2 border-gray-300 bg-gray-50 shadow-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" placeholder="Italiana" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
-                        </div>
+                <div className="flex flex-col gap-2">
+                    <label className="app-modal-fieldLabel">Correo</label>
+                    <input type="email" className="app-modal-input" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+                </div>
 
-                        <div className="flex flex-col">
-                            <label className="text-sm font-semibold text-gray-700 mb-1">
-                                Precio promedio (averagePrice)
-                            </label>
-                            <input type="number" min="0" step="0.01" className="w-full px-3 py-2 rounded-lg border-2 border-gray-300 bg-gray-50 shadow-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" placeholder="00.00" value={form.averagePrice} onChange={(e) => setForm({ ...form, averagePrice: e.target.value })} />
-                        </div>
+                <div className="flex flex-col gap-2">
+                    <label className="app-modal-fieldLabel">Teléfono</label>
+                    <input className="app-modal-input" placeholder="+50212345678" value={form.phoneNumber} onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })} />
+                </div>
 
-                        <div className="flex flex-col">
-                            <label className="text-sm font-semibold text-gray-700 mb-1">
-                                Correo (email)
-                            </label>
-                            <input type="email" className="w-full px-3 py-2 rounded-lg border-2 border-gray-300 bg-gray-50 shadow-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-                        </div>
+                <div className="flex flex-col gap-2 md:col-span-2">
+                    <label className="app-modal-fieldLabel">Imagen</label>
+                    <input type="file" accept="image/*" className="app-modal-input cursor-pointer border-dashed" />
+                </div>
 
-                        <div className="flex flex-col">
-                            <label className="text-sm font-semibold text-gray-700 mb-1">
-                                Teléfono (phoneNumber)
-                            </label>
-                            <input className="w-full px-3 py-2 rounded-lg border-2 border-gray-300 bg-gray-50 shadow-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" placeholder="+50212345678" value={form.phoneNumber} onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })} />
-                        </div>
-
-                        <div className="flex flex-col md:col-span-2">
-                            <label className="text-sm font-semibold text-gray-700 mb-1">
-                                Imagen (photos)
-                            </label>
-                            <input type="file" accept="image/*" className="w-full px-3 py-2 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200 transition cursor-pointer" />
-                        </div>
-
-                        <div className="flex flex-col md:col-span-2">
-                            <label className="text-sm font-semibold text-gray-700 mb-1">
-                                Estado (state)
-                            </label>
-                            <select className="w-full px-3 py-2 rounded-lg border-2 border-gray-300 bg-gray-50 shadow-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })}>
-                                <option>Operativa</option>
-                                <option>En mantenimiento</option>
-                                <option>Cerrada</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t">
-                        <button type="button" onClick={() => onClose?.()} className="w-full sm:w-auto px-4 py-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition">
-                            Cancelar
-                        </button>
-
-                        <button type="button" onClick={() => onClose?.()}
-                            className="w-full sm:w-auto px-5 py-2 rounded-lg text-white font-medium transition shadow"
-                            style={{
-                                background:
-                                    "linear-gradient(135deg, var(--primary-red) 0%, var(--primary-orange) 100%)",
-                                border: "none",
-                            }}
-                        >
-                            Guardar
-                        </button>
-                    </div>
+                <div className="flex flex-col gap-2 md:col-span-2">
+                    <label className="app-modal-fieldLabel">Estado</label>
+                    <select className="app-modal-select" value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })}>
+                        <option>Operativa</option>
+                        <option>En mantenimiento</option>
+                        <option>Cerrada</option>
+                    </select>
                 </div>
             </div>
-        </div>
+
+            <div className="app-modal-actions">
+                <button type="button" onClick={() => onClose?.()} className="app-modal-btn app-modal-btnSecondary w-full sm:w-auto">Cancelar</button>
+                <button type="button" onClick={() => onClose?.()} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Guardar</button>
+            </div>
+        </Modal>
     );
 };

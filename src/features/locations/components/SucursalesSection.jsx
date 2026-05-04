@@ -1,4 +1,11 @@
+import { useState } from "react";
+import { SucursalModal } from "./SucursalModal";
+import { Modal } from "../../../shared/ui/Modal";
+
 export const SucursalesSection = () => {
+    const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
     return (
         <>
             <header className="header">
@@ -6,7 +13,7 @@ export const SucursalesSection = () => {
                     <h2>CRUD de Sucursales</h2>
                     <p>Administra sedes, responsable y estado operativo.</p>
                 </div>
-                <button className="btn danger">Nueva sucursal</button>
+                <button className="btn danger" type="button" onClick={() => setIsCreateOpen(true)}>Nueva sucursal</button>
             </header>
             <section className="section">
                 <div className="top">
@@ -48,8 +55,8 @@ export const SucursalesSection = () => {
                                 <td>Sin datos</td>
                                 <td>
                                     <div className="row-actions">
-                                        <button>Editar</button>
-                                        <button>Eliminar</button>
+                                        <button type="button" onClick={() => setIsCreateOpen(true)}>Editar</button>
+                                        <button type="button" onClick={() => setIsDeleteOpen(true)}>Eliminar</button>
                                     </div>
                                 </td>
                             </tr>
@@ -58,43 +65,20 @@ export const SucursalesSection = () => {
                 </div>
             </section>
 
-            <div className="modal">
-                <div className="modal-card">
-                    <h2 style={{ fontSize: "18px", marginBottom: "10px" }}>Nueva sucursal</h2>
-                    <div className="field"><label>Nombre (name)</label><input /></div>
-                    <div className="field"><label>Descripcion (descripcion)</label><textarea /></div>
-                    <div className="field"><label>Direccion (address)</label><input /></div>
-                    <div className="field"><label>Apertura (openingTime)</label><input placeholder="08:00" /></div>
-                    <div className="field"><label>Cierre (closingTime)</label><input placeholder="22:00" /></div>
-                    <div className="field"><label>Categoria (category)</label><input placeholder="Italiana" /></div>
-                    <div className="field"><label>Precio promedio (averagePrice)</label><input type="number" min="0" step="0.01" placeholder="00.00" /></div>
-                    <div className="field"><label>Email (email)</label><input type="email" /></div>
-                    <div className="field"><label>Telefono (phoneNumber)</label><input placeholder="+50212345678" /></div>
-                    <div className="field"><label>Imagen (photos)</label><input type="file" /></div>
-                    <div className="field">
-                        <label>Estado visual</label>
-                        <select>
-                            <option>Operativa</option>
-                            <option>En mantenimiento</option>
-                        </select>
-                    </div>
-                    <div className="row">
-                        <button className="btn soft">Cancelar</button>
-                        <button className="btn danger">Guardar</button>
-                    </div>
-                </div>
-            </div>
+            <SucursalModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
 
-            <div className="modal">
-                <div className="modal-card">
-                    <h2 style={{ fontSize: "18px", marginBottom: "10px" }}>Eliminar sucursal</h2>
-                    <p className="confirm-text">La sucursal seleccionada sera eliminada. ¿Deseas continuar?</p>
-                    <div className="row">
-                        <button className="btn soft">Cancelar</button>
-                        <button className="btn danger">Eliminar</button>
-                    </div>
+            <Modal
+                isOpen={isDeleteOpen}
+                onClose={() => setIsDeleteOpen(false)}
+                title="Eliminar sucursal"
+                subtitle="Confirma la eliminación del registro"
+            >
+                <p className="text-sm leading-6 text-slate-700">La sucursal seleccionada sera eliminada. ¿Deseas continuar?</p>
+                <div className="app-modal-actions">
+                    <button type="button" onClick={() => setIsDeleteOpen(false)} className="app-modal-btn app-modal-btnSecondary w-full sm:w-auto">Cancelar</button>
+                    <button type="button" onClick={() => setIsDeleteOpen(false)} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Eliminar</button>
                 </div>
-            </div>
+            </Modal>
 
             <div className="toast-zone"></div>
         </>

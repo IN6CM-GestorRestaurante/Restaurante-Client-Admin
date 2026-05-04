@@ -22,7 +22,7 @@ export const Sidebar = () => {
     };
 
     return (
-        <aside className="sidebar w-[290px] shrink-0 sticky top-[4rem] h-[calc(100vh-4rem)] overflow-y-auto">
+        <aside className="sidebar w-full md:w-72 md:shrink-0 md:sticky md:top-16 md:h-[calc(100dvh-4rem)] overflow-y-auto">
             <div className="brand">
                 <i className="fas fa-store"></i>
                 <h1>Restaurante Admin</h1>
@@ -46,11 +46,6 @@ export const Sidebar = () => {
                     );
                 })}
             </nav>
-
-            <button type="button" className="logout" onClick={handleLogout}>
-                <i className="fas fa-sign-out-alt"></i>
-                Cerrar Sesión
-            </button>
         </aside>
     );
 };

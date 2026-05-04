@@ -7,6 +7,7 @@ import { useUIStore } from "../../auth/store/uiStore";
 import { showError } from "../../../shared/utils/toast";
 import { spinner } from "@material-tailwind/react";
 import { MenuModal } from "./MenuModal";
+import { Modal } from "../../../shared/ui/Modal";
 
 export const MenuSection = () => {
     const { menus, loading, error, getMenus, deleteMenu } = useMenusStore();
@@ -110,28 +111,27 @@ export const MenuSection = () => {
                 </div>
             </section>
 
-            {openModal ? (
-                <MenuModal
-                    initialData={selectedMenu}
-                    onClose={() => {
-                        setOpenModal(false);
-                        setSelectedMenu(null);
-                    }}
-                />
-            ) : null}
+            <MenuModal
+                isOpen={openModal}
+                initialData={selectedMenu}
+                onClose={() => {
+                    setOpenModal(false);
+                    setSelectedMenu(null);
+                }}
+            />
 
-            {isDeleteOpen ? (
-            <div className="modal open">
-                <div className="modal-card">
-                    <h2 style={{ fontSize: "18px", marginBottom: "10px" }}>Eliminar producto</h2>
-                    <p className="confirm-text">El producto seleccionado sera eliminado. ¿Deseas continuar?</p>
-                    <div className="row">
-                        <button className="btn soft" type="button" onClick={() => setIsDeleteOpen(false)}>Cancelar</button>
-                        <button className="btn danger" type="button" onClick={handleDelete}>Eliminar</button>
-                    </div>
+            <Modal
+                isOpen={isDeleteOpen}
+                onClose={() => setIsDeleteOpen(false)}
+                title="Eliminar producto"
+                subtitle="Confirma la eliminación del registro"
+            >
+                <p className="text-sm leading-6 text-slate-700">El producto seleccionado sera eliminado. ¿Deseas continuar?</p>
+                <div className="app-modal-actions">
+                    <button type="button" onClick={() => setIsDeleteOpen(false)} className="app-modal-btn app-modal-btnSecondary w-full sm:w-auto">Cancelar</button>
+                    <button type="button" onClick={handleDelete} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Eliminar</button>
                 </div>
-            </div>
-            ) : null}
+            </Modal>
 
             <div className="toast-zone"></div>
         </>
