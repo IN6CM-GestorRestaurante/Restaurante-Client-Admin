@@ -12,7 +12,7 @@ export const Navbar = () => {
             className="h-9 w-9 rounded-lg border border-stone-200 object-cover md:h-10 md:w-10"
           />
 
-          <h1 className="text-base font-bold text-main-blue sm:text-lg">
+          <h1 className="text-base font-bold text-[var(--primary-red)] sm:text-lg">
             Restaurante Admin
           </h1>
         </div>
