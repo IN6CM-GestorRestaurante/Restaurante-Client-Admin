@@ -31,6 +31,12 @@ export const AvatarUser = () => {
         ? user.profilePicture
         : defaultAvatarImg;
 
+    const rawUsername = typeof user?.username === "string" ? user.username.trim() : "";
+    const displayName = rawUsername && rawUsername.toLowerCase() !== "undefined" ? rawUsername : "Administrador";
+
+    const rawEmail = typeof user?.email === "string" ? user.email.trim() : "";
+    const displayEmail = rawEmail && rawEmail.toLowerCase() !== "undefined" ? rawEmail : "Cuenta activa";
+
     return (
         <div className="relative" ref={dropdownRef}>
             <button
@@ -41,7 +47,7 @@ export const AvatarUser = () => {
             >
                 <span className="hidden h-10 w-28 items-center justify-center overflow-hidden text-center sm:flex">
                     <span className="block w-full truncate text-sm font-semibold leading-none text-slate-800 text-center">
-                        Administrador
+                        {displayName}
                     </span>
                 </span>
                 <img
@@ -67,8 +73,8 @@ export const AvatarUser = () => {
                         </div>
 
                         <div className="min-w-0 w-full">
-                            <p className="truncate text-sm font-semibold text-slate-900">{user?.username || "Administrador"}</p>
-                            <p className="truncate text-xs text-slate-500">{user?.email || "Cuenta activa"}</p>
+                            <p className="truncate text-sm font-semibold text-slate-900">{displayName}</p>
+                            <p className="truncate text-xs text-slate-500">{displayEmail}</p>
                         </div>
                     </div>
 

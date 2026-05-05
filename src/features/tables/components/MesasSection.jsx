@@ -65,40 +65,66 @@ export const MesasSection = () => {
                     <article className="kpi"><span>Fuera de servicio</span><strong>Sin datos</strong></article>
                 </section>
 
-                <div style={{ overflowX: "auto" }}>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Restaurante (restaurant)</th>
-                                <th>Numero (number)</th>
-                                <th>Capacidad (capacity)</th>
-                                <th>Ubicacion (location)</th>
-                                <th>Estado (status)</th>
-                                <th>Horarios (availabilitySchedules)</th>
-                                <th>Descripcion (description)</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {tableRows.map((table) => (
-                                <tr key={table._id || table.number}>
-                                    <td>{table.restaurant || "Sin datos"}</td>
-                                    <td>{table.number || "Sin datos"}</td>
-                                    <td>{table.capacity || "Sin datos"}</td>
-                                    <td>{table.location || "Sin datos"}</td>
-                                    <td>{table.status || "Sin datos"}</td>
-                                    <td>{table.availabilitySchedules || "Sin datos"}</td>
-                                    <td>{table.description || "Sin datos"}</td>
-                                    <td>
-                                        <div className="row-actions">
-                                            <button type="button" onClick={() => { setSelectedTable(table); setOpenModalTrue(); }}>Editar</button>
-                                            <button type="button" onClick={() => { setSelectedTable(table); setDeleteOpenTrue(); }}>Eliminar</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                <div className="crud-cards-grid crud-cards-gridCompact">
+                    {tableRows.map((table) => (
+                        <article key={table._id || table.number} className="crud-card crud-cardCompact crud-cardPost crud-cardDense">
+                            <div className="crud-cardMedia crud-cardPostMedia">
+                                <div className="crud-cardMediaBox crud-cardMediaBoxIcon crud-cardMediaThemeTables">
+                                    <i className="fas fa-chair crud-cardMediaIcon" aria-hidden="true"></i>
+                                </div>
+
+                                <div className="crud-cardOverlayActions">
+                                    <button
+                                        type="button"
+                                        className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
+                                        aria-label="Editar mesa"
+                                        onClick={() => { setSelectedTable(table); setOpenModalTrue(); }}
+                                    >
+                                        <i className="fas fa-pen-to-square"></i>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="crud-cardAction crud-cardActionDelete crud-cardOverlayAction"
+                                        aria-label="Eliminar mesa"
+                                        onClick={() => { setSelectedTable(table); setDeleteOpenTrue(); }}
+                                    >
+                                        <i className="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="crud-cardHeader">
+                                <div className="crud-cardTitleGroup">
+                                    <span className="crud-cardEyebrow"><i className="fas fa-chair"></i> Mesa</span>
+                                    <h3 className="crud-cardTitle">{table.number || "Sin datos"}</h3>
+                                </div>
+                                <span className="crud-cardBadge">{table.status || "Sin datos"}</span>
+                            </div>
+
+                            <div className="crud-cardBody crud-cardPostBodyCols">
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Restaurante</span>
+                                    <div className="crud-cardFieldValue">{table.restaurant || "Sin datos"}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Capacidad</span>
+                                    <div className="crud-cardFieldValue">{table.capacity || "Sin datos"}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Ubicación</span>
+                                    <div className="crud-cardFieldValue">{table.location || "Sin datos"}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Horarios</span>
+                                    <div className="crud-cardFieldValue">{table.availabilitySchedules || "Sin datos"}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Descripción</span>
+                                    <div className="crud-cardFieldValue">{table.description || "Sin datos"}</div>
+                                </div>
+                            </div>
+                        </article>
+                    ))}
                 </div>
             </section>
 
@@ -116,13 +142,12 @@ export const MesasSection = () => {
                 onClose={() => setDeleteOpenFalse()}
                 title="Eliminar mesa"
                 subtitle="Confirmación de eliminación"
+                compact
             >
-                <div className="flex flex-col space-y-4">
-                    <p className="text-gray-700">La mesa seleccionada sera eliminada. ¿Deseas continuar?</p>
-                    <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t">
-                        <button type="button" onClick={() => setDeleteOpenFalse()} className="w-full sm:w-auto px-4 py-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Cancelar</button>
-                        <button type="button" onClick={handleDelete} className="w-full sm:w-auto px-5 py-2 rounded-lg text-white font-medium transition shadow bg-red-600 hover:bg-red-700 border-none">Eliminar</button>
-                    </div>
+                <p className="text-sm leading-6 text-slate-700">La mesa seleccionada sera eliminada. ¿Deseas continuar?</p>
+                <div className="app-modal-actions">
+                    <button type="button" onClick={() => setDeleteOpenFalse()} className="app-modal-btn app-modal-btnSecondary w-full sm:w-auto">Cancelar</button>
+                    <button type="button" onClick={handleDelete} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Eliminar</button>
                 </div>
             </Modal>
 

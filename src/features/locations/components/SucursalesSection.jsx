@@ -24,44 +24,92 @@ export const SucursalesSection = () => {
                     <article className="kpi"><span>Operativas</span><strong>Sin datos</strong></article>
                     <article className="kpi"><span>En mantenimiento</span><strong>Sin datos</strong></article>
                 </section>
-                <div style={{ overflowX: "auto" }}>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nombre (name)</th>
-                                <th>Descripcion (descripcion)</th>
-                                <th>Direccion (address)</th>
-                                <th>Apertura (openingTime)</th>
-                                <th>Cierre (closingTime)</th>
-                                <th>Categoria (category)</th>
-                                <th>Precio promedio (averagePrice)</th>
-                                <th>Correo (email)</th>
-                                <th>Telefono (phoneNumber)</th>
-                                <th>Imagen (photos)</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Sucursal Centro</td>
-                                <td>Sin datos</td>
-                                <td>Avenida principal 123</td>
-                                <td>08:00</td>
-                                <td>22:00</td>
-                                <td>Casera</td>
-                                <td>00.00</td>
-                                <td>info@restaurante.com</td>
-                                <td>+50212345678</td>
-                                <td>Sin datos</td>
-                                <td>
-                                    <div className="row-actions">
-                                        <button type="button" onClick={() => setIsCreateOpen(true)}>Editar</button>
-                                        <button type="button" onClick={() => setIsDeleteOpen(true)}>Eliminar</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div className="crud-cards-grid crud-cards-gridCompact">
+                    {[
+                        {
+                            _id: "sample-location",
+                            name: "Sucursal Centro",
+                            address: "Avenida principal 123",
+                            openingTime: "08:00",
+                            closingTime: "22:00",
+                            category: "Casera",
+                            averagePrice: "00.00",
+                            email: "info@restaurante.com",
+                            phoneNumber: "+50212345678",
+                            state: "Operativa",
+                            descripcion: "Sin datos",
+                        },
+                    ].map((location) => (
+                        <article key={location._id} className="crud-card crud-cardCompact crud-cardPost crud-cardDense">
+                            <div className="crud-cardMedia crud-cardPostMedia">
+                                <div className="crud-cardMediaBox crud-cardMediaBoxPhoto">
+                                    {location.image ? (
+                                        <img className="crud-cardMediaImage" src={location.image} alt={`Imagen de ${location.name}`} />
+                                    ) : (
+                                        <span>Sin imagen</span>
+                                    )}
+                                </div>
+
+                                <div className="crud-cardOverlayActions">
+                                    <button
+                                        type="button"
+                                        className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
+                                        aria-label="Editar sucursal"
+                                        onClick={() => setIsCreateOpen(true)}
+                                    >
+                                        <i className="fas fa-pen-to-square"></i>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="crud-cardAction crud-cardActionDelete crud-cardOverlayAction"
+                                        aria-label="Eliminar sucursal"
+                                        onClick={() => setIsDeleteOpen(true)}
+                                    >
+                                        <i className="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="crud-cardHeader">
+                                <div className="crud-cardTitleGroup">
+                                    <span className="crud-cardEyebrow"><i className="fas fa-store"></i> Sucursal</span>
+                                    <h3 className="crud-cardTitle">{location.name}</h3>
+                                </div>
+                                <span className="crud-cardBadge">{location.state}</span>
+                            </div>
+
+                            <div className="crud-cardBody crud-cardPostBodyCols">
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Dirección</span>
+                                    <div className="crud-cardFieldValue">{location.address}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Horario</span>
+                                    <div className="crud-cardFieldValue">{location.openingTime} - {location.closingTime}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Categoría</span>
+                                    <div className="crud-cardFieldValue">{location.category}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Precio promedio</span>
+                                    <div className="crud-cardFieldValue">{location.averagePrice}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Correo</span>
+                                    <div className="crud-cardFieldValue">{location.email}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Teléfono</span>
+                                    <div className="crud-cardFieldValue">{location.phoneNumber}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Descripción</span>
+                                    <div className="crud-cardFieldValue">{location.descripcion}</div>
+                                </div>
+                            </div>
+                        </article>
+                    ))}
                 </div>
             </section>
 
@@ -72,6 +120,7 @@ export const SucursalesSection = () => {
                 onClose={() => setIsDeleteOpen(false)}
                 title="Eliminar sucursal"
                 subtitle="Confirma la eliminación del registro"
+                compact
             >
                 <p className="text-sm leading-6 text-slate-700">La sucursal seleccionada sera eliminada. ¿Deseas continuar?</p>
                 <div className="app-modal-actions">

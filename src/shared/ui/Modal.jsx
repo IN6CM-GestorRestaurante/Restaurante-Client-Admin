@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-export const Modal = ({ isOpen, onClose, title, subtitle, children }) => {
+export const Modal = ({ isOpen, onClose, title, subtitle, children, compact = false }) => {
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === "Escape") {
@@ -18,8 +18,8 @@ export const Modal = ({ isOpen, onClose, title, subtitle, children }) => {
 
     return (
         <div className="app-modal-overlay">
-            <div className="app-modal-card">
-                <div className="app-modal-header">
+            <div className={`app-modal-card${compact ? " app-modal-cardCompact" : ""}`}>
+                <div className={`app-modal-header${compact ? " app-modal-headerCompact" : ""}`}>
                     <div className="app-modal-titleGroup">
                         <h2 className="app-modal-title">{title}</h2>
                         {subtitle ? <p className="app-modal-subtitle">{subtitle}</p> : null}
@@ -27,7 +27,7 @@ export const Modal = ({ isOpen, onClose, title, subtitle, children }) => {
 
                     <button
                         onClick={onClose}
-                        className="app-modal-close"
+                        className={`app-modal-close${compact ? " app-modal-closeCompact" : ""}`}
                         aria-label="Cerrar modal"
                         type="button"
                     >
@@ -35,7 +35,7 @@ export const Modal = ({ isOpen, onClose, title, subtitle, children }) => {
                     </button>
                 </div>
 
-                <div className="app-modal-body">
+                <div className={`app-modal-body${compact ? " app-modal-bodyCompact" : ""}`}>
                     {children}
                 </div>
             </div>

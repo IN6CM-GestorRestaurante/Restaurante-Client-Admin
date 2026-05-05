@@ -6,6 +6,19 @@ export const UsuariosSection = () => {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
+    const users = [
+        {
+            _id: "sample-user",
+            name: "Carlos",
+            surname: "López",
+            username: "carlos.lopez",
+            email: "carlos@restaurante.com",
+            phone: "+50212345678",
+            role: "Administrador",
+            status: "Activo",
+        },
+    ];
+
     return (
         <>
             <header className="header">
@@ -27,38 +40,62 @@ export const UsuariosSection = () => {
                     <article className="kpi"><span>Inactivos</span><strong>Sin datos</strong></article>
                 </section>
 
-                <div style={{ overflowX: "auto" }}>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nombre (name)</th>
-                                <th>Apellido (surname)</th>
-                                <th>Usuario (username)</th>
-                                <th>Correo (email)</th>
-                                <th>Telefono (phone)</th>
-                                <th>Rol (role)</th>
-                                <th>Estado (status)</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Carlos</td>
-                                <td>López</td>
-                                <td>carlos.lopez</td>
-                                <td>carlos@restaurante.com</td>
-                                <td>+50212345678</td>
-                                <td>Administrador</td>
-                                <td>Activo</td>
-                                <td>
-                                    <div className="row-actions">
-                                        <button type="button" onClick={() => setIsCreateOpen(true)}>Editar</button>
-                                        <button type="button" onClick={() => setIsDeleteOpen(true)}>Eliminar</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div className="crud-cards-grid crud-cards-gridCompact">
+                    {users.map((user) => (
+                        <article key={user._id} className="crud-card crud-cardCompact crud-cardPost">
+                            <div className="crud-cardMedia crud-cardPostMedia">
+                                <div className="crud-cardMediaBox crud-cardMediaBoxIcon crud-cardMediaThemeUsers">
+                                    <i className="fas fa-user crud-cardMediaIcon" aria-hidden="true"></i>
+                                </div>
+
+                                <div className="crud-cardOverlayActions">
+                                    <button
+                                        type="button"
+                                        className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
+                                        aria-label="Editar usuario"
+                                        onClick={() => setIsCreateOpen(true)}
+                                    >
+                                        <i className="fas fa-pen-to-square"></i>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="crud-cardAction crud-cardActionDelete crud-cardOverlayAction"
+                                        aria-label="Eliminar usuario"
+                                        onClick={() => setIsDeleteOpen(true)}
+                                    >
+                                        <i className="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="crud-cardHeader">
+                                <div className="crud-cardTitleGroup">
+                                    <span className="crud-cardEyebrow"><i className="fas fa-user"></i> Usuario</span>
+                                    <h3 className="crud-cardTitle">{user.name} {user.surname}</h3>
+                                </div>
+                                <span className="crud-cardBadge">{user.status}</span>
+                            </div>
+
+                            <div className="crud-cardBody crud-cardPostBodyCols">
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Usuario</span>
+                                    <div className="crud-cardFieldValue">{user.username}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Correo</span>
+                                    <div className="crud-cardFieldValue">{user.email}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Teléfono</span>
+                                    <div className="crud-cardFieldValue">{user.phone}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Rol</span>
+                                    <div className="crud-cardFieldValue">{user.role}</div>
+                                </div>
+                            </div>
+                        </article>
+                    ))}
                 </div>
             </section>
 
@@ -69,6 +106,7 @@ export const UsuariosSection = () => {
                 onClose={() => setIsDeleteOpen(false)}
                 title="Eliminar usuario"
                 subtitle="Confirma la eliminación del registro"
+                compact
             >
                 <p className="text-sm leading-6 text-slate-700">El usuario seleccionado sera eliminado. ¿Deseas continuar?</p>
                 <div className="app-modal-actions">

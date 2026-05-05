@@ -6,6 +6,20 @@ export const OrdenesSection = () => {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
+    const orders = [
+        {
+            _id: "sample-order",
+            table: "Mesa 5",
+            restaurant: "Sin datos",
+            menuItem: "Pasta Alfredo",
+            quantity: 2,
+            price: "00.00",
+            modifiers: "Sin datos",
+            itemStatus: "En espera",
+            status: "Abierta",
+        },
+    ];
+
     return (
         <>
             <header className="header">
@@ -27,40 +41,70 @@ export const OrdenesSection = () => {
                     <article className="kpi"><span>Completadas</span><strong>Sin datos</strong></article>
                 </section>
 
-                <div style={{ overflowX: "auto" }}>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Mesa (table)</th>
-                                <th>Restaurante (restaurant)</th>
-                                <th>Platillo (items.menuItem)</th>
-                                <th>Cantidad (items.quantity)</th>
-                                <th>Precio (items.price)</th>
-                                <th>Modificadores (items.modifiers)</th>
-                                <th>Estado item (items.status)</th>
-                                <th>Estado orden (status)</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Mesa 5</td>
-                                <td>Sin datos</td>
-                                <td>Sin datos</td>
-                                <td>2</td>
-                                <td>00.00</td>
-                                <td>Sin datos</td>
-                                <td>En espera</td>
-                                <td>Abierta</td>
-                                <td>
-                                    <div className="row-actions">
-                                        <button type="button" onClick={() => setIsCreateOpen(true)}>Editar</button>
-                                        <button type="button" onClick={() => setIsDeleteOpen(true)}>Eliminar</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div className="crud-cards-grid crud-cards-gridCompact">
+                    {orders.map((order) => (
+                        <article key={order._id} className="crud-card crud-cardCompact crud-cardPost crud-cardDense">
+                            <div className="crud-cardMedia crud-cardPostMedia">
+                                <div className="crud-cardMediaBox crud-cardMediaBoxIcon crud-cardMediaThemeOrders">
+                                    <i className="fas fa-receipt crud-cardMediaIcon" aria-hidden="true"></i>
+                                </div>
+
+                                <div className="crud-cardOverlayActions">
+                                    <button
+                                        type="button"
+                                        className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
+                                        aria-label="Editar orden"
+                                        onClick={() => setIsCreateOpen(true)}
+                                    >
+                                        <i className="fas fa-pen-to-square"></i>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="crud-cardAction crud-cardActionDelete crud-cardOverlayAction"
+                                        aria-label="Eliminar orden"
+                                        onClick={() => setIsDeleteOpen(true)}
+                                    >
+                                        <i className="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="crud-cardHeader">
+                                <div className="crud-cardTitleGroup">
+                                    <span className="crud-cardEyebrow"><i className="fas fa-receipt"></i> Orden</span>
+                                    <h3 className="crud-cardTitle">{order.table}</h3>
+                                </div>
+                                <span className="crud-cardBadge">{order.status}</span>
+                            </div>
+
+                            <div className="crud-cardBody crud-cardPostBodyCols">
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Restaurante</span>
+                                    <div className="crud-cardFieldValue">{order.restaurant}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Platillo</span>
+                                    <div className="crud-cardFieldValue">{order.menuItem}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Cantidad</span>
+                                    <div className="crud-cardFieldValue">{order.quantity}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Precio</span>
+                                    <div className="crud-cardFieldValue">{order.price}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Modificadores</span>
+                                    <div className="crud-cardFieldValue">{order.modifiers}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Estado item</span>
+                                    <div className="crud-cardFieldValue">{order.itemStatus}</div>
+                                </div>
+                            </div>
+                        </article>
+                    ))}
                 </div>
             </section>
 
@@ -71,6 +115,7 @@ export const OrdenesSection = () => {
                 onClose={() => setIsDeleteOpen(false)}
                 title="Eliminar orden"
                 subtitle="Confirma la eliminación del registro"
+                compact
             >
                 <p className="text-sm leading-6 text-slate-700">La orden seleccionada sera eliminada. ¿Deseas continuar?</p>
                 <div className="app-modal-actions">

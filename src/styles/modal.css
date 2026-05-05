@@ -49,6 +49,40 @@
   .modal-body {
     margin-bottom: 1.5rem;
   }
+
+  /* Grid para contener múltiples recuadros dentro del modal */
+  .modal-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    align-items: start;
+  }
+
+  /* Cada recuadro dentro del grid debe tener tamaño uniforme */
+  .modal-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    min-height: 8rem;
+  }
+
+  /* Clase para que el recuadro de descripción ocupe las 3 columnas */
+  .modal-card.descripcion,
+  .modal-card--descripcion {
+    grid-column: 1 / -1;
+  }
+
+  /* Asegurar que los hijos llenen la tarjeta y mantengan alturas iguales */
+  .modal-card > * {
+    flex: none;
+  }
+
   
   .modal-footer {
     display: flex;
