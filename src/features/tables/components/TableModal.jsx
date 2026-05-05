@@ -9,7 +9,7 @@ export const TableModal = ({ isOpen, onClose, initialData }) => {
             subtitle="Completa la información de la mesa"
         >
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 sm:gap-6">
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-2">
                     <label className="app-modal-fieldLabel">Restaurante</label>
                     <input placeholder="MongoID" className="app-modal-input" />
                 </div>
@@ -47,24 +47,31 @@ export const TableModal = ({ isOpen, onClose, initialData }) => {
                     </select>
                 </div>
 
-                <div className="flex flex-col gap-2 sm:col-span-2 lg:col-span-2">
+                <div className="flex flex-col gap-2 sm:col-span-1">
                     <label className="app-modal-fieldLabel">Día horario</label>
                     <input placeholder="Lunes" className="app-modal-input" />
                 </div>
 
-                <div className="flex flex-col gap-2 sm:col-span-1">
-                    <label className="app-modal-fieldLabel">Inicio horario</label>
-                    <input placeholder="08:00" className="app-modal-input" />
+                <div className="flex flex-col gap-2 col-span-full">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                        <div className="flex flex-col">
+                            <label className="app-modal-fieldLabel">Inicio horario</label>
+                            <input placeholder="08:00" className="app-modal-input" />
+                        </div>
+
+                        <div className="flex flex-col">
+                            <label className="app-modal-fieldLabel">Fin horario</label>
+                            <input placeholder="22:00" className="app-modal-input" />
+                        </div>
+                    </div>
                 </div>
 
-                <div className="flex flex-col gap-2 sm:col-span-2 lg:col-span-1">
-                    <label className="app-modal-fieldLabel">Fin horario</label>
-                    <input placeholder="22:00" className="app-modal-input" />
-                </div>
-
-                <div className="flex flex-col gap-2 sm:col-span-2 lg:col-span-2">
-                    <label className="app-modal-fieldLabel">Descripción</label>
-                    <textarea rows="4" className="app-modal-textarea" placeholder="Detalles de la mesa..." />
+                <div className="flex flex-col gap-2 col-span-full items-center">
+                        <br />
+                        <label className="app-modal-fieldLabel">Descripción</label>
+                            <div className="flex justify-center w-full">
+                                <textarea rows="4" className="app-modal-textarea w-full md:w-3/4 lg:w-2/3" placeholder="Detalles de la mesa..." />
+                            </div>
                 </div>
             </div>
 

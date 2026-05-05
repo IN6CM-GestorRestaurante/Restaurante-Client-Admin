@@ -60,54 +60,81 @@ export const MenuSection = () => {
                     <article className="kpi"><span>No disponibles</span><strong>Sin datos</strong></article>
                 </section>
 
-                <div style={{ overflowX: "auto" }}>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Restaurante (restaurant)</th>
-                                <th>Nombre (name)</th>
-                                <th>Descripcion (description)</th>
-                                <th>Ingredientes (ingredients)</th>
-                                <th>Precio (price)</th>
-                                <th>Categoria (category)</th>
-                                <th>Imagen (image)</th>
-                                <th>Activo (isActive)</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {(menus?.length ? menus : [
-                                {
-                                    _id: "sample-menu",
-                                    restaurant: "Sin datos",
-                                    name: "Pasta Alfredo",
-                                    description: "Pasta cremosa con salsa Alfredo",
-                                    ingredients: "Sin datos",
-                                    price: "12.99",
-                                    category: "Entrada",
-                                    image: "Sin datos",
-                                    isActive: true,
-                                },
-                            ]).map((menu) => (
-                                <tr key={menu._id || menu.name}>
-                                    <td>{menu.restaurant || "Sin datos"}</td>
-                                    <td>{menu.name || "Sin datos"}</td>
-                                    <td>{menu.description || "Sin datos"}</td>
-                                    <td>{menu.ingredients || "Sin datos"}</td>
-                                    <td>{menu.price || "00.00"}</td>
-                                    <td>{menu.category || "Sin datos"}</td>
-                                    <td>{menu.image || "Sin datos"}</td>
-                                    <td>{menu.isActive ? "Activo" : "Inactivo"}</td>
-                                    <td>
-                                        <div className="row-actions">
-                                            <button type="button" onClick={() => { setSelectedMenu(menu); setOpenModal(true); }}>Editar</button>
-                                            <button type="button" onClick={() => { setSelectedMenu(menu); setIsDeleteOpen(true); }}>Eliminar</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                <div className="crud-cards-grid crud-cards-gridCompact">
+                    {(menus?.length ? menus : [
+                        {
+                            _id: "sample-menu",
+                            restaurant: "Sin datos",
+                            name: "Pasta Alfredo",
+                            description: "Pasta cremosa con salsa Alfredo",
+                            ingredients: "Sin datos",
+                            price: "12.99",
+                            category: "Entrada",
+                            image: "Sin datos",
+                            isActive: true,
+                        },
+                    ]).map((menu) => {
+                        const hasImage = !!(menu.image && menu.image !== "Sin datos");
+
+                        return (
+                        <article key={menu._id || menu.name} className="crud-card crud-cardCompact crud-cardPost crud-cardDense">
+                            <div className="crud-cardMedia crud-cardPostMedia">
+                                <div className="crud-cardMediaBox crud-cardMediaBoxPhoto">
+                                    {hasImage ? (
+                                        <img className="crud-cardMediaImage" src={menu.image} alt={`Imagen de ${menu.name || "producto"}`} />
+                                    ) : (
+                                        <span>Sin imagen</span>
+                                    )}
+                                </div>
+                                    <div className="crud-cardOverlayActions">
+                                        <button
+                                            type="button"
+                                            className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
+                                            aria-label="Editar producto"
+                                            onClick={() => { setSelectedMenu(menu); setOpenModal(true); }}
+                                        >
+                                            <i className="fas fa-pen-to-square"></i>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="crud-cardAction crud-cardActionDelete crud-cardOverlayAction"
+                                            aria-label="Eliminar producto"
+                                            onClick={() => { setSelectedMenu(menu); setIsDeleteOpen(true); }}
+                                        >
+                                            <i className="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                            </div>
+
+                            <div className="crud-cardHeader">
+                                <div className="crud-cardTitleGroup">
+                                    <span className="crud-cardEyebrow"><i className="fas fa-utensils"></i> {menu.category || "Producto"}</span>
+                                    <h3 className="crud-cardTitle">{menu.name || "Sin datos"}</h3>
+                                </div>
+                                <span className="crud-cardBadge">{menu.isActive ? "Activo" : "Inactivo"}</span>
+                            </div>
+
+                            <div className="crud-cardBody crud-cardPostBodyCols">
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Restaurante</span>
+                                    <div className="crud-cardFieldValue">{menu.restaurant || "Sin datos"}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Precio</span>
+                                    <div className="crud-cardFieldValue">{menu.price || "00.00"}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Ingredientes</span>
+                                    <div className="crud-cardFieldValue">{menu.ingredients || "Sin datos"}</div>
+                                </div>
+                                <div className="crud-cardField">
+                                    <span className="crud-cardFieldLabel">Descripción</span>
+                                    <div className="crud-cardFieldValue">{menu.description || "Sin datos"}</div>
+                                </div>
+                            </div>
+
+                        </article>
+                    )})}
                 </div>
             </section>
 
@@ -125,6 +152,7 @@ export const MenuSection = () => {
                 onClose={() => setIsDeleteOpen(false)}
                 title="Eliminar producto"
                 subtitle="Confirma la eliminación del registro"
+                compact
             >
                 <p className="text-sm leading-6 text-slate-700">El producto seleccionado sera eliminado. ¿Deseas continuar?</p>
                 <div className="app-modal-actions">

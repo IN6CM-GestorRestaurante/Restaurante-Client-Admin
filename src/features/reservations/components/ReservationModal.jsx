@@ -8,15 +8,25 @@ export const ReservationModal = ({ isOpen, onClose }) => {
             title="Nueva reservacion" 
             subtitle="Completa la información de la reservación"
         >
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
-                <div className="flex flex-col gap-2 md:col-span-2">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6">
+                <div className="flex flex-col gap-2">
                     <label className="app-modal-fieldLabel">Usuario</label>
                     <input placeholder="MongoID" className="app-modal-input" />
                 </div>
 
-                <div className="flex flex-col gap-2 md:col-span-2">
+                <div className="flex flex-col gap-2">
                     <label className="app-modal-fieldLabel">Restaurante</label>
                     <input placeholder="MongoID" className="app-modal-input" />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                    <label className="app-modal-fieldLabel">Fecha y hora</label>
+                    <input placeholder="2026-04-26T19:30:00.000Z" className="app-modal-input" />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                    <label className="app-modal-fieldLabel">Mesa</label>
+                    <input placeholder="Requerido para En Mesa" className="app-modal-input" />
                 </div>
 
                 <div className="flex flex-col gap-2">
@@ -29,21 +39,11 @@ export const ReservationModal = ({ isOpen, onClose }) => {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Mesa</label>
-                    <input placeholder="Requerido para En Mesa" className="app-modal-input" />
-                </div>
-
-                <div className="flex flex-col gap-2 md:col-span-2">
-                    <label className="app-modal-fieldLabel">Fecha y hora</label>
-                    <input placeholder="2026-04-26T19:30:00.000Z" className="app-modal-input" />
-                </div>
-
-                <div className="flex flex-col gap-2 md:col-span-2">
                     <label className="app-modal-fieldLabel">Dirección entrega</label>
                     <input placeholder="Requerido para A domicilio" className="app-modal-input" />
                 </div>
 
-                <div className="flex flex-col gap-2 md:col-span-2">
+                <div className="flex flex-col gap-2">
                     <label className="app-modal-fieldLabel">Item menú</label>
                     <input placeholder="MongoID" className="app-modal-input" />
                 </div>
@@ -64,9 +64,12 @@ export const ReservationModal = ({ isOpen, onClose }) => {
                     </select>
                 </div>
 
-                <div className="flex flex-col gap-2 md:col-span-2">
+                <div className="flex flex-col gap-2 col-span-full">
+                    <br />
                     <label className="app-modal-fieldLabel">Notas</label>
-                    <textarea className="app-modal-textarea" placeholder="Observaciones..." />
+                    <div className="flex justify-center w-full">
+                        <textarea className="app-modal-textarea w-full md:w-3/4 lg:w-2/3" placeholder="Observaciones..." />
+                    </div>
                 </div>
             </div>
 

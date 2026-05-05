@@ -28,21 +28,26 @@ export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
             title={initialData ? "Editar sucursal" : "Nueva sucursal"}
             subtitle="Completa la información de la sucursal"
         >
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
-                <div className="flex justify-center md:col-span-2">
-                    <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border bg-gray-100 shadow-inner sm:h-28 sm:w-28 md:h-32 md:w-32">
-                        <span className="text-xs text-gray-400 sm:text-sm">Sin imagen</span>
-                    </div>
+            <div className="flex justify-center pb-2 sm:pb-4">
+                <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border bg-gray-100 shadow-inner sm:h-28 sm:w-28 md:h-32 md:w-32">
+                    <span className="text-xs text-gray-400 sm:text-sm">Sin imagen</span>
                 </div>
+            </div>
 
-                <div className="flex flex-col gap-2 md:col-span-2">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6">
+                <div className="flex flex-col gap-2">
                     <label className="app-modal-fieldLabel">Nombre</label>
                     <input className="app-modal-input" placeholder="Sucursal Centro" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
                 </div>
 
-                <div className="flex flex-col gap-2 md:col-span-2">
-                    <label className="app-modal-fieldLabel">Descripción</label>
-                    <textarea className="app-modal-textarea" placeholder="Detalles de la sucursal..." value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} />
+                <div className="flex flex-col gap-2">
+                    <label className="app-modal-fieldLabel">Teléfono</label>
+                    <input className="app-modal-input" placeholder="+50212345678" value={form.phoneNumber} onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })} />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                    <label className="app-modal-fieldLabel">Correo</label>
+                    <input type="email" className="app-modal-input" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
                 </div>
 
                 <div className="flex flex-col gap-2">
@@ -61,7 +66,7 @@ export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Categoria</label>
+                    <label className="app-modal-fieldLabel">Categoría</label>
                     <input className="app-modal-input" placeholder="Italiana" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
                 </div>
 
@@ -71,27 +76,27 @@ export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Correo</label>
-                    <input type="email" className="app-modal-input" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Teléfono</label>
-                    <input className="app-modal-input" placeholder="+50212345678" value={form.phoneNumber} onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })} />
-                </div>
-
-                <div className="flex flex-col gap-2 md:col-span-2">
-                    <label className="app-modal-fieldLabel">Imagen</label>
-                    <input type="file" accept="image/*" className="app-modal-input cursor-pointer border-dashed" />
-                </div>
-
-                <div className="flex flex-col gap-2 md:col-span-2">
                     <label className="app-modal-fieldLabel">Estado</label>
                     <select className="app-modal-select" value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })}>
                         <option>Operativa</option>
                         <option>En mantenimiento</option>
                         <option>Cerrada</option>
                     </select>
+                </div>
+
+                <div className="flex flex-col gap-2 col-span-full">
+                    <label className="app-modal-fieldLabel">Imagen</label>
+                    <div className="flex justify-center w-full">
+                        <input type="file" accept="image/*" className="app-modal-input cursor-pointer border-dashed w-full md:w-3/4 lg:w-2/3" />
+                    </div>
+                </div>
+
+                <div className="flex flex-col gap-2 col-span-full">
+                    <br />
+                    <label className="app-modal-fieldLabel">Descripción</label>
+                    <div className="flex justify-center w-full">
+                        <textarea className="app-modal-textarea w-full md:w-3/4 lg:w-2/3" placeholder="Detalles de la sucursal..." value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} />
+                    </div>
                 </div>
             </div>
 
