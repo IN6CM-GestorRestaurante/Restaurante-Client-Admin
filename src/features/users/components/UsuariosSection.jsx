@@ -1,23 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useUsersStore } from "../store/adminStore";
 import { UserModal } from "./UserModal";
 import { Modal } from "../../../shared/ui/Modal";
+import { showError, showSuccess } from "../../../shared/utils/toast";
 
 export const UsuariosSection = () => {
+    const { users, loading, error, getUsers, deleteUser } = useUsersStore();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
 
-    const users = [
-        {
-            _id: "sample-user",
-            name: "Carlos",
-            surname: "López",
-            username: "carlos.lopez",
-            email: "carlos@restaurante.com",
-            phone: "+50212345678",
-            role: "Administrador",
-            status: "Activo",
-        },
-    ];
+    useEffect(() => {
+        getUsers();
+    }, [getUsers]);
+
+    useEffect(() => {
+        if (error) showError(error);
+    }, [error]);
+
+    const handleDelete = async () => {
+        if (!selectedUser?._id) {
+            setIsDeleteOpen(false);
+            return;
+        }
+
+        try {
+            await deleteUser(selectedUser._id);
+            showSuccess("Usuario desactivado correctamente");
+        } catch {
+            // El store ya expone el error
+        } finally {
+            setIsDeleteOpen(false);
+            setSelectedUser(null);
+        }
+    };
 
     return (
         <>
@@ -35,13 +51,13 @@ export const UsuariosSection = () => {
                 </div>
 
                 <section className="kpis">
-                    <article className="kpi"><span>Total usuarios</span><strong>Sin datos</strong></article>
-                    <article className="kpi"><span>Activos</span><strong>Sin datos</strong></article>
-                    <article className="kpi"><span>Inactivos</span><strong>Sin datos</strong></article>
+                    <article className="kpi"><span>Total usuarios</span><strong>{loading ? "Cargando..." : users.length}</strong></article>
+                    <article className="kpi"><span>Activos</span><strong>{users.filter((user) => user.status).length}</strong></article>
+                    <article className="kpi"><span>Inactivos</span><strong>{users.filter((user) => !user.status).length}</strong></article>
                 </section>
 
                 <div className="crud-cards-grid crud-cards-gridCompact">
-                    {users.map((user) => (
+                    {(users.length ? users : []).map((user) => (
                         <article key={user._id} className="crud-card crud-cardCompact crud-cardPost">
                             <div className="crud-cardMedia crud-cardPostMedia">
                                 <div className="crud-cardMediaBox crud-cardMediaBoxIcon crud-cardMediaThemeUsers">
@@ -53,7 +69,10 @@ export const UsuariosSection = () => {
                                         type="button"
                                         className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
                                         aria-label="Editar usuario"
-                                        onClick={() => setIsCreateOpen(true)}
+                                        onClick={() => {
+                                            setSelectedUser(user);
+                                            setIsCreateOpen(true);
+                                        }}
                                     >
                                         <i className="fas fa-pen-to-square"></i>
                                     </button>
@@ -61,7 +80,10 @@ export const UsuariosSection = () => {
                                         type="button"
                                         className="crud-cardAction crud-cardActionDelete crud-cardOverlayAction"
                                         aria-label="Eliminar usuario"
-                                        onClick={() => setIsDeleteOpen(true)}
+                                        onClick={() => {
+                                            setSelectedUser(user);
+                                            setIsDeleteOpen(true);
+                                        }}
                                     >
                                         <i className="fas fa-trash"></i>
                                     </button>
@@ -73,7 +95,7 @@ export const UsuariosSection = () => {
                                     <span className="crud-cardEyebrow"><i className="fas fa-user"></i> Usuario</span>
                                     <h3 className="crud-cardTitle">{user.name} {user.surname}</h3>
                                 </div>
-                                <span className="crud-cardBadge">{user.status}</span>
+                                <span className="crud-cardBadge">{user.status ? "Activo" : "Inactivo"}</span>
                             </div>
 
                             <div className="crud-cardBody crud-cardPostBodyCols">
@@ -99,7 +121,14 @@ export const UsuariosSection = () => {
                 </div>
             </section>
 
-            <UserModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
+            <UserModal
+                isOpen={isCreateOpen}
+                initialData={selectedUser}
+                onClose={() => {
+                    setIsCreateOpen(false);
+                    setSelectedUser(null);
+                }}
+            />
 
             <Modal
                 isOpen={isDeleteOpen}
@@ -108,10 +137,10 @@ export const UsuariosSection = () => {
                 subtitle="Confirma la eliminación del registro"
                 compact
             >
-                <p className="text-sm leading-6 text-slate-700">El usuario seleccionado sera eliminado. ¿Deseas continuar?</p>
+                <p className="text-sm leading-6 text-slate-700">El usuario seleccionado sera desactivado. ¿Deseas continuar?</p>
                 <div className="app-modal-actions">
                     <button type="button" onClick={() => setIsDeleteOpen(false)} className="app-modal-btn app-modal-btnSecondary w-full sm:w-auto">Cancelar</button>
-                    <button type="button" onClick={() => setIsDeleteOpen(false)} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Eliminar</button>
+                    <button type="button" onClick={handleDelete} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Eliminar</button>
                 </div>
             </Modal>
 

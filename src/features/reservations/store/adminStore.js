@@ -1,7 +1,10 @@
 import { create } from "zustand";
 import {
 	getAllReservations as getAllReservationsRequest,
+	createReservation as createReservationRequest,
+	updateReservation as updateReservationRequest,
 	confirmReservation as confirmReservationRequest,
+	changeReservationStatus as changeReservationStatusRequest,
 } from "../../../shared/api/admin";
 
 const getErrorMessage = (error, fallback) =>
@@ -46,15 +49,48 @@ export const useReservationsStore = create((set, get) => ({
 		}
 	},
 
-	createReservation: async () => {
-		const message = "El endpoint para crear reservacion no esta disponible en admin API";
-		set({ error: message });
-		throw new Error(message);
+	deleteReservation: async (id) => {
+		try {
+			set({ loading: true, error: null });
+			await changeReservationStatusRequest(id, false);
+			await get().getReservations();
+			set({ loading: false });
+		} catch (error) {
+			set({
+				loading: false,
+				error: getErrorMessage(error, "Error al eliminar reservacion"),
+			});
+			throw error;
+		}
 	},
 
-	updateReservation: async () => {
-		const message = "El endpoint para actualizar reservacion no esta disponible en admin API";
-		set({ error: message });
-		throw new Error(message);
+	createReservation: async (data) => {
+		try {
+			set({ loading: true, error: null });
+			await createReservationRequest(data);
+			await get().getReservations();
+			set({ loading: false });
+		} catch (error) {
+			set({
+				loading: false,
+				error: getErrorMessage(error, "Error al crear reservacion"),
+			});
+			throw error;
+		}
+	},
+
+	updateReservation: async (id, data) => {
+		try {
+			set({ loading: true, error: null });
+			await updateReservationRequest(id, data);
+			await get().getReservations();
+			set({ loading: false });
+		} catch (error) {
+			set({
+				loading: false,
+				error: getErrorMessage(error, "Error al actualizar reservacion"),
+			});
+			throw error;
+		}
 	},
 }));

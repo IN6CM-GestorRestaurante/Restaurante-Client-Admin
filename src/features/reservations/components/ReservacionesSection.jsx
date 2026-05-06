@@ -1,24 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useReservationsStore } from "../store/adminStore";
 import { ReservationModal } from "./ReservationModal";
 import { Modal } from "../../../shared/ui/Modal";
+import { showError, showSuccess } from "../../../shared/utils/toast";
 
 export const ReservacionesSection = () => {
+    const { reservations, loading, error, getReservations, deleteReservation } = useReservationsStore();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [selectedReservation, setSelectedReservation] = useState(null);
 
-    const reservations = [
-        {
-            _id: "sample-reservation",
-            user: "Sin datos",
-            restaurant: "Sin datos",
-            type: "En mesa",
-            table: "Mesa 5",
-            date: "Sin datos",
-            deliveryAddress: "No aplica",
-            status: "Pendiente",
-            notes: "Sin datos",
-        },
-    ];
+    useEffect(() => {
+        getReservations();
+    }, [getReservations]);
+
+    useEffect(() => {
+        if (error) showError(error);
+    }, [error]);
+
+    const handleDelete = async () => {
+        if (!selectedReservation?._id) {
+            setIsDeleteOpen(false);
+            return;
+        }
+
+        try {
+            await deleteReservation(selectedReservation._id);
+            showSuccess("Reservación eliminada correctamente");
+        } catch {
+            // El store ya expone el error
+        } finally {
+            setIsDeleteOpen(false);
+            setSelectedReservation(null);
+        }
+    };
 
     return (
         <>
@@ -36,13 +51,13 @@ export const ReservacionesSection = () => {
                 </div>
 
                 <section className="kpis">
-                    <article className="kpi"><span>Total reservaciones</span><strong>Sin datos</strong></article>
-                    <article className="kpi"><span>Confirmadas</span><strong>Sin datos</strong></article>
-                    <article className="kpi"><span>Pendientes</span><strong>Sin datos</strong></article>
+                    <article className="kpi"><span>Total reservaciones</span><strong>{loading ? "Cargando..." : reservations.length}</strong></article>
+                    <article className="kpi"><span>Confirmadas</span><strong>{reservations.filter((reservation) => reservation.status === "Confirmada").length}</strong></article>
+                    <article className="kpi"><span>Pendientes</span><strong>{reservations.filter((reservation) => reservation.status === "Pendiente").length}</strong></article>
                 </section>
 
                 <div className="crud-cards-grid crud-cards-gridCompact">
-                    {reservations.map((reservation) => (
+                    {(reservations.length ? reservations : []).map((reservation) => (
                         <article key={reservation._id} className="crud-card crud-cardCompact crud-cardPost crud-cardDense">
                             <div className="crud-cardMedia crud-cardPostMedia">
                                 <div className="crud-cardMediaBox crud-cardMediaBoxIcon crud-cardMediaThemeReservations">
@@ -54,7 +69,10 @@ export const ReservacionesSection = () => {
                                         type="button"
                                         className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
                                         aria-label="Editar reservación"
-                                        onClick={() => setIsCreateOpen(true)}
+                                        onClick={() => {
+                                            setSelectedReservation(reservation);
+                                            setIsCreateOpen(true);
+                                        }}
                                     >
                                         <i className="fas fa-pen-to-square"></i>
                                     </button>
@@ -62,7 +80,10 @@ export const ReservacionesSection = () => {
                                         type="button"
                                         className="crud-cardAction crud-cardActionDelete crud-cardOverlayAction"
                                         aria-label="Eliminar reservación"
-                                        onClick={() => setIsDeleteOpen(true)}
+                                        onClick={() => {
+                                            setSelectedReservation(reservation);
+                                            setIsDeleteOpen(true);
+                                        }}
                                     >
                                         <i className="fas fa-trash"></i>
                                     </button>
@@ -72,19 +93,19 @@ export const ReservacionesSection = () => {
                             <div className="crud-cardHeader">
                                 <div className="crud-cardTitleGroup">
                                     <span className="crud-cardEyebrow"><i className="fas fa-calendar-check"></i> Reservación</span>
-                                    <h3 className="crud-cardTitle">{reservation.table}</h3>
+                                    <h3 className="crud-cardTitle">{reservation.table?._id ? reservation.table._id : reservation.table || "Sin mesa"}</h3>
                                 </div>
-                                <span className="crud-cardBadge">{reservation.status}</span>
+                                <span className="crud-cardBadge">{reservation.status || "Sin datos"}</span>
                             </div>
 
                             <div className="crud-cardBody crud-cardPostBodyCols">
                                 <div className="crud-cardField">
                                     <span className="crud-cardFieldLabel">Usuario</span>
-                                    <div className="crud-cardFieldValue">{reservation.user}</div>
+                                    <div className="crud-cardFieldValue">{reservation.user?._id ? reservation.user._id : reservation.user || "Sin datos"}</div>
                                 </div>
                                 <div className="crud-cardField">
                                     <span className="crud-cardFieldLabel">Restaurante</span>
-                                    <div className="crud-cardFieldValue">{reservation.restaurant}</div>
+                                    <div className="crud-cardFieldValue">{reservation.restaurant?._id ? reservation.restaurant._id : reservation.restaurant || "Sin datos"}</div>
                                 </div>
                                 <div className="crud-cardField">
                                     <span className="crud-cardFieldLabel">Tipo</span>
@@ -92,7 +113,7 @@ export const ReservacionesSection = () => {
                                 </div>
                                 <div className="crud-cardField">
                                     <span className="crud-cardFieldLabel">Fecha y hora</span>
-                                    <div className="crud-cardFieldValue">{reservation.date}</div>
+                                    <div className="crud-cardFieldValue">{reservation.date ? new Date(reservation.date).toLocaleString() : "Sin datos"}</div>
                                 </div>
                                 <div className="crud-cardField">
                                     <span className="crud-cardFieldLabel">Dirección entrega</span>
@@ -100,7 +121,7 @@ export const ReservacionesSection = () => {
                                 </div>
                                 <div className="crud-cardField">
                                     <span className="crud-cardFieldLabel">Notas</span>
-                                    <div className="crud-cardFieldValue">{reservation.notes}</div>
+                                    <div className="crud-cardFieldValue">{reservation.notes || "Sin datos"}</div>
                                 </div>
                             </div>
                         </article>
@@ -108,7 +129,14 @@ export const ReservacionesSection = () => {
                 </div>
             </section>
 
-            <ReservationModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
+            <ReservationModal
+                isOpen={isCreateOpen}
+                initialData={selectedReservation}
+                onClose={() => {
+                    setIsCreateOpen(false);
+                    setSelectedReservation(null);
+                }}
+            />
 
             <Modal
                 isOpen={isDeleteOpen}
@@ -117,10 +145,10 @@ export const ReservacionesSection = () => {
                 subtitle="Confirma la eliminación del registro"
                 compact
             >
-                <p className="text-sm leading-6 text-slate-700">La reservacion seleccionada sera eliminada. ¿Deseas continuar?</p>
+                <p className="text-sm leading-6 text-slate-700">La reservación seleccionada sera desactivada. ¿Deseas continuar?</p>
                 <div className="app-modal-actions">
                     <button type="button" onClick={() => setIsDeleteOpen(false)} className="app-modal-btn app-modal-btnSecondary w-full sm:w-auto">Cancelar</button>
-                    <button type="button" onClick={() => setIsDeleteOpen(false)} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Eliminar</button>
+                    <button type="button" onClick={handleDelete} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Eliminar</button>
                 </div>
             </Modal>
 

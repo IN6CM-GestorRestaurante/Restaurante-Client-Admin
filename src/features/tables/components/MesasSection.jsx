@@ -31,18 +31,7 @@ export const MesasSection = () => {
         }
     };
 
-    const tableRows = tables?.length
-        ? tables
-        : [{
-            _id: "sample-table",
-            restaurant: "Sin datos",
-            number: "Sin datos",
-            capacity: "Sin datos",
-            location: "Sala Principal",
-            status: "Disponible",
-            availabilitySchedules: "Lunes 08:00-22:00",
-            description: "Sin datos",
-        }];
+    const tableRows = tables ?? [];
 
     return (
         <>

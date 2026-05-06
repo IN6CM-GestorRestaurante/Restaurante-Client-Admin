@@ -1,7 +1,9 @@
 import { create } from "zustand";
 import {
   getUsers as getUsersRequest,
-  syncUserProfile as syncUserProfileRequest,
+  createUser as createUserRequest,
+  updateUser as updateUserRequest,
+  deleteUser as deleteUserRequest,
 } from "../../../shared/api/admin";
 
 const getErrorMessage = (error, fallback) =>
@@ -30,7 +32,7 @@ export const useUsersStore = create((set, get) => ({
   createUser: async (data) => {
     try {
       set({ loading: true, error: null });
-      await syncUserProfileRequest(data);
+      await createUserRequest(data);
       await get().getUsers();
       set({ loading: false });
     } catch (error) {
@@ -45,13 +47,28 @@ export const useUsersStore = create((set, get) => ({
   updateUser: async (id, data) => {
     try {
       set({ loading: true, error: null });
-      await syncUserProfileRequest({ id, ...data });
+      await updateUserRequest(id, data);
       await get().getUsers();
       set({ loading: false });
     } catch (error) {
       set({
         loading: false,
         error: getErrorMessage(error, "Error al actualizar usuario"),
+      });
+      throw error;
+    }
+  },
+
+  deleteUser: async (id) => {
+    try {
+      set({ loading: true, error: null });
+      await deleteUserRequest(id);
+      await get().getUsers();
+      set({ loading: false });
+    } catch (error) {
+      set({
+        loading: false,
+        error: getErrorMessage(error, "Error al eliminar usuario"),
       });
       throw error;
     }

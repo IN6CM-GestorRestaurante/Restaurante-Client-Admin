@@ -1,10 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocationsStore } from "../store/adminStore";
 import { SucursalModal } from "./SucursalModal";
 import { Modal } from "../../../shared/ui/Modal";
+import { showError, showSuccess } from "../../../shared/utils/toast";
 
 export const SucursalesSection = () => {
+    const { locations, loading, error, getLocations, deleteLocation } = useLocationsStore();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [selectedLocation, setSelectedLocation] = useState(null);
+
+    useEffect(() => {
+        getLocations();
+    }, [getLocations]);
+
+    useEffect(() => {
+        if (error) showError(error);
+    }, [error]);
+
+    const handleDelete = async () => {
+        if (!selectedLocation?._id) {
+            setIsDeleteOpen(false);
+            return;
+        }
+
+        try {
+            await deleteLocation(selectedLocation._id);
+            showSuccess("Sucursal desactivada correctamente");
+        } catch {
+            // El store ya expone el error
+        } finally {
+            setIsDeleteOpen(false);
+            setSelectedLocation(null);
+        }
+    };
 
     return (
         <>
@@ -20,31 +49,17 @@ export const SucursalesSection = () => {
                     <p style={{ fontSize: "13px", color: "#6f6f78" }}>Gestion centralizada de sedes del restaurante.</p>
                 </div>
                 <section className="kpis">
-                    <article className="kpi"><span>Total sucursales</span><strong>Sin datos</strong></article>
-                    <article className="kpi"><span>Operativas</span><strong>Sin datos</strong></article>
-                    <article className="kpi"><span>En mantenimiento</span><strong>Sin datos</strong></article>
+                    <article className="kpi"><span>Total sucursales</span><strong>{loading ? "Cargando..." : locations.length}</strong></article>
+                    <article className="kpi"><span>Operativas</span><strong>{locations.filter((location) => location.isActive !== false).length}</strong></article>
+                    <article className="kpi"><span>En mantenimiento</span><strong>{locations.filter((location) => location.state === "En mantenimiento").length}</strong></article>
                 </section>
                 <div className="crud-cards-grid crud-cards-gridCompact">
-                    {[
-                        {
-                            _id: "sample-location",
-                            name: "Sucursal Centro",
-                            address: "Avenida principal 123",
-                            openingTime: "08:00",
-                            closingTime: "22:00",
-                            category: "Casera",
-                            averagePrice: "00.00",
-                            email: "info@restaurante.com",
-                            phoneNumber: "+50212345678",
-                            state: "Operativa",
-                            descripcion: "Sin datos",
-                        },
-                    ].map((location) => (
+                    {(locations.length ? locations : []).map((location) => (
                         <article key={location._id} className="crud-card crud-cardCompact crud-cardPost crud-cardDense">
                             <div className="crud-cardMedia crud-cardPostMedia">
                                 <div className="crud-cardMediaBox crud-cardMediaBoxPhoto">
-                                    {location.image ? (
-                                        <img className="crud-cardMediaImage" src={location.image} alt={`Imagen de ${location.name}`} />
+                                    {location.photos?.[0] ? (
+                                        <img className="crud-cardMediaImage" src={location.photos[0]} alt={`Imagen de ${location.name}`} />
                                     ) : (
                                         <span>Sin imagen</span>
                                     )}
@@ -55,7 +70,10 @@ export const SucursalesSection = () => {
                                         type="button"
                                         className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
                                         aria-label="Editar sucursal"
-                                        onClick={() => setIsCreateOpen(true)}
+                                        onClick={() => {
+                                            setSelectedLocation(location);
+                                            setIsCreateOpen(true);
+                                        }}
                                     >
                                         <i className="fas fa-pen-to-square"></i>
                                     </button>
@@ -63,7 +81,10 @@ export const SucursalesSection = () => {
                                         type="button"
                                         className="crud-cardAction crud-cardActionDelete crud-cardOverlayAction"
                                         aria-label="Eliminar sucursal"
-                                        onClick={() => setIsDeleteOpen(true)}
+                                        onClick={() => {
+                                            setSelectedLocation(location);
+                                            setIsDeleteOpen(true);
+                                        }}
                                     >
                                         <i className="fas fa-trash"></i>
                                     </button>
@@ -75,7 +96,7 @@ export const SucursalesSection = () => {
                                     <span className="crud-cardEyebrow"><i className="fas fa-store"></i> Sucursal</span>
                                     <h3 className="crud-cardTitle">{location.name}</h3>
                                 </div>
-                                <span className="crud-cardBadge">{location.state}</span>
+                                <span className="crud-cardBadge">{location.isActive !== false ? "Operativa" : "Inactiva"}</span>
                             </div>
 
                             <div className="crud-cardBody crud-cardPostBodyCols">
@@ -113,7 +134,14 @@ export const SucursalesSection = () => {
                 </div>
             </section>
 
-            <SucursalModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
+            <SucursalModal
+                isOpen={isCreateOpen}
+                initialData={selectedLocation}
+                onClose={() => {
+                    setIsCreateOpen(false);
+                    setSelectedLocation(null);
+                }}
+            />
 
             <Modal
                 isOpen={isDeleteOpen}
@@ -122,10 +150,10 @@ export const SucursalesSection = () => {
                 subtitle="Confirma la eliminación del registro"
                 compact
             >
-                <p className="text-sm leading-6 text-slate-700">La sucursal seleccionada sera eliminada. ¿Deseas continuar?</p>
+                <p className="text-sm leading-6 text-slate-700">La sucursal seleccionada sera desactivada. ¿Deseas continuar?</p>
                 <div className="app-modal-actions">
                     <button type="button" onClick={() => setIsDeleteOpen(false)} className="app-modal-btn app-modal-btnSecondary w-full sm:w-auto">Cancelar</button>
-                    <button type="button" onClick={() => setIsDeleteOpen(false)} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Eliminar</button>
+                    <button type="button" onClick={handleDelete} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Eliminar</button>
                 </div>
             </Modal>
 

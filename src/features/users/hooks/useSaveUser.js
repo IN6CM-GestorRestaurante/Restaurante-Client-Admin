@@ -10,10 +10,9 @@ export const useSaveUser = () => {
       surname: data.surname,
       username: data.username,
       email: data.email,
-      password: data.password,
       phone: data.phone,
       role: data.role,
-      status: data.status,
+      status: data.status === true || data.status === "true",
     };
 
     if (userId) {

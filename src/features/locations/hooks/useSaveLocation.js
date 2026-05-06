@@ -16,10 +16,10 @@ export const useSaveLocation = () => {
     formData.append("averagePrice", data.averagePrice);
     formData.append("email", data.email);
     formData.append("phoneNumber", data.phoneNumber);
-    formData.append("state", data.state);
+    formData.append("isActive", String(data.state !== "Cerrada"));
 
     if (data.photos?.length > 0) {
-      formData.append("image", data.photos[0]);
+      formData.append("photos", data.photos[0]);
     }
 
     if (locationId) {

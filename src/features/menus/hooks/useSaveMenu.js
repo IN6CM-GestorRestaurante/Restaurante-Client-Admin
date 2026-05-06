@@ -6,11 +6,16 @@ export const useSaveMenu = () => {
 
   const saveMenu = async (data, menuId = null) => {
     const formData = new FormData();
+    const ingredients = typeof data.ingredients === "string"
+      ? data.ingredients.split(",").map((item) => item.trim()).filter(Boolean)
+      : Array.isArray(data.ingredients)
+        ? data.ingredients
+        : [];
 
     formData.append("restaurant", data.restaurant);
     formData.append("name", data.name);
     formData.append("description", data.description);
-    formData.append("ingredients", data.ingredients);
+    ingredients.forEach((ingredient) => formData.append("ingredients", ingredient));
     formData.append("price", data.price);
     formData.append("category", data.category);
     formData.append("isActive", data.isActive ?? true);

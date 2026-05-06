@@ -2,16 +2,13 @@ import { useEffect, useState } from "react";
 import { useEffect as useToastEffect } from "react";
 
 import { useMenusStore } from "../../menus/store/adminStore";
-import { useUIStore } from "../../auth/store/uiStore";
 
 import { showError } from "../../../shared/utils/toast";
-import { spinner } from "@material-tailwind/react";
 import { MenuModal } from "./MenuModal";
 import { Modal } from "../../../shared/ui/Modal";
 
 export const MenuSection = () => {
     const { menus, loading, error, getMenus, deleteMenu } = useMenusStore();
-    const { openConfirm } = useUIStore();
 
     const [openModal, setOpenModal] = useState(false);
     const [selectedMenu, setSelectedMenu] = useState(null);
@@ -36,9 +33,6 @@ export const MenuSection = () => {
         }
     };
 
-    void spinner;
-    void openConfirm;
-
     return (
         <>
             <header className="header">
@@ -55,25 +49,13 @@ export const MenuSection = () => {
                 </div>
 
                 <section className="kpis">
-                    <article className="kpi"><span>Total productos</span><strong>Sin datos</strong></article>
-                    <article className="kpi"><span>Disponibles</span><strong>Sin datos</strong></article>
-                    <article className="kpi"><span>No disponibles</span><strong>Sin datos</strong></article>
+                    <article className="kpi"><span>Total productos</span><strong>{loading ? "Cargando..." : menus.length}</strong></article>
+                    <article className="kpi"><span>Disponibles</span><strong>{menus.filter((menu) => menu.isActive !== false).length}</strong></article>
+                    <article className="kpi"><span>No disponibles</span><strong>{menus.filter((menu) => menu.isActive === false).length}</strong></article>
                 </section>
 
                 <div className="crud-cards-grid crud-cards-gridCompact">
-                    {(menus?.length ? menus : [
-                        {
-                            _id: "sample-menu",
-                            restaurant: "Sin datos",
-                            name: "Pasta Alfredo",
-                            description: "Pasta cremosa con salsa Alfredo",
-                            ingredients: "Sin datos",
-                            price: "12.99",
-                            category: "Entrada",
-                            image: "Sin datos",
-                            isActive: true,
-                        },
-                    ]).map((menu) => {
+                    {(menus?.length ? menus : []).map((menu) => {
                         const hasImage = !!(menu.image && menu.image !== "Sin datos");
 
                         return (
