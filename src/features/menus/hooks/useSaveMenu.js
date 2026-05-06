@@ -7,7 +7,7 @@ export const useSaveMenu = () => {
   const saveMenu = async (data, menuId = null) => {
     const formData = new FormData();
 
-    formData.append("restaurant", data.restaurant);
+    formData.append("branch", data.restaurant); // Send to backend as 'branch'
     formData.append("name", data.name);
     formData.append("description", data.description);
     formData.append("ingredients", data.ingredients);

@@ -7,7 +7,7 @@ export const useSaveReservation = () => {
   const saveReservation = async (data, reservationId = null) => {
     const payload = {
       user: data.user,
-      restaurant: data.restaurant,
+      branch: data.restaurant, // mapped to 'branch'
       type: data.type,
       table: data.table,
       date: data.date,

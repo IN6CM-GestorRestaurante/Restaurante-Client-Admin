@@ -8,7 +8,7 @@ export const useSaveLocation = () => {
     const formData = new FormData();
 
     formData.append("name", data.name);
-    formData.append("descripcion", data.descripcion);
+    formData.append("description", data.descripcion); // mapped to 'description' as expected by Model
     formData.append("address", data.address);
     formData.append("openingTime", data.openingTime);
     formData.append("closingTime", data.closingTime);

@@ -44,7 +44,7 @@ export const getAllReservations = async () => {
 };
 
 export const confirmReservation = async (id) => {
-    return await axiosAdmin.put(`/reservations/${id}/confirm`);
+    return await axiosAdmin.put(`/reservations/${id}`, { status: 'Confirmada' });
 };
 
 export const createReservation = async (data) => {
@@ -87,28 +87,28 @@ export const changeMenuStatus = async (id, activate = true) => {
 
 // ================= RESTAURANTS (LOCATIONS) =================
 export const getRestaurants = async (params) => {
-    return await axiosAdmin.get("/restaurants", { params });
+    return await axiosAdmin.get("/branches", { params });
 };
 
 export const getRestaurantById = async (id) => {
-    return await axiosAdmin.get(`/restaurants/${id}`);
+    return await axiosAdmin.get(`/branches/${id}`);
 };
 
 export const createRestaurant = async (data) => {
-    return await axiosAdmin.post("/restaurants", data, {
+    return await axiosAdmin.post("/branches", data, {
         headers: { "Content-Type": "multipart/form-data" },
     });
 };
 
 export const updateRestaurant = async (id, data) => {
-    return await axiosAdmin.put(`/restaurants/${id}`, data, {
+    return await axiosAdmin.put(`/branches/${id}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
     });
 };
 
 export const changeRestaurantStatus = async (id, activate = true) => {
     const action = activate ? 'activate' : 'desactivate';
-    return await axiosAdmin.put(`/restaurants/${id}/${action}`);
+    return await axiosAdmin.put(`/branches/${id}/${action}`);
 };
 
 // ================= TABLES =================
@@ -135,7 +135,12 @@ export const changeTableStatus = async (id, activate = true) => {
 
 // ================= ORDERS =================
 export const getOrders = async (params) => {
-    return await axiosAdmin.get("/orders", { params });
+    // If we have branchId in params, use it
+    const { branchId, ...otherParams } = params || {};
+    if (branchId) {
+        return await axiosAdmin.get(`/orders/branch/${branchId}`, { params: otherParams });
+    }
+    return await axiosAdmin.get("/orders", { params: otherParams });
 };
 
 export const createOrder = async (data) => {
@@ -143,11 +148,11 @@ export const createOrder = async (data) => {
 };
 
 export const updateItemStatus = async (orderId, itemId, body) => {
-    return await axiosAdmin.put(`/orders/${orderId}/items/${itemId}`, body);
+    return await axiosAdmin.patch(`/orders/${orderId}/item/${itemId}/status`, body);
 };
 
 export const updateOrderStatus = async (id, body) => {
-    return await axiosAdmin.put(`/orders/${id}`, body);
+    return await axiosAdmin.patch(`/orders/${id}/status`, body);
 };
 
 // ================= USERS =================
@@ -157,6 +162,10 @@ export const getUsers = async (params) => {
 
 export const syncUserProfile = async (data) => {
     return await axiosAdmin.post("/users/sync", data);
+};
+
+export const updateUser = async (id, data) => {
+    return await axiosAdmin.put(`/users/${id}`, data);
 };
 
 export const changeUserStatus = async (id, activate = true) => {
