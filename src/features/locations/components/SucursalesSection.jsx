@@ -1,10 +1,49 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { useLocationsStore } from "../store/adminStore";
 import { SucursalModal } from "./SucursalModal";
 import { Modal } from "../../../shared/ui/Modal";
+import { showError, showSuccess } from "../../../shared/utils/toast";
 
 export const SucursalesSection = () => {
+    const { locations, loading, error, getLocations, deleteLocation } = useLocationsStore();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [selectedLocation, setSelectedLocation] = useState(null);
+
+    useEffect(() => {
+        getLocations?.();
+    }, [getLocations]);
+
+    useEffect(() => {
+        if (error) showError(error);
+    }, [error]);
+
+    const handleCreate = () => {
+        setSelectedLocation(null);
+        setIsCreateOpen(true);
+    };
+
+    const handleEdit = (location) => {
+        setSelectedLocation(location);
+        setIsCreateOpen(true);
+    };
+
+    const handleDelete = async () => {
+        try {
+            if (selectedLocation?._id) {
+                await deleteLocation?.(selectedLocation._id);
+                showSuccess("Sucursal eliminada");
+            }
+        } catch {
+            showError("Error al eliminar sucursal");
+        } finally {
+            setIsDeleteOpen(false);
+            setSelectedLocation(null);
+        }
+    };
+
+    const locationRows = (locations || []).filter((location) => location?.isActive !== false);
 
     return (
         <>
@@ -13,33 +52,19 @@ export const SucursalesSection = () => {
                     <h2>CRUD de Sucursales</h2>
                     <p>Administra sedes, responsable y estado operativo.</p>
                 </div>
-                <button className="btn danger" type="button" onClick={() => setIsCreateOpen(true)}>Nueva sucursal</button>
+                <button className="btn danger" type="button" onClick={handleCreate}>Nueva sucursal</button>
             </header>
             <section className="section">
                 <div className="top">
                     <p style={{ fontSize: "13px", color: "#6f6f78" }}>Gestion centralizada de sedes del restaurante.</p>
                 </div>
                 <section className="kpis">
-                    <article className="kpi"><span>Total sucursales</span><strong>Sin datos</strong></article>
+                    <article className="kpi"><span>Total sucursales</span><strong>{loading ? "Cargando..." : locationRows.length || "Sin datos"}</strong></article>
                     <article className="kpi"><span>Operativas</span><strong>Sin datos</strong></article>
                     <article className="kpi"><span>En mantenimiento</span><strong>Sin datos</strong></article>
                 </section>
                 <div className="crud-cards-grid crud-cards-gridCompact">
-                    {[
-                        {
-                            _id: "sample-location",
-                            name: "Sucursal Centro",
-                            address: "Avenida principal 123",
-                            openingTime: "08:00",
-                            closingTime: "22:00",
-                            category: "Casera",
-                            averagePrice: "00.00",
-                            email: "info@restaurante.com",
-                            phoneNumber: "+50212345678",
-                            state: "Operativa",
-                            descripcion: "Sin datos",
-                        },
-                    ].map((location) => (
+                    {locationRows.map((location) => (
                         <article key={location._id} className="crud-card crud-cardCompact crud-cardPost crud-cardDense">
                             <div className="crud-cardMedia crud-cardPostMedia">
                                 <div className="crud-cardMediaBox crud-cardMediaBoxPhoto">
@@ -55,7 +80,7 @@ export const SucursalesSection = () => {
                                         type="button"
                                         className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
                                         aria-label="Editar sucursal"
-                                        onClick={() => setIsCreateOpen(true)}
+                                        onClick={() => handleEdit(location)}
                                     >
                                         <i className="fas fa-pen-to-square"></i>
                                     </button>
@@ -63,7 +88,11 @@ export const SucursalesSection = () => {
                                         type="button"
                                         className="crud-cardAction crud-cardActionDelete crud-cardOverlayAction"
                                         aria-label="Eliminar sucursal"
-                                        onClick={() => setIsDeleteOpen(true)}
+                                        onClick={() => {
+                                            setSelectedLocation(location);
+                                            setIsCreateOpen(false);
+                                            setIsDeleteOpen(true);
+                                        }}
                                     >
                                         <i className="fas fa-trash"></i>
                                     </button>
@@ -113,7 +142,14 @@ export const SucursalesSection = () => {
                 </div>
             </section>
 
-            <SucursalModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
+            <SucursalModal
+                isOpen={isCreateOpen}
+                initialData={selectedLocation}
+                onClose={() => {
+                    setIsCreateOpen(false);
+                    setSelectedLocation(null);
+                }}
+            />
 
             <Modal
                 isOpen={isDeleteOpen}
@@ -125,7 +161,7 @@ export const SucursalesSection = () => {
                 <p className="text-sm leading-6 text-slate-700">La sucursal seleccionada sera eliminada. ¿Deseas continuar?</p>
                 <div className="app-modal-actions">
                     <button type="button" onClick={() => setIsDeleteOpen(false)} className="app-modal-btn app-modal-btnSecondary w-full sm:w-auto">Cancelar</button>
-                    <button type="button" onClick={() => setIsDeleteOpen(false)} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Eliminar</button>
+                    <button type="button" onClick={handleDelete} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Eliminar</button>
                 </div>
             </Modal>
 

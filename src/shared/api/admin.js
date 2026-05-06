@@ -47,6 +47,18 @@ export const confirmReservation = async (id) => {
     return await axiosAdmin.put(`/reservations/${id}/confirm`);
 };
 
+export const createReservation = async (data) => {
+    return await axiosAdmin.post("/reservations", data);
+};
+
+export const updateReservation = async (id, data) => {
+    return await axiosAdmin.put(`/reservations/${id}`, data);
+};
+
+export const deleteReservation = async (id) => {
+    return await axiosAdmin.put(`/reservations/${id}/desactivate`);
+};
+
 // ================= MENUS =================
 export const getMenus = async (params) => {
     return await axiosAdmin.get("/menus", { params });
@@ -145,4 +157,9 @@ export const getUsers = async (params) => {
 
 export const syncUserProfile = async (data) => {
     return await axiosAdmin.post("/users/sync", data);
+};
+
+export const changeUserStatus = async (id, activate = true) => {
+    const action = activate ? 'activate' : 'desactivate';
+    return await axiosAdmin.put(`/users/${id}/${action}`);
 };

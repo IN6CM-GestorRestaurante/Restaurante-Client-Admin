@@ -1,23 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UserModal } from "./UserModal";
 import { Modal } from "../../../shared/ui/Modal";
+import { useUsersStore } from "../store/adminStore";
+import { showError, showSuccess } from "../../../shared/utils/toast";
 
 export const UsuariosSection = () => {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-    const users = [
-        {
-            _id: "sample-user",
-            name: "Carlos",
-            surname: "López",
-            username: "carlos.lopez",
-            email: "carlos@restaurante.com",
-            phone: "+50212345678",
-            role: "Administrador",
-            status: "Activo",
-        },
-    ];
+    const users = useUsersStore((s) => s.users || []);
+    const loading = useUsersStore((s) => s.loading);
+    const getUsers = useUsersStore((s) => s.getUsers);
+    const deleteUser = useUsersStore((s) => s.deleteUser);
+
+    const [selected, setSelected] = useState(null);
+
+    const handleDelete = async () => {
+        try {
+            if (selected?._id) {
+                await deleteUser(selected._id);
+                showSuccess("Usuario eliminado");
+            }
+        } catch (err) {
+            showError(err?.response?.data?.message || err?.message || "Error al eliminar usuario");
+        } finally {
+            setIsDeleteOpen(false);
+            setSelected(null);
+        }
+    };
+
+    useEffect(() => {
+        getUsers();
+    }, []);
 
     return (
         <>
@@ -53,7 +67,7 @@ export const UsuariosSection = () => {
                                         type="button"
                                         className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
                                         aria-label="Editar usuario"
-                                        onClick={() => setIsCreateOpen(true)}
+                                        onClick={() => { setSelected(user); setIsCreateOpen(true); }}
                                     >
                                         <i className="fas fa-pen-to-square"></i>
                                     </button>
@@ -61,7 +75,7 @@ export const UsuariosSection = () => {
                                         type="button"
                                         className="crud-cardAction crud-cardActionDelete crud-cardOverlayAction"
                                         aria-label="Eliminar usuario"
-                                        onClick={() => setIsDeleteOpen(true)}
+                                        onClick={() => { setSelected(user); setIsDeleteOpen(true); }}
                                     >
                                         <i className="fas fa-trash"></i>
                                     </button>
@@ -99,7 +113,7 @@ export const UsuariosSection = () => {
                 </div>
             </section>
 
-            <UserModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
+            <UserModal isOpen={isCreateOpen} initialData={selected} onClose={() => { setIsCreateOpen(false); setSelected(null); }} />
 
             <Modal
                 isOpen={isDeleteOpen}
@@ -111,7 +125,7 @@ export const UsuariosSection = () => {
                 <p className="text-sm leading-6 text-slate-700">El usuario seleccionado sera eliminado. ¿Deseas continuar?</p>
                 <div className="app-modal-actions">
                     <button type="button" onClick={() => setIsDeleteOpen(false)} className="app-modal-btn app-modal-btnSecondary w-full sm:w-auto">Cancelar</button>
-                    <button type="button" onClick={() => setIsDeleteOpen(false)} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Eliminar</button>
+                    <button type="button" onClick={handleDelete} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Eliminar</button>
                 </div>
             </Modal>
 

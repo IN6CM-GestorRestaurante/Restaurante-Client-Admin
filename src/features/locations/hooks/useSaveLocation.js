@@ -18,8 +18,17 @@ export const useSaveLocation = () => {
     formData.append("phoneNumber", data.phoneNumber);
     formData.append("state", data.state);
 
+    // Normalize phone to E.164 when a local 7-8 digit number is provided (assume +502)
+    const phone = String(data.phoneNumber || "").trim();
+    let phoneNormalized = phone;
+    if (/^\d{7,8}$/.test(phone)) {
+      phoneNormalized = `+502${phone}`;
+    }
+    formData.set("phoneNumber", phoneNormalized);
+
     if (data.photos?.length > 0) {
-      formData.append("image", data.photos[0]);
+      // server expects the file field name to be 'photos' (uploadRestaurantImage.single('photos'))
+      formData.append("photos", data.photos[0]);
     }
 
     if (locationId) {

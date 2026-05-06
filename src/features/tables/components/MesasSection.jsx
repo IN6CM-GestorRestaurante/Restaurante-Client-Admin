@@ -9,8 +9,21 @@ import { Modal } from "../../../shared/ui/Modal";
 export const MesasSection = () => {
     const { tables, loading, error, getTables, deleteTable } = useTablesStore();
     const { isOpen: openModal, openModal: setOpenModalTrue, closeModal: setOpenModalFalse } = useModal(false);
-    const { isOpen: isDeleteOpen, openModal: setDeleteOpenTrue, closeModal: setDeleteOpenFalse } = useModal(false);
     const [selectedTable, setSelectedTable] = useState(null);
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+    const handleDelete = async () => {
+        try {
+            if (selectedTable?._id) {
+                await deleteTable?.(selectedTable._id);
+            }
+        } catch {
+            // store handles error
+        } finally {
+            setIsDeleteOpen(false);
+            setSelectedTable(null);
+        }
+    };
 
     useEffect(() => {
         getTables?.();
@@ -20,16 +33,7 @@ export const MesasSection = () => {
         if (error) showError(error);
     }, [error]);
 
-    const handleDelete = async () => {
-        try {
-            if (selectedTable?._id) {
-                await deleteTable?.(selectedTable._id);
-            }
-        } finally {
-            setDeleteOpenFalse();
-            setSelectedTable(null);
-        }
-    };
+    // delete action disabled (admin API not exposing delete endpoint)
 
     const tableRows = tables?.length
         ? tables
@@ -86,7 +90,7 @@ export const MesasSection = () => {
                                         type="button"
                                         className="crud-cardAction crud-cardActionDelete crud-cardOverlayAction"
                                         aria-label="Eliminar mesa"
-                                        onClick={() => { setSelectedTable(table); setDeleteOpenTrue(); }}
+                                        onClick={() => { setSelectedTable(table); setIsDeleteOpen(true); }}
                                     >
                                         <i className="fas fa-trash"></i>
                                     </button>
@@ -139,14 +143,14 @@ export const MesasSection = () => {
 
             <Modal
                 isOpen={isDeleteOpen}
-                onClose={() => setDeleteOpenFalse()}
+                onClose={() => setIsDeleteOpen(false)}
                 title="Eliminar mesa"
                 subtitle="Confirmación de eliminación"
                 compact
             >
                 <p className="text-sm leading-6 text-slate-700">La mesa seleccionada sera eliminada. ¿Deseas continuar?</p>
                 <div className="app-modal-actions">
-                    <button type="button" onClick={() => setDeleteOpenFalse()} className="app-modal-btn app-modal-btnSecondary w-full sm:w-auto">Cancelar</button>
+                    <button type="button" onClick={() => setIsDeleteOpen(false)} className="app-modal-btn app-modal-btnSecondary w-full sm:w-auto">Cancelar</button>
                     <button type="button" onClick={handleDelete} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Eliminar</button>
                 </div>
             </Modal>

@@ -1,24 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ReservationModal } from "./ReservationModal";
 import { Modal } from "../../../shared/ui/Modal";
+import { useReservationsStore } from "../store/adminStore";
+import { showError, showSuccess } from "../../../shared/utils/toast";
 
 export const ReservacionesSection = () => {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [selectedReservation, setSelectedReservation] = useState(null);
 
-    const reservations = [
-        {
-            _id: "sample-reservation",
-            user: "Sin datos",
-            restaurant: "Sin datos",
-            type: "En mesa",
-            table: "Mesa 5",
-            date: "Sin datos",
-            deliveryAddress: "No aplica",
-            status: "Pendiente",
-            notes: "Sin datos",
-        },
-    ];
+    const reservations = useReservationsStore((s) => s.reservations || []);
+    const loading = useReservationsStore((s) => s.loading);
+    const getReservations = useReservationsStore((s) => s.getReservations);
+    const confirmReservation = useReservationsStore((s) => s.confirmReservation);
+
+    useEffect(() => {
+        getReservations();
+    }, []);
+
+    const deleteReservation = useReservationsStore((s) => s.deleteReservation);
+
+    const handleConfirm = async (id) => {
+        try {
+            await confirmReservation(id);
+            showSuccess("Reservación confirmada");
+        } catch (err) {
+            showError(err?.response?.data?.message || err?.message || "Error al confirmar reservación");
+        }
+    };
+
+    const handleDelete = async () => {
+        try {
+            if (selectedReservation?._id) {
+                await deleteReservation(selectedReservation._id);
+                showSuccess("Reservación eliminada");
+            }
+        } catch (err) {
+            showError(err?.response?.data?.message || err?.message || "Error al eliminar reservación");
+        } finally {
+            setIsDeleteOpen(false);
+            setSelectedReservation(null);
+        }
+    };
 
     return (
         <>
@@ -27,7 +50,7 @@ export const ReservacionesSection = () => {
                     <h2>CRUD de Reservaciones</h2>
                     <p>Administra agenda, disponibilidad y confirmaciones.</p>
                 </div>
-                <button className="btn danger" type="button" onClick={() => setIsCreateOpen(true)}>Nueva reservacion</button>
+                <button className="btn danger" type="button" onClick={() => { setSelectedReservation(null); setIsCreateOpen(true); }}>Nueva reservacion</button>
             </header>
 
             <section className="section">
@@ -50,22 +73,25 @@ export const ReservacionesSection = () => {
                                 </div>
 
                                 <div className="crud-cardOverlayActions">
-                                    <button
-                                        type="button"
-                                        className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
-                                        aria-label="Editar reservación"
-                                        onClick={() => setIsCreateOpen(true)}
-                                    >
-                                        <i className="fas fa-pen-to-square"></i>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="crud-cardAction crud-cardActionDelete crud-cardOverlayAction"
-                                        aria-label="Eliminar reservación"
-                                        onClick={() => setIsDeleteOpen(true)}
-                                    >
-                                        <i className="fas fa-trash"></i>
-                                    </button>
+                                    {/* Create/update endpoints not available in admin API - only confirm/list */}
+                                        {reservation.status !== "confirmada" && (
+                                            <button
+                                                type="button"
+                                                className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
+                                                aria-label="Confirmar reservación"
+                                                onClick={() => handleConfirm(reservation._id)}
+                                            >
+                                                <i className="fas fa-check"></i>
+                                            </button>
+                                        )}
+                                        <button
+                                            type="button"
+                                            className="crud-cardAction crud-cardActionDelete crud-cardOverlayAction"
+                                            aria-label="Eliminar reservación"
+                                            onClick={() => { setSelectedReservation(reservation); setIsDeleteOpen(true); }}
+                                        >
+                                            <i className="fas fa-trash"></i>
+                                        </button>
                                 </div>
                             </div>
 
@@ -120,7 +146,7 @@ export const ReservacionesSection = () => {
                 <p className="text-sm leading-6 text-slate-700">La reservacion seleccionada sera eliminada. ¿Deseas continuar?</p>
                 <div className="app-modal-actions">
                     <button type="button" onClick={() => setIsDeleteOpen(false)} className="app-modal-btn app-modal-btnSecondary w-full sm:w-auto">Cancelar</button>
-                    <button type="button" onClick={() => setIsDeleteOpen(false)} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Eliminar</button>
+                    <button type="button" onClick={handleDelete} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Eliminar</button>
                 </div>
             </Modal>
 

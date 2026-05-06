@@ -1,7 +1,39 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useLocationsStore } from "../../locations/store/adminStore";
+import { useMenusStore } from "../../menus/store/adminStore";
+import { useTablesStore } from "../../tables/store/adminStore";
+import { useOrdersStore } from "../../orders/store/adminStore";
+import { useReservationsStore } from "../../reservations/store/adminStore";
+import { useUsersStore } from "../../users/store/adminStore";
 
 export const ResumenSection = () => {
     const navigate = useNavigate();
+
+    const locations = useLocationsStore((s) => s.locations || []);
+    const menus = useMenusStore((s) => s.menus || []);
+    const tables = useTablesStore((s) => s.tables || []);
+    const orders = useOrdersStore((s) => s.orders || []);
+    const reservations = useReservationsStore((s) => s.reservations || []);
+    const users = useUsersStore((s) => s.users || []);
+
+    const getLocations = useLocationsStore((s) => s.getLocations);
+    const getMenus = useMenusStore((s) => s.getMenus);
+    const getTables = useTablesStore((s) => s.getTables);
+    const getOrders = useOrdersStore((s) => s.getOrders);
+    const getReservations = useReservationsStore((s) => s.getReservations);
+    const getUsers = useUsersStore((s) => s.getUsers);
+
+    useEffect(() => {
+        getLocations();
+        getMenus();
+        getTables();
+        getOrders();
+        getReservations();
+        getUsers();
+    }, []);
+
+    const totalModules = 6;
 
     return (
         <>
@@ -19,19 +51,23 @@ export const ResumenSection = () => {
             <section className="stats">
                 <article className="stat-card">
                     <span>Total modulos</span>
-                    <strong>Sin datos</strong>
+                    <strong>{totalModules}</strong>
                 </article>
                 <article className="stat-card">
                     <span>Registros del dia</span>
-                    <strong>Sin datos</strong>
+                    <strong>{locations.length + menus.length + tables.length + orders.length + reservations.length + users.length}</strong>
                 </article>
                 <article className="stat-card">
                     <span>Alertas abiertas</span>
-                    <strong>Sin datos</strong>
+                    <strong>{reservations.filter((r) => r.status && r.status.toLowerCase().includes("pend") ).length}</strong>
                 </article>
                 <article className="stat-card">
                     <span>Monto estimado</span>
-                    <strong>00.00</strong>
+                    <strong>{orders.reduce((acc, o) => {
+                        const items = o.items || [];
+                        const sum = items.reduce((s, it) => s + (Number(it.price || 0) * Number(it.quantity || 1)), 0);
+                        return acc + sum;
+                    }, 0).toFixed(2)}</strong>
                 </article>
             </section>
 
