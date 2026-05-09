@@ -11,29 +11,38 @@ export const SucursalesSection = () => {
     const [selectedLocation, setSelectedLocation] = useState(null);
 
     useEffect(() => {
-        getLocations();
+        getLocations?.();
     }, [getLocations]);
 
     useEffect(() => {
         if (error) showError(error);
     }, [error]);
 
-    const handleDelete = async () => {
-        if (!selectedLocation?._id) {
-            setIsDeleteOpen(false);
-            return;
-        }
+    const handleCreate = () => {
+        setSelectedLocation(null);
+        setIsCreateOpen(true);
+    };
 
+    const handleEdit = (location) => {
+        setSelectedLocation(location);
+        setIsCreateOpen(true);
+    };
+
+    const handleDelete = async () => {
         try {
-            await deleteLocation(selectedLocation._id);
-            showSuccess("Sucursal desactivada correctamente");
+            if (selectedLocation?._id) {
+                await deleteLocation?.(selectedLocation._id);
+                showSuccess("Sucursal eliminada");
+            }
         } catch {
-            // El store ya expone el error
+            showError("Error al eliminar sucursal");
         } finally {
             setIsDeleteOpen(false);
             setSelectedLocation(null);
         }
     };
+
+    const locationRows = (locations || []).filter((location) => location?.isActive !== false);
 
     return (
         <>
@@ -42,19 +51,19 @@ export const SucursalesSection = () => {
                     <h2>CRUD de Sucursales</h2>
                     <p>Administra sedes, responsable y estado operativo.</p>
                 </div>
-                <button className="btn danger" type="button" onClick={() => setIsCreateOpen(true)}>Nueva sucursal</button>
+                <button className="btn danger" type="button" onClick={handleCreate}>Nueva sucursal</button>
             </header>
             <section className="section">
                 <div className="top">
                     <p style={{ fontSize: "13px", color: "#6f6f78" }}>Gestion centralizada de sedes del restaurante.</p>
                 </div>
                 <section className="kpis">
-                    <article className="kpi"><span>Total sucursales</span><strong>{loading ? "Cargando..." : locations.length}</strong></article>
-                    <article className="kpi"><span>Operativas</span><strong>{locations.filter((location) => location.isActive !== false).length}</strong></article>
-                    <article className="kpi"><span>En mantenimiento</span><strong>{locations.filter((location) => location.state === "En mantenimiento").length}</strong></article>
+                    <article className="kpi"><span>Total sucursales</span><strong>{loading ? "Cargando..." : locationRows.length || "Sin datos"}</strong></article>
+                    <article className="kpi"><span>Operativas</span><strong>Sin datos</strong></article>
+                    <article className="kpi"><span>En mantenimiento</span><strong>Sin datos</strong></article>
                 </section>
                 <div className="crud-cards-grid crud-cards-gridCompact">
-                    {(locations.length ? locations : []).map((location) => (
+                    {locationRows.map((location) => (
                         <article key={location._id} className="crud-card crud-cardCompact crud-cardPost crud-cardDense">
                             <div className="crud-cardMedia crud-cardPostMedia">
                                 <div className="crud-cardMediaBox crud-cardMediaBoxPhoto">
@@ -70,10 +79,7 @@ export const SucursalesSection = () => {
                                         type="button"
                                         className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
                                         aria-label="Editar sucursal"
-                                        onClick={() => {
-                                            setSelectedLocation(location);
-                                            setIsCreateOpen(true);
-                                        }}
+                                        onClick={() => handleEdit(location)}
                                     >
                                         <i className="fas fa-pen-to-square"></i>
                                     </button>
@@ -83,6 +89,7 @@ export const SucursalesSection = () => {
                                         aria-label="Eliminar sucursal"
                                         onClick={() => {
                                             setSelectedLocation(location);
+                                            setIsCreateOpen(false);
                                             setIsDeleteOpen(true);
                                         }}
                                     >

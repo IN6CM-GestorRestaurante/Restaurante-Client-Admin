@@ -8,7 +8,7 @@ export const useSaveLocation = () => {
     const formData = new FormData();
 
     formData.append("name", data.name);
-    formData.append("descripcion", data.descripcion);
+    formData.append("description", data.descripcion); // mapped to 'description' as expected by Model
     formData.append("address", data.address);
     formData.append("openingTime", data.openingTime);
     formData.append("closingTime", data.closingTime);
@@ -18,7 +18,16 @@ export const useSaveLocation = () => {
     formData.append("phoneNumber", data.phoneNumber);
     formData.append("isActive", String(data.state !== "Cerrada"));
 
+    // Normalize phone to E.164 when a local 7-8 digit number is provided (assume +502)
+    const phone = String(data.phoneNumber || "").trim();
+    let phoneNormalized = phone;
+    if (/^\d{7,8}$/.test(phone)) {
+      phoneNormalized = `+502${phone}`;
+    }
+    formData.set("phoneNumber", phoneNormalized);
+
     if (data.photos?.length > 0) {
+      // server expects the file field name to be 'photos' (uploadRestaurantImage.single('photos'))
       formData.append("photos", data.photos[0]);
     }
 

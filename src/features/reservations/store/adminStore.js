@@ -4,7 +4,9 @@ import {
 	createReservation as createReservationRequest,
 	updateReservation as updateReservationRequest,
 	confirmReservation as confirmReservationRequest,
-	changeReservationStatus as changeReservationStatusRequest,
+	createReservation as createReservationRequest,
+	updateReservation as updateReservationRequest,
+	deleteReservation as deleteReservationRequest,
 } from "../../../shared/api/admin";
 
 const getErrorMessage = (error, fallback) =>
@@ -49,21 +51,6 @@ export const useReservationsStore = create((set, get) => ({
 		}
 	},
 
-	deleteReservation: async (id) => {
-		try {
-			set({ loading: true, error: null });
-			await changeReservationStatusRequest(id, false);
-			await get().getReservations();
-			set({ loading: false });
-		} catch (error) {
-			set({
-				loading: false,
-				error: getErrorMessage(error, "Error al eliminar reservacion"),
-			});
-			throw error;
-		}
-	},
-
 	createReservation: async (data) => {
 		try {
 			set({ loading: true, error: null });
@@ -71,10 +58,7 @@ export const useReservationsStore = create((set, get) => ({
 			await get().getReservations();
 			set({ loading: false });
 		} catch (error) {
-			set({
-				loading: false,
-				error: getErrorMessage(error, "Error al crear reservacion"),
-			});
+			set({ loading: false, error: getErrorMessage(error, "Error al crear reservacion") });
 			throw error;
 		}
 	},
@@ -86,10 +70,19 @@ export const useReservationsStore = create((set, get) => ({
 			await get().getReservations();
 			set({ loading: false });
 		} catch (error) {
-			set({
-				loading: false,
-				error: getErrorMessage(error, "Error al actualizar reservacion"),
-			});
+			set({ loading: false, error: getErrorMessage(error, "Error al actualizar reservacion") });
+			throw error;
+		}
+	},
+
+	deleteReservation: async (id) => {
+		try {
+			set({ loading: true, error: null });
+			await deleteReservationRequest(id);
+			await get().getReservations();
+			set({ loading: false });
+		} catch (error) {
+			set({ loading: false, error: getErrorMessage(error, "Error al eliminar reservacion") });
 			throw error;
 		}
 	},

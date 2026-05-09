@@ -4,6 +4,26 @@ export const useSaveUser = () => {
   const createUser = useUsersStore((s) => s.createUser);
   const updateUser = useUsersStore((s) => s.updateUser);
 
+  const normalizeRole = (role) => {
+    const value = String(role || "").trim().toUpperCase();
+
+    if (value === "ADMIN_ROLE") return "ADMIN";
+    if (value === "USER_ROLE" || value === "CLIENT_ROLE") return "CLIENT";
+    if (value === "WAITER_ROLE") return "WAITER";
+
+    return value || "CLIENT";
+  };
+
+  const normalizeStatus = (status) => {
+    if (typeof status === "boolean") return status;
+
+    const value = String(status || "").trim().toLowerCase();
+    if (value === "activo" || value === "active" || value === "true") return true;
+    if (value === "inactivo" || value === "inactive" || value === "false") return false;
+
+    return true;
+  };
+
   const saveUser = async (data, userId = null) => {
     const payload = {
       name: data.name,
@@ -11,8 +31,8 @@ export const useSaveUser = () => {
       username: data.username,
       email: data.email,
       phone: data.phone,
-      role: data.role,
-      status: data.status === true || data.status === "true",
+      role: normalizeRole(data.role),
+      status: normalizeStatus(data.status),
     };
 
     if (userId) {

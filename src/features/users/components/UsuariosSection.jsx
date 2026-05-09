@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { useUsersStore } from "../store/adminStore";
+import { useState, useEffect } from "react";
 import { UserModal } from "./UserModal";
 import { Modal } from "../../../shared/ui/Modal";
+import { useUsersStore } from "../store/adminStore";
 import { showError, showSuccess } from "../../../shared/utils/toast";
 
 export const UsuariosSection = () => {
@@ -10,30 +10,30 @@ export const UsuariosSection = () => {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
-    useEffect(() => {
-        getUsers();
-    }, [getUsers]);
+    const users = useUsersStore((s) => s.users || []);
+    const loading = useUsersStore((s) => s.loading);
+    const getUsers = useUsersStore((s) => s.getUsers);
+    const deleteUser = useUsersStore((s) => s.deleteUser);
 
-    useEffect(() => {
-        if (error) showError(error);
-    }, [error]);
+    const [selected, setSelected] = useState(null);
 
     const handleDelete = async () => {
-        if (!selectedUser?._id) {
-            setIsDeleteOpen(false);
-            return;
-        }
-
         try {
-            await deleteUser(selectedUser._id);
-            showSuccess("Usuario desactivado correctamente");
-        } catch {
-            // El store ya expone el error
+            if (selected?._id) {
+                await deleteUser(selected._id);
+                showSuccess("Usuario eliminado");
+            }
+        } catch (err) {
+            showError(err?.response?.data?.message || err?.message || "Error al eliminar usuario");
         } finally {
             setIsDeleteOpen(false);
-            setSelectedUser(null);
+            setSelected(null);
         }
     };
+
+    useEffect(() => {
+        getUsers();
+    }, []);
 
     return (
         <>
@@ -69,10 +69,7 @@ export const UsuariosSection = () => {
                                         type="button"
                                         className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
                                         aria-label="Editar usuario"
-                                        onClick={() => {
-                                            setSelectedUser(user);
-                                            setIsCreateOpen(true);
-                                        }}
+                                        onClick={() => { setSelected(user); setIsCreateOpen(true); }}
                                     >
                                         <i className="fas fa-pen-to-square"></i>
                                     </button>
@@ -80,10 +77,7 @@ export const UsuariosSection = () => {
                                         type="button"
                                         className="crud-cardAction crud-cardActionDelete crud-cardOverlayAction"
                                         aria-label="Eliminar usuario"
-                                        onClick={() => {
-                                            setSelectedUser(user);
-                                            setIsDeleteOpen(true);
-                                        }}
+                                        onClick={() => { setSelected(user); setIsDeleteOpen(true); }}
                                     >
                                         <i className="fas fa-trash"></i>
                                     </button>
@@ -121,14 +115,7 @@ export const UsuariosSection = () => {
                 </div>
             </section>
 
-            <UserModal
-                isOpen={isCreateOpen}
-                initialData={selectedUser}
-                onClose={() => {
-                    setIsCreateOpen(false);
-                    setSelectedUser(null);
-                }}
-            />
+            <UserModal isOpen={isCreateOpen} initialData={selected} onClose={() => { setIsCreateOpen(false); setSelected(null); }} />
 
             <Modal
                 isOpen={isDeleteOpen}

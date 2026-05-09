@@ -73,4 +73,16 @@ export const useOrdersStore = create((set, get) => ({
 			throw error;
 		}
 	},
+
+	deleteOrder: async (id) => {
+		try {
+			set({ loading: true, error: null });
+			await updateOrderStatusRequest(id, { status: "CANCELADA" });
+			await get().getOrders();
+			set({ loading: false });
+		} catch (error) {
+			set({ loading: false, error: getErrorMessage(error, "Error al eliminar orden") });
+			throw error;
+		}
+	},
 }));

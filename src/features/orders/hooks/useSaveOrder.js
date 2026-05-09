@@ -6,8 +6,8 @@ export const useSaveOrder = () => {
 
   const saveOrder = async (data, orderId = null) => {
     const payload = {
-      table: data.table,
-      restaurant: data.restaurant,
+      tables: Array.isArray(data.table) ? data.table : [data.table], // Convert table to tables array
+      branch: data.restaurant, // Map restaurant to branch
       items: data.items,
       status: data.status,
     };

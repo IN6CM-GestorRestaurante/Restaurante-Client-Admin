@@ -58,18 +58,15 @@ export const useUsersStore = create((set, get) => ({
       throw error;
     }
   },
-
   deleteUser: async (id) => {
     try {
       set({ loading: true, error: null });
-      await deleteUserRequest(id);
+      const { changeUserStatus } = await import("../../../shared/api/admin");
+      await changeUserStatus(id, false);
       await get().getUsers();
       set({ loading: false });
     } catch (error) {
-      set({
-        loading: false,
-        error: getErrorMessage(error, "Error al eliminar usuario"),
-      });
+      set({ loading: false, error: getErrorMessage(error, "Error al eliminar usuario") });
       throw error;
     }
   },

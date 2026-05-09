@@ -69,8 +69,12 @@ export const useLocationsStore = create((set, get) => ({
 		try {
 			set({ loading: true, error: null });
 			await changeRestaurantStatusRequest(id, false);
-			await get().getLocations();
-			set({ loading: false });
+			// update local lists without refetching
+			set({
+				locations: get().locations.filter((item) => item._id !== id),
+				sucursales: get().sucursales.filter((item) => item._id !== id),
+				loading: false,
+			});
 		} catch (error) {
 			set({
 				loading: false,

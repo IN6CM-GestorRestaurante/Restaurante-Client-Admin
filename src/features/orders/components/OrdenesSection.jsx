@@ -1,24 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { OrderModal } from "./OrderModal";
 import { Modal } from "../../../shared/ui/Modal";
+import { useOrdersStore } from "../store/adminStore";
+import { showError, showSuccess } from "../../../shared/utils/toast";
 
 export const OrdenesSection = () => {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-    const orders = [
-        {
-            _id: "sample-order",
-            table: "Mesa 5",
-            restaurant: "Sin datos",
-            menuItem: "Pasta Alfredo",
-            quantity: 2,
-            price: "00.00",
-            modifiers: "Sin datos",
-            itemStatus: "En espera",
-            status: "Abierta",
-        },
-    ];
+    const orders = useOrdersStore((s) => s.orders || []);
+    const loading = useOrdersStore((s) => s.loading);
+    const getOrders = useOrdersStore((s) => s.getOrders);
+    const deleteOrder = useOrdersStore((s) => s.deleteOrder);
+
+    const [selected, setSelected] = useState(null);
+
+    const handleDelete = async () => {
+        try {
+            if (selected?._id) {
+                await deleteOrder(selected._id);
+                showSuccess("Orden cancelada");
+            }
+        } catch (err) {
+            showError(err?.response?.data?.message || err?.message || "Error al eliminar orden");
+        } finally {
+            setIsDeleteOpen(false);
+            setSelected(null);
+        }
+    };
+
+    useEffect(() => {
+        getOrders();
+    }, []);
 
     return (
         <>
@@ -54,7 +67,7 @@ export const OrdenesSection = () => {
                                         type="button"
                                         className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
                                         aria-label="Editar orden"
-                                        onClick={() => setIsCreateOpen(true)}
+                                        onClick={() => { setSelected(order); setIsCreateOpen(true); }}
                                     >
                                         <i className="fas fa-pen-to-square"></i>
                                     </button>
@@ -62,7 +75,7 @@ export const OrdenesSection = () => {
                                         type="button"
                                         className="crud-cardAction crud-cardActionDelete crud-cardOverlayAction"
                                         aria-label="Eliminar orden"
-                                        onClick={() => setIsDeleteOpen(true)}
+                                        onClick={() => { setSelected(order); setIsDeleteOpen(true); }}
                                     >
                                         <i className="fas fa-trash"></i>
                                     </button>
@@ -108,19 +121,19 @@ export const OrdenesSection = () => {
                 </div>
             </section>
 
-            <OrderModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
+            <OrderModal isOpen={isCreateOpen} initialData={selected} onClose={() => { setIsCreateOpen(false); setSelected(null); }} />
 
             <Modal
                 isOpen={isDeleteOpen}
                 onClose={() => setIsDeleteOpen(false)}
                 title="Eliminar orden"
-                subtitle="Confirma la eliminación del registro"
+                subtitle="Confirmación de eliminación"
                 compact
             >
-                <p className="text-sm leading-6 text-slate-700">La orden seleccionada sera eliminada. ¿Deseas continuar?</p>
+                <p className="text-sm leading-6 text-slate-700">La orden seleccionada sera cancelada. ¿Deseas continuar?</p>
                 <div className="app-modal-actions">
                     <button type="button" onClick={() => setIsDeleteOpen(false)} className="app-modal-btn app-modal-btnSecondary w-full sm:w-auto">Cancelar</button>
-                    <button type="button" onClick={() => setIsDeleteOpen(false)} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Eliminar</button>
+                    <button type="button" onClick={handleDelete} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto">Eliminar</button>
                 </div>
             </Modal>
 

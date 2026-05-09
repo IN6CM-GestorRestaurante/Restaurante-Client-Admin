@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { useReservationsStore } from "../store/adminStore";
+import { useState, useEffect } from "react";
 import { ReservationModal } from "./ReservationModal";
 import { Modal } from "../../../shared/ui/Modal";
+import { useReservationsStore } from "../store/adminStore";
 import { showError, showSuccess } from "../../../shared/utils/toast";
 
 export const ReservacionesSection = () => {
@@ -10,25 +10,34 @@ export const ReservacionesSection = () => {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedReservation, setSelectedReservation] = useState(null);
 
+    const reservations = useReservationsStore((s) => s.reservations || []);
+    const loading = useReservationsStore((s) => s.loading);
+    const getReservations = useReservationsStore((s) => s.getReservations);
+    const confirmReservation = useReservationsStore((s) => s.confirmReservation);
+
     useEffect(() => {
         getReservations();
-    }, [getReservations]);
+    }, []);
 
-    useEffect(() => {
-        if (error) showError(error);
-    }, [error]);
+    const deleteReservation = useReservationsStore((s) => s.deleteReservation);
+
+    const handleConfirm = async (id) => {
+        try {
+            await confirmReservation(id);
+            showSuccess("Reservación confirmada");
+        } catch (err) {
+            showError(err?.response?.data?.message || err?.message || "Error al confirmar reservación");
+        }
+    };
 
     const handleDelete = async () => {
-        if (!selectedReservation?._id) {
-            setIsDeleteOpen(false);
-            return;
-        }
-
         try {
-            await deleteReservation(selectedReservation._id);
-            showSuccess("Reservación eliminada correctamente");
-        } catch {
-            // El store ya expone el error
+            if (selectedReservation?._id) {
+                await deleteReservation(selectedReservation._id);
+                showSuccess("Reservación eliminada");
+            }
+        } catch (err) {
+            showError(err?.response?.data?.message || err?.message || "Error al eliminar reservación");
         } finally {
             setIsDeleteOpen(false);
             setSelectedReservation(null);
@@ -42,7 +51,7 @@ export const ReservacionesSection = () => {
                     <h2>CRUD de Reservaciones</h2>
                     <p>Administra agenda, disponibilidad y confirmaciones.</p>
                 </div>
-                <button className="btn danger" type="button" onClick={() => setIsCreateOpen(true)}>Nueva reservacion</button>
+                <button className="btn danger" type="button" onClick={() => { setSelectedReservation(null); setIsCreateOpen(true); }}>Nueva reservacion</button>
             </header>
 
             <section className="section">
@@ -65,28 +74,25 @@ export const ReservacionesSection = () => {
                                 </div>
 
                                 <div className="crud-cardOverlayActions">
-                                    <button
-                                        type="button"
-                                        className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
-                                        aria-label="Editar reservación"
-                                        onClick={() => {
-                                            setSelectedReservation(reservation);
-                                            setIsCreateOpen(true);
-                                        }}
-                                    >
-                                        <i className="fas fa-pen-to-square"></i>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="crud-cardAction crud-cardActionDelete crud-cardOverlayAction"
-                                        aria-label="Eliminar reservación"
-                                        onClick={() => {
-                                            setSelectedReservation(reservation);
-                                            setIsDeleteOpen(true);
-                                        }}
-                                    >
-                                        <i className="fas fa-trash"></i>
-                                    </button>
+                                    {/* Create/update endpoints not available in admin API - only confirm/list */}
+                                        {reservation.status !== "confirmada" && (
+                                            <button
+                                                type="button"
+                                                className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
+                                                aria-label="Confirmar reservación"
+                                                onClick={() => handleConfirm(reservation._id)}
+                                            >
+                                                <i className="fas fa-check"></i>
+                                            </button>
+                                        )}
+                                        <button
+                                            type="button"
+                                            className="crud-cardAction crud-cardActionDelete crud-cardOverlayAction"
+                                            aria-label="Eliminar reservación"
+                                            onClick={() => { setSelectedReservation(reservation); setIsDeleteOpen(true); }}
+                                        >
+                                            <i className="fas fa-trash"></i>
+                                        </button>
                                 </div>
                             </div>
 

@@ -14,6 +14,19 @@ export const MenuSection = () => {
     const [selectedMenu, setSelectedMenu] = useState(null);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
+    const handleDelete = async () => {
+        try {
+            if (selectedMenu?._id) {
+                await deleteMenu?.(selectedMenu._id);
+            }
+        } catch {
+            // store handles error
+        } finally {
+            setIsDeleteOpen(false);
+            setSelectedMenu(null);
+        }
+    };
+
     useEffect(() => {
         getMenus?.();
     }, [getMenus]);
@@ -22,16 +35,7 @@ export const MenuSection = () => {
         if (error) showError(error);
     }, [error]);
 
-    const handleDelete = async () => {
-        try {
-            if (selectedMenu?._id) {
-                await deleteMenu?.(selectedMenu._id);
-            }
-            setIsDeleteOpen(false);
-        } catch {
-            setIsDeleteOpen(false);
-        }
-    };
+    // delete action intentionally disabled (admin API lacks delete)
 
     return (
         <>

@@ -6,7 +6,7 @@ export const useSaveTable = () => {
 
   const saveTable = async (data, tableId = null) => {
     const payload = {
-      restaurant: data.restaurant,
+      branch: data.restaurant, // Send to backend as 'branch'
       number: data.number,
       capacity: data.capacity,
       location: data.location,
