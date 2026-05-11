@@ -1,4 +1,4 @@
-import { useTablesStore } from "../../tables/store/adminStore";
+import { useTablesStore } from "../store/adminStore";
 
 export const useSaveTable = () => {
   const createTable = useTablesStore((s) => s.createTable);
@@ -6,13 +6,16 @@ export const useSaveTable = () => {
 
   const saveTable = async (data, tableId = null) => {
     const payload = {
-      branch: data.restaurant, // Send to backend as 'branch'
+      branch: data.branch,
       number: data.number,
-      capacity: data.capacity,
+      capacity: Number(data.capacity),
       location: data.location,
-      status: data.status,
-      availabilitySchedules: data.availabilitySchedules,
-      description: data.description,
+      description: data.description || undefined,
+      availabilitySchedules: (data.schedules || []).map((s) => ({
+        day: s.day,
+        startTime: s.startTime,
+        endTime: s.endTime,
+      })),
     };
 
     if (tableId) {

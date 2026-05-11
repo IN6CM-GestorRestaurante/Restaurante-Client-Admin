@@ -10,10 +10,7 @@ export const UsuariosSection = () => {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
-    const users = useUsersStore((s) => s.users || []);
-    const loading = useUsersStore((s) => s.loading);
-    const getUsers = useUsersStore((s) => s.getUsers);
-    const deleteUser = useUsersStore((s) => s.deleteUser);
+
 
     const [selected, setSelected] = useState(null);
 

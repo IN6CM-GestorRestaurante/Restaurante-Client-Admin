@@ -4,6 +4,19 @@ import { toast } from "react-hot-toast";
 
 import { login as loginRequest } from "../../../shared/api/auth.js";
 
+// Roles válidos del ERP
+const VALID_ROLES = [
+  "SUPER_ADMIN",
+  "ADMIN_ROLE",
+  "COMPANY_ADMIN",
+  "BRANCH_MANAGER",
+  "WAITER",
+  "WAITRESS",
+  "CHEF",
+  "CASHIER",
+  "RECEPTIONIST",
+];
+
 export const useAuthStore = create(
   persist(
     (set, get) => ({
@@ -19,17 +32,16 @@ export const useAuthStore = create(
       checkAuth: () => {
         const token = get().token;
         const role = get().user?.role;
-        const isAdmin = role === "ADMIN_ROLE";
 
-        if (token && !isAdmin) {
+        if (!token || !VALID_ROLES.includes(role)) {
           set({
             user: null,
             token: null,
             refreshToken: null,
             expiresAt: null,
             isAuthenticated: false,
-            isLoadingAuth: false,
-            error: "No tienes permiso para acceder como administrador",
+            isLoading: false,
+            error: !token ? null : "No tienes permiso para acceder",
           });
         }
       },
@@ -48,11 +60,11 @@ export const useAuthStore = create(
         try {
           set({ loading: true, error: null });
 
-          const { data } = await loginRequest({ email: emailOrUsername, password });
+          const { data } = await loginRequest({ emailOrUsername, password });
 
           const role = data?.userDetails?.role;
-          if (role !== "ADMIN_ROLE") {
-            const message = "No tienes permisos para acceder como administrador";
+          if (!VALID_ROLES.includes(role)) {
+            const message = "Rol no reconocido. Contacta al administrador.";
             set({
               user: null,
               token: null,
@@ -62,7 +74,6 @@ export const useAuthStore = create(
               loading: false,
               error: message,
             });
-
             toast.error(message);
             return { success: false, error: message };
           }

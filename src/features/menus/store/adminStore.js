@@ -4,6 +4,8 @@ import {
 	createMenu as createMenuRequest,
 	updateMenu as updateMenuRequest,
 	changeMenuStatus as changeMenuStatusRequest,
+    getIngredients as getIngredientsRequest,
+    getRestaurants as getRestaurantsRequest
 } from "../../../shared/api/admin";
 
 const getErrorMessage = (error, fallback) =>
@@ -13,6 +15,8 @@ const normalizeList = (response) => response?.data?.data ?? response?.data ?? []
 
 export const useMenusStore = create((set, get) => ({
 	menus: [],
+    ingredients: [],
+    branches: [],
 	loading: false,
 	error: null,
 
@@ -28,6 +32,21 @@ export const useMenusStore = create((set, get) => ({
 			});
 		}
 	},
+
+    getDependencies: async () => {
+        try {
+            const [ingRes, branchRes] = await Promise.all([
+                getIngredientsRequest({ isActive: true }),
+                getRestaurantsRequest({ isActive: true })
+            ]);
+            set({
+                ingredients: normalizeList(ingRes),
+                branches: normalizeList(branchRes)
+            });
+        } catch (error) {
+            console.error("Error loading dependencies", error);
+        }
+    },
 
 	createMenu: async (data) => {
 		try {

@@ -4,8 +4,7 @@ import {
 	createReservation as createReservationRequest,
 	updateReservation as updateReservationRequest,
 	confirmReservation as confirmReservationRequest,
-	createReservation as createReservationRequest,
-	updateReservation as updateReservationRequest,
+
 	deleteReservation as deleteReservationRequest,
 } from "../../../shared/api/admin";
 

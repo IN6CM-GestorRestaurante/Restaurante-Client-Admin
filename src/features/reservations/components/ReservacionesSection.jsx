@@ -10,16 +10,12 @@ export const ReservacionesSection = () => {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedReservation, setSelectedReservation] = useState(null);
 
-    const reservations = useReservationsStore((s) => s.reservations || []);
-    const loading = useReservationsStore((s) => s.loading);
-    const getReservations = useReservationsStore((s) => s.getReservations);
     const confirmReservation = useReservationsStore((s) => s.confirmReservation);
 
     useEffect(() => {
         getReservations();
     }, []);
 
-    const deleteReservation = useReservationsStore((s) => s.deleteReservation);
 
     const handleConfirm = async (id) => {
         try {

@@ -1,71 +1,85 @@
-import { useEffect, useState } from "react";
-
+import { useState, useEffect } from "react";
 import { Modal } from "../../../shared/ui/Modal";
 import { useTablesStore } from "../store/adminStore";
 import { useSaveTable } from "../hooks/useSaveTable";
+import { useLocationsStore } from "../../locations/store/adminStore";
 import { showError, showSuccess } from "../../../shared/utils/toast";
+
+const LOCATIONS = ["Terraza", "Sala Principal", "VIP", "Bar", "Ventana", "Balcón", "Otro"];
+const DAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+
+const emptySchedule = () => ({ day: "Lunes", startTime: "08:00", endTime: "22:00" });
+
+const defaultForm = {
+    branch: "",
+    number: "",
+    capacity: "",
+    location: "Sala Principal",
+    description: "",
+    schedules: [emptySchedule()],
+};
 
 export const TableModal = ({ isOpen, onClose, initialData }) => {
     const { saveTable } = useSaveTable();
-    const loading = useTablesStore((state) => state.loading);
-    const [form, setForm] = useState({
-        restaurant: "",
-        number: "",
-        capacity: "",
-        location: "",
-        status: "Disponible",
-        day: "Lunes",
-        startTime: "08:00",
-        endTime: "22:00",
-        description: "",
-    });
+    const loading = useTablesStore((s) => s.loading);
+
+    // Cargar sucursales para el select
+    const branches = useLocationsStore((s) => s.locations);
+    const getBranches = useLocationsStore((s) => s.getLocations);
+
+    const [form, setForm] = useState({ ...defaultForm });
+
+    useEffect(() => {
+        if (isOpen) getBranches?.();
+    }, [isOpen]);
 
     useEffect(() => {
         if (!isOpen) return;
 
         if (initialData) {
-            const scheduleText = String(initialData.availabilitySchedules || "").trim();
-            const [parsedDay = "Lunes", parsedTimeRange = "08:00-22:00"] = scheduleText.split(" ");
-            const [parsedStart = "08:00", parsedEnd = "22:00"] = parsedTimeRange.split("-");
+            const schedules = Array.isArray(initialData.availabilitySchedules) && initialData.availabilitySchedules.length > 0
+                ? initialData.availabilitySchedules.map((s) => ({
+                    day: s.day || "Lunes",
+                    startTime: s.startTime || "08:00",
+                    endTime: s.endTime || "22:00",
+                }))
+                : [emptySchedule()];
+
             setForm({
-                restaurant: initialData.restaurant ?? "",
+                branch: initialData.branch?._id || initialData.branch || "",
                 number: initialData.number ?? "",
                 capacity: initialData.capacity ?? "",
-                location: initialData.location ?? "",
-                status: initialData.status ?? "Disponible",
-                day: parsedDay,
-                startTime: parsedStart,
-                endTime: parsedEnd,
+                location: initialData.location ?? "Sala Principal",
                 description: initialData.description ?? "",
+                schedules,
             });
         } else {
-            setForm({
-                restaurant: "",
-                number: "",
-                capacity: "",
-                location: "",
-                status: "Disponible",
-                day: "Lunes",
-                startTime: "08:00",
-                endTime: "22:00",
-                description: "",
-            });
+            setForm({ ...defaultForm, schedules: [emptySchedule()] });
         }
     }, [initialData, isOpen]);
 
+    const updateSchedule = (index, field, value) => {
+        setForm((prev) => {
+            const updated = [...prev.schedules];
+            updated[index] = { ...updated[index], [field]: value };
+            return { ...prev, schedules: updated };
+        });
+    };
+
+    const addSchedule = () => {
+        setForm((prev) => ({ ...prev, schedules: [...prev.schedules, emptySchedule()] }));
+    };
+
+    const removeSchedule = (index) => {
+        setForm((prev) => ({
+            ...prev,
+            schedules: prev.schedules.filter((_, i) => i !== index),
+        }));
+    };
+
     const handleSubmit = async () => {
         try {
-            const payload = {
-                restaurant: form.restaurant,
-                number: form.number,
-                capacity: form.capacity,
-                location: form.location,
-                status: form.status,
-                availabilitySchedules: `${form.day} ${form.startTime}-${form.endTime}`,
-                description: form.description,
-            };
-
-            await saveTable(payload, initialData?._id);
+            await saveTable(form, initialData?._id);
             showSuccess(initialData ? "Mesa actualizada correctamente" : "Mesa creada correctamente");
             onClose?.();
         } catch (error) {
@@ -74,83 +88,159 @@ export const TableModal = ({ isOpen, onClose, initialData }) => {
     };
 
     return (
-        <Modal 
-            isOpen={isOpen} 
-            onClose={onClose} 
-            title={initialData ? "Editar mesa" : "Nueva mesa"} 
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title={initialData ? "Editar mesa" : "Nueva mesa"}
             subtitle="Completa la información de la mesa"
         >
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 sm:gap-6">
-                <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Restaurante</label>
-                    <input placeholder="MongoID" className="app-modal-input" value={form.restaurant} onChange={(e) => setForm({ ...form, restaurant: e.target.value })} />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Número</label>
-                    <input placeholder="Mesa 12" className="app-modal-input" value={form.number} onChange={(e) => setForm({ ...form, number: e.target.value })} />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Capacidad</label>
-                    <input type="number" min="1" placeholder="4" className="app-modal-input" value={form.capacity} onChange={(e) => setForm({ ...form, capacity: e.target.value })} />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Ubicación</label>
-                    <select className="app-modal-select" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })}>
-                        <option>Terraza</option>
-                        <option>Sala Principal</option>
-                        <option>VIP</option>
-                        <option>Bar</option>
-                        <option>Ventana</option>
-                        <option>Balcón</option>
-                        <option>Otro</option>
-                    </select>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Estado</label>
-                    <select className="app-modal-select" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
-                        <option>Disponible</option>
-                        <option>Ocupada</option>
-                        <option>Reservada</option>
-                        <option>Mantenimiento</option>
-                    </select>
-                </div>
-
-                <div className="flex flex-col gap-2 sm:col-span-1">
-                    <label className="app-modal-fieldLabel">Día horario</label>
-                    <input placeholder="Lunes" className="app-modal-input" value={form.day} onChange={(e) => setForm({ ...form, day: e.target.value })} />
-                </div>
-
-                <div className="flex flex-col gap-2 col-span-full">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                        <div className="flex flex-col">
-                            <label className="app-modal-fieldLabel">Inicio horario</label>
-                            <input placeholder="08:00" className="app-modal-input" value={form.startTime} onChange={(e) => setForm({ ...form, startTime: e.target.value })} />
-                        </div>
+            <div className="space-y-5">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6">
+                    {/* Sucursal */}
+                    <div className="flex flex-col gap-2">
+                        <label className="app-modal-fieldLabel">Sucursal</label>
+                        <select
+                            className="app-modal-select"
+                            value={form.branch}
+                            onChange={(e) => setForm({ ...form, branch: e.target.value })}
+                        >
+                            <option value="">-- Seleccionar --</option>
+                            {(branches || []).map((b) => (
+                                <option key={b._id} value={b._id}>{b.name}</option>
+                            ))}
+                        </select>
                     </div>
 
-                        <div className="flex flex-col">
-                            <label className="app-modal-fieldLabel">Fin horario</label>
-                            <input placeholder="22:00" className="app-modal-input" value={form.endTime} onChange={(e) => setForm({ ...form, endTime: e.target.value })} />
-                        </div>
+                    {/* Número */}
+                    <div className="flex flex-col gap-2">
+                        <label className="app-modal-fieldLabel">Número / Código</label>
+                        <input
+                            className="app-modal-input"
+                            placeholder="T01"
+                            value={form.number}
+                            onChange={(e) => setForm({ ...form, number: e.target.value })}
+                        />
+                    </div>
+
+                    {/* Capacidad */}
+                    <div className="flex flex-col gap-2">
+                        <label className="app-modal-fieldLabel">Capacidad</label>
+                        <input
+                            type="number"
+                            min="1"
+                            className="app-modal-input"
+                            placeholder="4"
+                            value={form.capacity}
+                            onChange={(e) => setForm({ ...form, capacity: e.target.value })}
+                        />
+                    </div>
+
+                    {/* Ubicación */}
+                    <div className="flex flex-col gap-2">
+                        <label className="app-modal-fieldLabel">Ubicación</label>
+                        <select
+                            className="app-modal-select"
+                            value={form.location}
+                            onChange={(e) => setForm({ ...form, location: e.target.value })}
+                        >
+                            {LOCATIONS.map((loc) => (
+                                <option key={loc} value={loc}>{loc}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Descripción */}
+                    <div className="flex flex-col gap-2 col-span-full">
+                        <label className="app-modal-fieldLabel">Descripción (opcional)</label>
+                        <textarea
+                            className="app-modal-textarea w-full"
+                            rows="2"
+                            placeholder="Mesa esquinera junto a la ventana..."
+                            maxLength={200}
+                            value={form.description}
+                            onChange={(e) => setForm({ ...form, description: e.target.value })}
+                        />
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-2 col-span-full items-center">
-                        <br />
-                        <label className="app-modal-fieldLabel">Descripción</label>
-                            <div className="flex justify-center w-full">
-                                <textarea rows="4" className="app-modal-textarea w-full md:w-3/4 lg:w-2/3" placeholder="Detalles de la mesa..." value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+                {/* Horarios de disponibilidad */}
+                <div className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                        <label className="app-modal-fieldLabel">Horarios de disponibilidad</label>
+                        <button
+                            type="button"
+                            onClick={addSchedule}
+                            className="text-xs font-semibold px-3 py-1 rounded-lg bg-orange-50 text-orange-700 border border-orange-200 hover:bg-orange-100 transition"
+                        >
+                            <i className="fas fa-plus mr-1"></i> Agregar horario
+                        </button>
+                    </div>
+
+                    {form.schedules.map((schedule, idx) => (
+                        <div key={idx} className="grid grid-cols-1 sm:grid-cols-4 gap-3 items-end p-3 rounded-lg bg-gray-50 border border-gray-100">
+                            <div className="flex flex-col gap-1">
+                                <label className="text-xs text-stone-500">Día</label>
+                                <select
+                                    className="app-modal-select"
+                                    value={schedule.day}
+                                    onChange={(e) => updateSchedule(idx, "day", e.target.value)}
+                                >
+                                    {DAYS.map((d) => (
+                                        <option key={d} value={d}>{d}</option>
+                                    ))}
+                                </select>
                             </div>
+                            <div className="flex flex-col gap-1">
+                                <label className="text-xs text-stone-500">Apertura</label>
+                                <input
+                                    type="time"
+                                    className="app-modal-input"
+                                    value={schedule.startTime}
+                                    onChange={(e) => updateSchedule(idx, "startTime", e.target.value)}
+                                />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <label className="text-xs text-stone-500">Cierre</label>
+                                <input
+                                    type="time"
+                                    className="app-modal-input"
+                                    value={schedule.endTime}
+                                    onChange={(e) => updateSchedule(idx, "endTime", e.target.value)}
+                                />
+                            </div>
+                            <div className="flex items-end">
+                                {form.schedules.length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => removeSchedule(idx)}
+                                        className="text-xs text-red-500 hover:text-red-700 font-semibold py-2"
+                                    >
+                                        <i className="fas fa-xmark mr-1"></i> Quitar
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    ))}
                 </div>
-            </div>
 
-            <div className="app-modal-actions">
-                <button type="button" onClick={onClose} className="app-modal-btn app-modal-btnSecondary w-full sm:w-auto">Cancelar</button>
-                <button type="button" onClick={handleSubmit} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto" disabled={loading}>{loading ? "Guardando..." : "Guardar"}</button>
+                {/* Acciones */}
+                <div className="app-modal-actions">
+                    <button
+                        type="button"
+                        onClick={() => onClose?.()}
+                        className="app-modal-btn app-modal-btnSecondary w-full sm:w-auto"
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleSubmit}
+                        className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto"
+                        disabled={loading}
+                    >
+                        {loading ? "Guardando..." : "Guardar"}
+                    </button>
+                </div>
             </div>
         </Modal>
     );
