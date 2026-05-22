@@ -6,9 +6,7 @@ export const login = async (data) => {
 
 // El registro unificado va a Node.js (Saga), NO a C# directamente
 export const register = async (data) => {
-  return await axiosAdmin.post("/companies/register", data, {
-    headers: { "Content-Type": "multipart/form-data" }
-  });
+  return await axiosAdmin.post("/companies/register", data);
 };
 
 export const forgotPassword = async (email) => {

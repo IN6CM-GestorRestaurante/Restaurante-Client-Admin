@@ -2,42 +2,27 @@ import axios from 'axios';
  
 import { useAuthStore } from "../../features/auth/store/authStore.js";
  
-//Instacio de axios
+// Instancia de axios para Auth
 const axiosAuth = axios.create({
     baseURL: import.meta.env.VITE_AUTH_URL,
     timeout: 8000,
-    headers:{
+    withCredentials: true, // Obliga al navegador a adjuntar la cookie HttpOnly de forma automática
+    headers: {
         "Content-Type": "application/json",
+        "X-Requested-With": "XMLHttpRequest" // Cabecera inmutable requerida por el antiCsrfGuard del backend
     }
 });
 
+// Instancia de axios para Admin
 const axiosAdmin = axios.create({
   baseURL: import.meta.env.VITE_ADMIN_URL,
   timeout: 8000,
+  withCredentials: true, // Obliga al navegador a adjuntar la cookie HttpOnly de forma automática
   headers: {
     "Content-Type": "application/json",
+    "X-Requested-With": "XMLHttpRequest" // Cabecera inmutable requerida por el antiCsrfGuard del backend
   }
 });
- 
-// Configuración de interceptores
-axiosAuth.interceptors.request.use( (config)=>{
-    config._axiosClient = "auth";
-    const token = useAuthStore.getState().token;
-    if(token){
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-} );
-
-axiosAdmin.interceptors.request.use((config) => {
-  config._axiosClient = "admin";
-  const token = useAuthStore.getState().token;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
- 
  
 // configuración de documentación axios
 let _isRefreshing = false;
@@ -79,8 +64,8 @@ const handleRefreshToken = async function (_error) {
       return new Promise(function (resolve, reject) {
         failedQueue.push({ resolve, reject });
       })
-        .then((token) => {
-          _original.headers["Authorization"] = "Bearer " + token;
+        .then(() => {
+          // El token viaja estrictamente en la cookie HttpOnly, por lo que no es necesario inyectar cabecera Authorization
           return retryClient(_original);
         })
         .catch((err) => Promise.reject(err));
@@ -108,7 +93,7 @@ const handleRefreshToken = async function (_error) {
         isAuthenticated: true,
       });
       _processQueue(null, accessToken);
-      _original.headers["Authorization"] = "Bearer " + accessToken;
+      // El token viaja estrictamente en la cookie HttpOnly, por lo que no es necesario inyectar cabecera Authorization
       return retryClient(_original);
     } catch (err) {
       _processQueue(err, null);
