@@ -16,6 +16,16 @@ export const NuevaOrdenModal = ({ isOpen, branchId, onClose }) => {
     const [selectedTables, setSelectedTables] = useState([]);
     const [items, setItems] = useState([{ menuItem: "", quantity: 1 }]);
 
+    const [prevIsOpen, setPrevIsOpen] = useState(false);
+
+    if (isOpen !== prevIsOpen) {
+        setPrevIsOpen(isOpen);
+        if (isOpen) {
+            setSelectedTables([]);
+            setItems([{ menuItem: "", quantity: 1 }]);
+        }
+    }
+
     useEffect(() => {
         if (!isOpen || !branchId) return;
         const load = async () => {
@@ -24,13 +34,14 @@ export const NuevaOrdenModal = ({ isOpen, branchId, onClose }) => {
                     getTables({ branch: branchId }),
                     getMenus({ branch: branchId }),
                 ]);
-                setTables((tRes?.data?.data ?? tRes?.data ?? []).filter((t) => t.status === "Disponible"));
-                setMenus(mRes?.data?.data ?? mRes?.data ?? []);
+                const nextTables = (tRes?.data?.data ?? tRes?.data ?? []).filter((t) => t.status === "Disponible");
+                const nextMenus = mRes?.data?.data ?? mRes?.data ?? [];
+                
+                setTables(nextTables);
+                setMenus(nextMenus);
             } catch { /* ignore */ }
         };
         load();
-        setSelectedTables([]);
-        setItems([{ menuItem: "", quantity: 1 }]);
     }, [isOpen, branchId]);
 
     const toggleTable = (id) => {

@@ -1,10 +1,10 @@
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { register as registerAPI } from "../../../shared/api/auth";
-import loginImg from "../../../assets/img/login.jpg";
+
 
 export const RegisterForm = ({ onNavigate }) => {
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
+    const { register, handleSubmit, formState: { isSubmitting } } = useForm();
 
     const onSubmit = async (data) => {
         try {

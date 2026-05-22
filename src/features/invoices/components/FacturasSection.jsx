@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useInvoicesStore } from "../store/adminStore";
 import { ConfirmarFacturaModal } from "./ConfirmarFacturaModal";
 import { AnularFacturaModal } from "./AnularFacturaModal";
-import { showError, showSuccess } from "../../../shared/utils/toast";
+import { showError } from "../../../shared/utils/toast";
 
 const STATUS_STYLE = {
     DRAFT:     { label: "Borrador",   bg: "#fef9c3", color: "#854d0e", icon: "fa-file-pen" },
@@ -16,7 +16,7 @@ export const FacturasSection = () => {
     const [commitTarget, setCommitTarget] = useState(null);
     const [voidTarget, setVoidTarget] = useState(null);
 
-    useEffect(() => { getInvoices(); }, []);
+    useEffect(() => { getInvoices(); }, [getInvoices]);
     useEffect(() => { if (error) showError(error); }, [error]);
 
     const drafts = invoices.filter((i) => i.status === "DRAFT").length;

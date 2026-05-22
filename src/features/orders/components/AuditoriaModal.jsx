@@ -9,7 +9,7 @@ export const AuditoriaModal = ({ orderId, onClose }) => {
 
     useEffect(() => {
         if (orderId) getAudit(orderId);
-    }, [orderId]);
+    }, [orderId, getAudit]);
 
     const isOpen = !!orderId;
 

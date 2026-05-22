@@ -35,7 +35,7 @@ export const ResumenSection = () => {
         getLocations?.();
         getUsers?.();
         getTables?.();
-    }, []);
+    }, [getLocations, getUsers, getTables]);
 
     const totalRevenue = orders.reduce((acc, o) => acc + (o.total || 0), 0);
     const availableTables = tables.filter((t) => t.status === "Disponible").length;

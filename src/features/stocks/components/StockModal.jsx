@@ -16,10 +16,12 @@ export const StockModal = ({ isOpen, onClose }) => {
     const [branches, setBranches] = useState([]);
     const [ingredients, setIngredients] = useState([]);
     const [fetchingDeps, setFetchingDeps] = useState(false);
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         if (!isOpen) return;
 
+        setErrors({});
         setForm({
             branchId: "",
             ingredientId: "",
@@ -37,7 +39,7 @@ export const StockModal = ({ isOpen, onClose }) => {
                 
                 setBranches(branchesRes?.data?.data ?? branchesRes?.data ?? []);
                 setIngredients(ingredientsRes?.data?.data ?? ingredientsRes?.data ?? []);
-            } catch (error) {
+            } catch {
                 showError("Error al cargar sucursales e ingredientes");
             } finally {
                 setFetchingDeps(false);
@@ -47,12 +49,20 @@ export const StockModal = ({ isOpen, onClose }) => {
         fetchDependencies();
     }, [isOpen]);
 
-    const handleSubmit = async () => {
-        try {
-            if (!form.branchId || !form.ingredientId || form.quantity === "" || form.minStock === "") {
-                return showError("Todos los campos son requeridos");
-            }
+    const validate = () => {
+        const newErrors = {};
+        if (!form.branchId) newErrors.branchId = "Obligatorio";
+        if (!form.ingredientId) newErrors.ingredientId = "Obligatorio";
+        if (form.quantity === "") newErrors.quantity = "Obligatorio";
+        if (form.minStock === "") newErrors.minStock = "Obligatorio";
 
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleSubmit = async () => {
+        if (!validate()) return;
+        try {
             await upsertStock({
                 branchId: form.branchId,
                 ingredientId: form.ingredientId,
@@ -62,7 +72,15 @@ export const StockModal = ({ isOpen, onClose }) => {
             showSuccess("Stock actualizado correctamente");
             onClose?.();
         } catch (error) {
-            // Error manejado por el store, pero se captura aquí por si acaso
+            const serverErrors = error?.response?.data?.errors;
+            if (serverErrors && Array.isArray(serverErrors)) {
+                const newErrors = {};
+                serverErrors.forEach(e => {
+                    const field = e.path || e.param;
+                    if (field) newErrors[field] = e.msg;
+                });
+                setErrors(newErrors);
+            }
         }
     };
 
@@ -82,7 +100,7 @@ export const StockModal = ({ isOpen, onClose }) => {
                         <div className="flex flex-col gap-2">
                             <label className="app-modal-fieldLabel">Sucursal</label>
                             <select
-                                className="app-modal-select"
+                                className={`app-modal-select ${errors.branchId ? 'border-red-500' : ''}`}
                                 value={form.branchId}
                                 onChange={(e) => setForm({ ...form, branchId: e.target.value })}
                             >
@@ -91,12 +109,13 @@ export const StockModal = ({ isOpen, onClose }) => {
                                     <option key={b._id} value={b._id}>{b.name}</option>
                                 ))}
                             </select>
+                            {errors.branchId && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.branchId}</span>}
                         </div>
 
                         <div className="flex flex-col gap-2">
                             <label className="app-modal-fieldLabel">Ingrediente</label>
                             <select
-                                className="app-modal-select"
+                                className={`app-modal-select ${errors.ingredientId ? 'border-red-500' : ''}`}
                                 value={form.ingredientId}
                                 onChange={(e) => setForm({ ...form, ingredientId: e.target.value })}
                             >
@@ -105,6 +124,7 @@ export const StockModal = ({ isOpen, onClose }) => {
                                     <option key={i._id} value={i._id}>{i.name} ({i.unit})</option>
                                 ))}
                             </select>
+                            {errors.ingredientId && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.ingredientId}</span>}
                         </div>
 
                         <div className="flex flex-col gap-2">
@@ -113,11 +133,12 @@ export const StockModal = ({ isOpen, onClose }) => {
                                 type="number"
                                 min="0"
                                 step="0.01"
-                                className="app-modal-input"
+                                className={`app-modal-input ${errors.quantity ? 'border-red-500' : ''}`}
                                 placeholder="0.00"
                                 value={form.quantity}
                                 onChange={(e) => setForm({ ...form, quantity: e.target.value })}
                             />
+                            {errors.quantity && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.quantity}</span>}
                         </div>
 
                         <div className="flex flex-col gap-2">
@@ -126,11 +147,12 @@ export const StockModal = ({ isOpen, onClose }) => {
                                 type="number"
                                 min="0"
                                 step="0.01"
-                                className="app-modal-input"
+                                className={`app-modal-input ${errors.minStock ? 'border-red-500' : ''}`}
                                 placeholder="0.00"
                                 value={form.minStock}
                                 onChange={(e) => setForm({ ...form, minStock: e.target.value })}
                             />
+                            {errors.minStock && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.minStock}</span>}
                         </div>
                     </div>
                 )}

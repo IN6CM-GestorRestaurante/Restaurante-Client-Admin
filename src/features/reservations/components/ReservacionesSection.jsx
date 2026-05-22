@@ -5,7 +5,7 @@ import { useReservationsStore } from "../store/adminStore";
 import { showError, showSuccess } from "../../../shared/utils/toast";
 
 export const ReservacionesSection = () => {
-    const { reservations, loading, error, getReservations, deleteReservation } = useReservationsStore();
+    const { reservations, loading, getReservations, deleteReservation } = useReservationsStore();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedReservation, setSelectedReservation] = useState(null);
@@ -14,7 +14,7 @@ export const ReservacionesSection = () => {
 
     useEffect(() => {
         getReservations();
-    }, []);
+    }, [getReservations]);
 
 
     const handleConfirm = async (id) => {

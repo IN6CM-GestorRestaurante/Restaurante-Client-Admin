@@ -44,7 +44,7 @@ export const OrdenesSection = () => {
     const [cancelOrderId, setCancelOrderId] = useState(null);
 
     // Cargar sucursales al montar
-    useEffect(() => { getBranches?.(); }, []);
+    useEffect(() => { getBranches?.(); }, [getBranches]);
 
     // Si el usuario tiene branchId, usarla; si es admin, esperar selección
     useEffect(() => {
@@ -56,7 +56,7 @@ export const OrdenesSection = () => {
     // Cargar órdenes cuando cambie la sucursal
     useEffect(() => {
         if (selectedBranch) getOrders({ branchId: selectedBranch });
-    }, [selectedBranch]);
+    }, [selectedBranch, getOrders]);
 
     useEffect(() => { if (error) showError(error); }, [error]);
 

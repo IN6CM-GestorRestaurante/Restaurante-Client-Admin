@@ -5,10 +5,10 @@ import { useUsersStore } from "../store/adminStore";
 import { showError, showSuccess } from "../../../shared/utils/toast";
 
 export const UsuariosSection = () => {
-    const { users, loading, error, getUsers, deleteUser } = useUsersStore();
+    const { users, loading, getUsers, deleteUser } = useUsersStore();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-    const [selectedUser, setSelectedUser] = useState(null);
+
 
 
 
@@ -30,7 +30,7 @@ export const UsuariosSection = () => {
 
     useEffect(() => {
         getUsers();
-    }, []);
+    }, [getUsers]);
 
     return (
         <>

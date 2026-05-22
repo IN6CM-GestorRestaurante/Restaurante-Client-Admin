@@ -7,11 +7,11 @@ export const useSaveUser = () => {
   const normalizeRole = (role) => {
     const value = String(role || "").trim().toUpperCase();
 
-    if (value === "ADMIN_ROLE") return "ADMIN";
+    if (value === "ADMIN_ROLE" || value === "ADMIN") return "COMPANY_ADMIN";
     if (value === "USER_ROLE" || value === "CLIENT_ROLE") return "CLIENT";
     if (value === "WAITER_ROLE") return "WAITER";
 
-    return value || "CLIENT";
+    return value || "WAITER";
   };
 
   const normalizeStatus = (status) => {

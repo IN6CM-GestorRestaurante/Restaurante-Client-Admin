@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Modal } from "../../../shared/ui/Modal";
 import { useSaveReservation } from "../hooks/useSaveReservation";
 import { useReservationsStore } from "../store/adminStore";
@@ -20,10 +20,15 @@ export const ReservationModal = ({ isOpen, initialData = null, onClose }) => {
         notes: "",
     });
 
-    useEffect(() => {
-        if (!isOpen) return;
-        if (initialData) {
-            setForm({
+    const [prevInitialData, setPrevInitialData] = useState(null);
+    const [prevIsOpen, setPrevIsOpen] = useState(false);
+
+    if (isOpen !== prevIsOpen || initialData !== prevInitialData) {
+        setPrevIsOpen(isOpen);
+        setPrevInitialData(initialData);
+
+        if (isOpen) {
+            const nextForm = initialData ? {
                 user: initialData.user ?? "",
                 restaurant: initialData.restaurant ?? "",
                 date: initialData.date ?? "",
@@ -33,9 +38,7 @@ export const ReservationModal = ({ isOpen, initialData = null, onClose }) => {
                 items: initialData.items ?? [],
                 status: initialData.status ?? "Pendiente",
                 notes: initialData.notes ?? "",
-            });
-        } else {
-            setForm({
+            } : {
                 user: "",
                 restaurant: "",
                 date: "",
@@ -45,9 +48,10 @@ export const ReservationModal = ({ isOpen, initialData = null, onClose }) => {
                 items: [],
                 status: "Pendiente",
                 notes: "",
-            });
+            };
+            setForm(nextForm);
         }
-    }, [isOpen, initialData]);
+    }
 
     const handleSubmit = async () => {
         try {

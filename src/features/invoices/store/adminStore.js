@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import {
     getInvoices as getInvoicesRequest,
-    getInvoiceById as getInvoiceByIdRequest,
     createInvoiceFromOrder as createInvoiceFromOrderRequest,
     commitInvoice as commitInvoiceRequest,
     voidInvoice as voidInvoiceRequest,

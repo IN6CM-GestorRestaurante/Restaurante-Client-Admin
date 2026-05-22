@@ -3,7 +3,6 @@ import {
   getUsers as getUsersRequest,
   createUser as createUserRequest,
   updateUser as updateUserRequest,
-  deleteUser as deleteUserRequest,
 } from "../../../shared/api/admin";
 
 const getErrorMessage = (error, fallback) =>

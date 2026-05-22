@@ -24,45 +24,27 @@ export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
     });
     const [preview, setPreview] = useState(null);
     const [categories, setCategories] = useState([]);
+    const [errors, setErrors] = useState({});
     
 
-    useEffect(() => {
-        if (!isOpen) {
-            return;
-        }
+    const [prevInitialData, setPrevInitialData] = useState(null);
+    const [prevIsOpen, setPrevIsOpen] = useState(false);
 
-        if (initialData) {
-            setForm({
-                name: initialData.name ?? "",
-                descripcion: initialData.descripcion ?? "",
-                address: initialData.address ?? "",
-                openingTime: initialData.openingTime ?? "08:00",
-                closingTime: initialData.closingTime ?? "22:00",
-                category: initialData.category ?? "",
-                averagePrice: initialData.averagePrice ?? "",
-                email: initialData.email ?? "",
-                phoneNumber: initialData.phoneNumber ?? "",
-                state: initialData.state ?? "Operativa",
-                photos: [],
-            });
-            setPreview(initialData.image ?? null);
-        } else {
-            setForm({
-                name: "",
-                descripcion: "",
-                address: "",
-                openingTime: "08:00",
-                closingTime: "22:00",
-                category: "",
-                averagePrice: "",
-                email: "",
-                phoneNumber: "",
-                state: "Operativa",
-                photos: [],
-            });
-            setPreview(null);
+    if (isOpen !== prevIsOpen || initialData !== prevInitialData) {
+        setPrevIsOpen(isOpen);
+        setPrevInitialData(initialData);
+
+        if (isOpen) {
+            setErrors({});
+            const nextForm = initialData ? {
+// ...
+            } : {
+// ...
+            };
+            setForm(nextForm);
+            setPreview(initialData?.image ?? null);
         }
-    }, [initialData, isOpen]);
+    }
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -71,7 +53,7 @@ export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
                 const list = resp?.data?.data ?? resp?.data ?? [];
                 const uniq = Array.from(new Set(list.map((m) => m.category).filter(Boolean)));
                 setCategories(uniq);
-            } catch (e) {
+            } catch {
                 // ignore errors - keep manual input
             }
         };
@@ -91,12 +73,35 @@ export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
         }
     };
 
+    const validate = () => {
+        const newErrors = {};
+        if (!form.name) newErrors.name = "Obligatorio";
+        if (!form.phoneNumber) newErrors.phoneNumber = "Obligatorio";
+        else if (form.phoneNumber.length < 8) newErrors.phoneNumber = "Min 8 dígitos";
+        
+        if (form.email && !/\S+@\S+\.\S+/.test(form.email)) newErrors.email = "Email inválido";
+        if (!form.address) newErrors.address = "Obligatorio";
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async () => {
+        if (!validate()) return;
         try {
             await saveLocation(form, initialData?._id);
             showSuccess(initialData ? "Sucursal actualizada correctamente" : "Sucursal creada correctamente");
             onClose?.();
         } catch (error) {
+            const serverErrors = error?.response?.data?.errors;
+            if (serverErrors && Array.isArray(serverErrors)) {
+                const newErrors = {};
+                serverErrors.forEach(e => {
+                    const field = e.path || e.param;
+                    if (field) newErrors[field] = e.msg;
+                });
+                setErrors(newErrors);
+            }
             showError(error?.response?.data?.message || error?.message || "Error al guardar sucursal");
         }
     };
@@ -123,41 +128,45 @@ export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
                     <div className="flex flex-col gap-2">
                         <label className="app-modal-fieldLabel">Nombre</label>
                         <input
-                            className="app-modal-input"
+                            className={`app-modal-input ${errors.name ? 'border-red-500' : ''}`}
                             placeholder="Sucursal Centro"
                             value={form.name}
                             onChange={(e) => setForm({ ...form, name: e.target.value })}
                         />
+                        {errors.name && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.name}</span>}
                     </div>
 
                     <div className="flex flex-col gap-2">
                         <label className="app-modal-fieldLabel">Teléfono</label>
                         <input
-                            className="app-modal-input"
+                            className={`app-modal-input ${errors.phoneNumber ? 'border-red-500' : ''}`}
                             placeholder="+50212345678"
                             value={form.phoneNumber}
                             onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })}
                         />
+                        {errors.phoneNumber && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.phoneNumber}</span>}
                     </div>
 
                     <div className="flex flex-col gap-2">
                         <label className="app-modal-fieldLabel">Correo</label>
                         <input
                             type="email"
-                            className="app-modal-input"
+                            className={`app-modal-input ${errors.email ? 'border-red-500' : ''}`}
                             value={form.email}
                             onChange={(e) => setForm({ ...form, email: e.target.value })}
                         />
+                        {errors.email && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.email}</span>}
                     </div>
 
                     <div className="flex flex-col gap-2">
                         <label className="app-modal-fieldLabel">Dirección</label>
                         <input
-                            className="app-modal-input"
+                            className={`app-modal-input ${errors.address ? 'border-red-500' : ''}`}
                             placeholder="Avenida principal 123"
                             value={form.address}
                             onChange={(e) => setForm({ ...form, address: e.target.value })}
                         />
+                        {errors.address && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.address}</span>}
                     </div>
 
                     <div className="flex flex-col gap-2">

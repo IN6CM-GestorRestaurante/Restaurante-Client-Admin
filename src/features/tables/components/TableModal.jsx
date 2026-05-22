@@ -31,13 +31,17 @@ export const TableModal = ({ isOpen, onClose, initialData }) => {
 
     useEffect(() => {
         if (isOpen) getBranches?.();
-    }, [isOpen]);
+    }, [isOpen, getBranches]);
 
-    useEffect(() => {
-        if (!isOpen) return;
+    const [prevInitialData, setPrevInitialData] = useState(null);
+    const [prevIsOpen, setPrevIsOpen] = useState(false);
 
-        if (initialData) {
-            const schedules = Array.isArray(initialData.availabilitySchedules) && initialData.availabilitySchedules.length > 0
+    if (isOpen !== prevIsOpen || initialData !== prevInitialData) {
+        setPrevIsOpen(isOpen);
+        setPrevInitialData(initialData);
+
+        if (isOpen) {
+            const schedules = initialData && Array.isArray(initialData.availabilitySchedules) && initialData.availabilitySchedules.length > 0
                 ? initialData.availabilitySchedules.map((s) => ({
                     day: s.day || "Lunes",
                     startTime: s.startTime || "08:00",
@@ -45,18 +49,17 @@ export const TableModal = ({ isOpen, onClose, initialData }) => {
                 }))
                 : [emptySchedule()];
 
-            setForm({
+            const nextForm = initialData ? {
                 branch: initialData.branch?._id || initialData.branch || "",
                 number: initialData.number ?? "",
                 capacity: initialData.capacity ?? "",
                 location: initialData.location ?? "Sala Principal",
                 description: initialData.description ?? "",
                 schedules,
-            });
-        } else {
-            setForm({ ...defaultForm, schedules: [emptySchedule()] });
+            } : { ...defaultForm, schedules: [emptySchedule()] };
+            setForm(nextForm);
         }
-    }, [initialData, isOpen]);
+    }
 
     const updateSchedule = (index, field, value) => {
         setForm((prev) => {

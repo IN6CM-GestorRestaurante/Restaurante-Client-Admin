@@ -35,6 +35,7 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
 
     const [preview, setPreview] = useState(null);
     const [showPromo, setShowPromo] = useState(false);
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         if (isOpen) {
@@ -42,55 +43,25 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
         }
     }, [isOpen, getDependencies]);
 
-    useEffect(() => {
-        if (!isOpen) return;
+    const [prevInitialData, setPrevInitialData] = useState(null);
+    const [prevIsOpen, setPrevIsOpen] = useState(false);
 
-        if (initialData) {
-            setForm({
-                branch: initialData.branch?._id || initialData.branch || "",
-                itemType: initialData.itemType || "SINGLE",
-                name: initialData.name || "",
-                description: initialData.description || "",
-                price: initialData.price || "",
-                category: initialData.category || "Entrada",
-                isActive: Boolean(initialData.isActive ?? true),
-                image: [],
-                recipe: initialData.recipe || [],
-                comboItems: initialData.comboItems || [],
-                promotion: {
-                    isActive: initialData.promotion?.isActive || false,
-                    discountType: initialData.promotion?.discountType || "PERCENTAGE",
-                    discountValue: initialData.promotion?.discountValue || "",
-                    startsAt: initialData.promotion?.startsAt ? new Date(initialData.promotion.startsAt).toISOString().split('T')[0] : "",
-                    endsAt: initialData.promotion?.endsAt ? new Date(initialData.promotion.endsAt).toISOString().split('T')[0] : ""
-                }
-            });
-            setShowPromo(initialData.promotion?.isActive || false);
-            setPreview(initialData.image || null);
-        } else {
-            setForm({
-                branch: branches?.[0]?._id || "",
-                itemType: "SINGLE",
-                name: "",
-                description: "",
-                price: "",
-                category: "Entrada",
-                isActive: true,
-                image: [],
-                recipe: [],
-                comboItems: [],
-                promotion: {
-                    isActive: false,
-                    discountType: "PERCENTAGE",
-                    discountValue: "",
-                    startsAt: "",
-                    endsAt: ""
-                }
-            });
-            setShowPromo(false);
-            setPreview(null);
+    if (isOpen !== prevIsOpen || initialData !== prevInitialData) {
+        setPrevIsOpen(isOpen);
+        setPrevInitialData(initialData);
+
+        if (isOpen) {
+            setErrors({});
+            const nextForm = initialData ? {
+// ...
+            } : {
+// ...
+            };
+            setForm(nextForm);
+            setShowPromo(initialData?.promotion?.isActive || false);
+            setPreview(initialData?.image || null);
         }
-    }, [initialData, isOpen, branches]);
+    }
 
     const handleFileChange = (event) => {
         const files = event.target.files;
@@ -119,13 +90,20 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
         setForm(f => ({ ...f, comboItems: newCombo }));
     };
 
-    const handleSubmit = async () => {
-        try {
-            // Validations
-            if (!form.branch) return showError("Debes seleccionar una sucursal");
-            if (!form.name) return showError("El nombre es requerido");
-            if (!form.price) return showError("El precio es requerido");
+    const validate = () => {
+        const newErrors = {};
+        if (!form.branch) newErrors.branch = "Obligatorio";
+        if (!form.name) newErrors.name = "Obligatorio";
+        else if (form.name.length > 25) newErrors.name = "Máx 25 carac.";
+        if (!form.price) newErrors.price = "Obligatorio";
 
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleSubmit = async () => {
+        if (!validate()) return;
+        try {
             const formData = new FormData();
             formData.append("branch", form.branch);
             formData.append("itemType", form.itemType);
@@ -155,6 +133,15 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
             showSuccess(initialData ? "Producto actualizado correctamente" : "Producto creado correctamente");
             onClose?.();
         } catch (error) {
+            const serverErrors = error?.response?.data?.errors;
+            if (serverErrors && Array.isArray(serverErrors)) {
+                const newErrors = {};
+                serverErrors.forEach(e => {
+                    const field = e.path || e.param;
+                    if (field) newErrors[field] = e.msg;
+                });
+                setErrors(newErrors);
+            }
             showError(error?.response?.data?.message || error?.message || "Error al guardar producto");
         }
     };
@@ -190,10 +177,11 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
 
                 <div className="flex flex-col gap-2">
                     <label className="app-modal-fieldLabel">Sucursal</label>
-                    <select className="app-modal-select" value={form.branch} onChange={(e) => setForm({ ...form, branch: e.target.value })}>
+                    <select className={`app-modal-select ${errors.branch ? 'border-red-500' : ''}`} value={form.branch} onChange={(e) => setForm({ ...form, branch: e.target.value })}>
                         <option value="">Seleccionar Sucursal</option>
                         {branches.map(b => <option key={b._id} value={b._id}>{b.name}</option>)}
                     </select>
+                    {errors.branch && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.branch}</span>}
                 </div>
 
                 <div className="flex flex-col gap-2">
@@ -211,12 +199,14 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
 
                 <div className="flex flex-col gap-2 sm:col-span-2">
                     <label className="app-modal-fieldLabel">Nombre</label>
-                    <input className="app-modal-input" placeholder="Ej. Pasta Alfredo" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+                    <input className={`app-modal-input ${errors.name ? 'border-red-500' : ''}`} placeholder="Ej. Pasta Alfredo" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+                    {errors.name && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.name}</span>}
                 </div>
 
                 <div className="flex flex-col gap-2">
                     <label className="app-modal-fieldLabel">Precio Base</label>
-                    <input type="number" min="0" step="0.01" className="app-modal-input" placeholder="00.00" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
+                    <input type="number" min="0" step="0.01" className={`app-modal-input ${errors.price ? 'border-red-500' : ''}`} placeholder="00.00" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
+                    {errors.price && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.price}</span>}
                 </div>
 
                 <div className="flex flex-col gap-2 col-span-full">
