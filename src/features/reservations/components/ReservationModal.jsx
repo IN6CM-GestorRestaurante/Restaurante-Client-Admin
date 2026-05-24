@@ -313,7 +313,7 @@ export const ReservationModal = ({ isOpen, initialData = null, onClose }) => {
                 <button 
                     type="button" 
                     onClick={handleSubmit} 
-                    className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto bg-gradient-to-r from-red-500 to-orange-500 border-none font-bold uppercase shadow-md shadow-orange-500/10 hover:shadow-orange-500/25 active:scale-[0.98] transition-all" 
+                    className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto bg-linear-to-r from-red-500 to-orange-500 border-none font-bold uppercase shadow-md shadow-orange-500/10 hover:shadow-orange-500/25 active:scale-[0.98] transition-all" 
                     disabled={loading}
                 >
                     {loading ? "Guardando..." : "Guardar"}

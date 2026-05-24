@@ -6,7 +6,11 @@ export const login = async (data) => {
 
 // El registro unificado va a Node.js (Saga), NO a C# directamente
 export const register = async (data) => {
-  return await axiosAdmin.post("/companies/register", data);
+  // When sending FormData (including file uploads) we must not send the default
+  // 'application/json' header. Let the browser set the multipart boundary.
+  return await axiosAdmin.post("/companies/register", data, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
 };
 
 export const forgotPassword = async (email) => {
@@ -20,6 +24,13 @@ export const resetPassword = async (token, newPassword) => {
 export const verifyEmail = async (token) => {
   return await axiosAuth.post("/auth/verify-email", { token });
 };
+
+export const resendVerification = async (email) => {
+  return await axiosAuth.post("/auth/resend-verification", { email });
+};
+
+// The AuthService exposes email verification via /auth/verify-email
+// Use `verifyEmail(token)` below. No generic resend endpoint exists in the C# service.
 
 export const updateUserRole = async (userId, role) => {
   return await axiosAuth.put(`/auth/users/${userId}/role`, { role });

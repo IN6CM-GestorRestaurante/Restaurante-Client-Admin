@@ -21,14 +21,17 @@ export const StockSection = () => {
     return (
         <>
             <header className="header">
-                <div>
-                    <h2>Inventario por Sucursal</h2>
-                    <p>Visualiza y gestiona el stock de ingredientes.</p>
+                <div className="space-y-1 px-1 pb-4 sm:px-0 sm:pb-5">
+                    <div className="flex items-center gap-3">
+                        <span className="h-6 w-1 rounded-full bg-linear-to-b from-orange-500 to-amber-500" />
+                        <h2 className="text-2xl font-bold text-stone-900 tracking-tight sm:text-3xl">Inventario por Sucursal</h2>
+                    </div>
+                    <p className="text-stone-500 text-sm leading-relaxed mb-4 sm:mb-6 sm:text-base">Visualiza y gestiona el stock de ingredientes.</p>
                 </div>
                 <button className="btn success" style={{ backgroundColor: '#3b82f6', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }} type="button" onClick={() => setIsModalOpen(true)}>Asignar Stock</button>
             </header>
-            <section className="section">
-                <div className="top">
+            <section className="section space-y-8">
+                <div className="top mb-4 sm:mb-6">
                     <p style={{ fontSize: "13px", color: "#6f6f78" }}>Monitor de existencias y alertas de bajo stock.</p>
                 </div>
                 <section className="kpis">

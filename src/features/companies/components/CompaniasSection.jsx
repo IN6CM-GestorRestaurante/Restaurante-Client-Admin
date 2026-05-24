@@ -41,11 +41,14 @@ export const CompaniasSection = () => {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
             <header className="header flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h2 className="text-2xl font-extrabold text-stone-800">Compañías Registradas</h2>
-                    <p className="text-stone-500 text-sm">Vista global de todas las empresas afiliadas a la plataforma.</p>
+                <div className="space-y-1 px-1 pb-4 sm:px-0 sm:pb-5">
+                    <div className="flex items-center gap-3">
+                        <span className="h-6 w-1 rounded-full bg-linear-to-b from-orange-500 to-amber-500" />
+                        <h2 className="text-2xl font-bold text-stone-900 tracking-tight sm:text-3xl">Compañías Registradas</h2>
+                    </div>
+                    <p className="text-stone-500 text-sm leading-relaxed mb-4 sm:mb-6 sm:text-base">Vista global de todas las empresas afiliadas a la plataforma.</p>
                 </div>
             </header>
 

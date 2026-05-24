@@ -80,9 +80,9 @@ export const RegisterForm = ({ onNavigate }) => {
                 formData.append("logo", data.logo[0]);
             }
 
-            await registerAPI(formData);
+            const res = await registerAPI(formData);
             toast.success("Registro exitoso. Introduce el código OTP enviado a tu correo electrónico.");
-            onNavigate("otp");
+            onNavigate("otp", { email: data.email, server: res?.data });
         } catch (error) {
             toast.error(error.response?.data?.message || "Error al registrar la empresa");
         }

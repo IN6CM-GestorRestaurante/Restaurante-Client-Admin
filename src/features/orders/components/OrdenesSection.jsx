@@ -92,9 +92,12 @@ export const OrdenesSection = () => {
     return (
         <>
             <header className="header">
-                <div>
-                    <h2>Comandas Activas</h2>
-                    <p>Gestiona flujo de cocina, entrega y atención en salón.</p>
+                <div className="space-y-1 px-1 pb-4 sm:px-0 sm:pb-5">
+                    <div className="flex items-center gap-3">
+                        <span className="h-6 w-1 rounded-full bg-linear-to-b from-orange-500 to-amber-500" />
+                        <h2 className="text-2xl font-bold text-stone-900 tracking-tight sm:text-3xl">Comandas Activas</h2>
+                    </div>
+                    <p className="text-stone-500 text-sm leading-relaxed mb-4 sm:mb-6 sm:text-base">Gestiona flujo de cocina, entrega y atención en salón.</p>
                 </div>
                 <div className="flex items-center gap-3">
                     {/* Selector de sucursal para admins */}
@@ -119,7 +122,7 @@ export const OrdenesSection = () => {
                 </div>
             </header>
 
-            <section className="section">
+            <section className="section space-y-8">
                 <section className="kpis">
                     <article className="kpi"><span>Total activas</span><strong>{loading ? "..." : orders.length}</strong></article>
                     <article className="kpi"><span>Pendientes</span><strong style={{ color: "#854d0e" }}>{pending}</strong></article>

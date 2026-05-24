@@ -17,6 +17,7 @@ export const ReservacionesSection = () => {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedReservation, setSelectedReservation] = useState(null);
+    const safeReservations = Array.isArray(reservations) ? reservations : [];
 
     const confirmReservation = useReservationsStore((s) => s.confirmReservation);
 
@@ -48,14 +49,17 @@ export const ReservacionesSection = () => {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8 rounded-3xl bg-white/70 p-4 shadow-sm sm:p-6 lg:p-8">
             <header className="header flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h2 className="text-2xl font-extrabold text-stone-800">Gestión de Reservaciones</h2>
-                    <p className="text-stone-500 text-sm">Control inteligente de salones, comensales y asignación óptima de mesas.</p>
+                <div className="space-y-1 px-1 pb-4 sm:px-0 sm:pb-5">
+                    <div className="flex items-center gap-3">
+                        <span className="h-6 w-1 rounded-full bg-linear-to-b from-orange-500 to-amber-500" />
+                        <h2 className="text-2xl font-bold text-stone-900 tracking-tight sm:text-3xl">Gestión de Reservaciones</h2>
+                    </div>
+                    <p className="text-stone-500 text-sm leading-relaxed mb-4 sm:mb-6 sm:text-base">Control inteligente de salones, comensales y asignación óptima de mesas.</p>
                 </div>
                 <button 
-                    className="btn primary bg-gradient-to-r from-red-500 to-orange-500 border-none font-bold shadow-md shadow-orange-500/10 hover:shadow-orange-500/25 active:scale-[0.98] transition-all cursor-pointer" 
+                    className="btn primary bg-linear-to-r from-red-500 to-orange-500 border-none font-bold shadow-md shadow-orange-500/10 hover:shadow-orange-500/25 active:scale-[0.98] transition-all cursor-pointer" 
                     type="button" 
                     onClick={() => { setSelectedReservation(null); setIsCreateOpen(true); }}
                 >
@@ -64,14 +68,14 @@ export const ReservacionesSection = () => {
             </header>
 
             {/* KPIs */}
-            <section className="kpis grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <section className="kpis grid grid-cols-1 gap-5 sm:grid-cols-3">
                 <article className="kpi bg-white p-5 rounded-2xl border border-stone-200 shadow-sm flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center border border-orange-100 text-orange-600">
                         <i className="fas fa-calendar-alt text-lg" />
                     </div>
                     <div>
                         <span className="text-stone-500 text-xs font-semibold block">Total de Reservas</span>
-                        <strong className="text-2xl font-black text-stone-800">{loading ? "..." : reservations.length}</strong>
+                        <strong className="text-2xl font-black text-stone-800">{loading ? "..." : safeReservations.length}</strong>
                     </div>
                 </article>
 
@@ -82,7 +86,7 @@ export const ReservacionesSection = () => {
                     <div>
                         <span className="text-stone-500 text-xs font-semibold block">Confirmadas</span>
                         <strong className="text-2xl font-black text-emerald-700">
-                            {reservations.filter((r) => r.status === "Confirmada").length}
+                            {safeReservations.filter((r) => r.status === "Confirmada").length}
                         </strong>
                     </div>
                 </article>
@@ -94,7 +98,7 @@ export const ReservacionesSection = () => {
                     <div>
                         <span className="text-stone-500 text-xs font-semibold block">Pendientes</span>
                         <strong className="text-2xl font-black text-amber-700">
-                            {reservations.filter((r) => r.status === "Pendiente").length}
+                            {safeReservations.filter((r) => r.status === "Pendiente").length}
                         </strong>
                     </div>
                 </article>
@@ -102,23 +106,23 @@ export const ReservacionesSection = () => {
 
             {/* Reservations Cards Grid */}
             <section className="section bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
-                <div className="top border-b border-stone-100 pb-4 mb-6">
+                <div className="top border-b border-stone-100 pb-4 mb-8">
                     <h3 className="text-base font-bold text-stone-800">Listado de Reservaciones Activas</h3>
                 </div>
 
-                {loading && reservations.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-12 gap-3 text-stone-400">
+                {loading && safeReservations.length === 0 ? (
+                    <div className="flex min-h-56 flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-stone-200 bg-stone-50 py-12 text-stone-400">
                         <i className="fas fa-spinner fa-spin text-2xl text-orange-500" />
                         <span className="text-xs font-semibold">Cargando reservaciones del sistema...</span>
                     </div>
-                ) : reservations.length === 0 ? (
-                    <div className="text-center py-16 text-stone-400 font-semibold text-xs border border-dashed border-stone-200 rounded-2xl">
+                ) : safeReservations.length === 0 ? (
+                    <div className="text-center py-16 text-stone-400 font-semibold text-xs border border-dashed border-stone-200 rounded-2xl bg-stone-50">
                         <i className="fas fa-calendar-times text-3xl text-stone-300 block mb-3" />
                         No se encontraron reservaciones registradas en el sistema.
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {reservations.map((reservation) => {
+                        {safeReservations.map((reservation) => {
                             const theme = STATUS_THEMES[reservation.status] || STATUS_THEMES.Pendiente;
                             const tablesStr = reservation.tables?.map(t => t.number || t.name || t).join(', ') || "Ninguna";
                             const branchName = reservation.branch?.alias || reservation.branch?.name || "Sucursal";
@@ -161,7 +165,7 @@ export const ReservacionesSection = () => {
                                     </div>
 
                                     {/* Top decoration gradient */}
-                                    <div className="h-1.5 bg-gradient-to-r from-orange-500 to-red-500" />
+                                    <div className="h-1.5 bg-linear-to-r from-orange-500 to-red-500" />
 
                                     {/* Card Header */}
                                     <div className="p-5 border-b border-stone-100 flex items-start justify-between gap-4">

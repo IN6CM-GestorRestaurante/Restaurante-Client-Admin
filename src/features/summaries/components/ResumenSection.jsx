@@ -70,21 +70,17 @@ export const ResumenSection = () => {
     const formatQ = (n) => `Q ${n.toFixed(2)}`;
 
     return (
-        <>
-            <header className="header">
-                <div>
-                    <h2>Gestor de Restaurante</h2>
-                    <p>Panel de administración — Bienvenido, {user?.name || user?.email || "Administrador"}.</p>
-                </div>
-                <div className="chips" style={{ display: "flex", gap: 8 }}>
-                    <span className="chip" style={{ fontSize: 12, padding: "4px 12px", borderRadius: 8, backgroundColor: "#f5f5f4", color: "#57534e", border: "1px solid #e7e5e4" }}>
-                        <i className="fas fa-user-shield mr-1"></i>{role?.replace(/_/g, " ")}
-                    </span>
-                </div>
-            </header>
-
+        <div className="mx-auto w-full max-w-none space-y-8 px-4 pt-4 pb-12 sm:px-6 sm:pt-5 sm:pb-14 lg:px-8 lg:pt-6 lg:pb-16 xl:px-10">
             {/* KPIs */}
-            <section className="section">
+            <section className="section space-y-9 rounded-3xl bg-white/70 p-4 shadow-sm sm:p-6 lg:p-8">
+                <div className="space-y-1 px-1 pb-4 sm:px-0 sm:pb-5">
+                    <div className="flex items-center gap-3">
+                        <span className="h-6 w-1 rounded-full bg-linear-to-b from-orange-500 to-amber-500" />
+                        <h3 className="text-2xl font-bold text-stone-900 tracking-tight sm:text-3xl">Gestor de Restaurante</h3>
+                    </div>
+                    <p className="text-sm font-semibold text-stone-500 leading-relaxed mb-4 sm:mb-6 sm:text-base">Panel de administración — Bienvenido, {user?.name || user?.email || "Administrador"}.</p>
+                </div>
+
                 <section className="kpis">
                     <article className="kpi">
                         <span><i className="fas fa-store" style={{ color: "#ea580c", marginRight: 6 }}></i>Sucursales</span>
@@ -105,16 +101,16 @@ export const ResumenSection = () => {
                 </section>
 
                 {/* Resumen de mesas */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 12, marginBottom: 24 }}>
-                    <div style={{ padding: 16, borderRadius: 12, backgroundColor: "#dcfce7", border: "1px solid #bbf7d0" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12, marginBottom: 24 }}>
+                    <div style={{ padding: 20, borderRadius: 18, backgroundColor: "#dcfce7", border: "1px solid #bbf7d0" }}>
                         <span style={{ fontSize: 12, color: "#166534", fontWeight: 600 }}>Mesas disponibles</span>
                         <strong style={{ display: "block", fontSize: 28, color: "#166534", marginTop: 4 }}>{availableTables}</strong>
                     </div>
-                    <div style={{ padding: 16, borderRadius: 12, backgroundColor: "#fee2e2", border: "1px solid #fecaca" }}>
+                    <div style={{ padding: 20, borderRadius: 18, backgroundColor: "#fee2e2", border: "1px solid #fecaca" }}>
                         <span style={{ fontSize: 12, color: "#991b1b", fontWeight: 600 }}>Mesas ocupadas</span>
                         <strong style={{ display: "block", fontSize: 28, color: "#991b1b", marginTop: 4 }}>{occupiedTables}</strong>
                     </div>
-                    <div style={{ padding: 16, borderRadius: 12, backgroundColor: "#f0f9ff", border: "1px solid #bae6fd" }}>
+                    <div style={{ padding: 20, borderRadius: 18, backgroundColor: "#f0f9ff", border: "1px solid #bae6fd" }}>
                         <span style={{ fontSize: 12, color: "#0369a1", fontWeight: 600 }}>Total mesas</span>
                         <strong style={{ display: "block", fontSize: 28, color: "#0369a1", marginTop: 4 }}>{tables.length}</strong>
                     </div>
@@ -164,56 +160,48 @@ export const ResumenSection = () => {
                 )}
 
                 {/* Acceso rápido — clickable cards grouped beautifully */}
-                <div className="mt-8 space-y-8">
-                    <h3 className="text-lg font-extrabold text-stone-800 flex items-center gap-2 border-b border-stone-200 pb-3">
-                        <i className="fas fa-grip-horizontal text-orange-500"></i>
-                        Módulos de Acceso Rápido
-                    </h3>
+                <div className="mt-12 mb-10 space-y-14 rounded-3xl bg-transparent p-0 sm:p-1 lg:p-2">
                     
                     {GROUPS.map((group) => {
                         const groupCards = visibleCards.filter((card) => group.keys.includes(card.key));
                         if (groupCards.length === 0) return null;
                         
                         return (
-                            <div key={group.title} className="space-y-4">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                                    <div className="flex items-center gap-2.5">
-                                        <span className={`w-1 h-6 rounded-full bg-gradient-to-b ${group.accentColor}`} />
-                                        <h4 className="text-base font-extrabold text-stone-900 tracking-tight">{group.title}</h4>
+                            <div key={group.title} className="space-y-7 rounded-2xl bg-white/60 p-5 sm:p-6 lg:p-7">
+                                <div className="space-y-4 px-1 sm:px-0 pt-2 pb-1">
+                                    <div className="flex items-center gap-3 justify-center sm:justify-start">
+                                        <span className={`h-6 w-1 rounded-full bg-linear-to-b ${group.accentColor}`} />
+                                        <h4 className="text-sm font-semibold text-stone-900 tracking-tight">{group.title}</h4>
                                     </div>
-                                    <span className="text-xs font-semibold text-stone-500 pl-3 sm:pl-0">{group.desc}</span>
+                                    <p className="text-xs font-semibold text-stone-500 leading-relaxed max-w-3xl text-center sm:text-left mx-auto sm:mx-0">{group.desc}</p>
                                 </div>
                                 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-1 gap-5 justify-items-center md:grid-cols-2">
                                     {groupCards.map((card) => (
                                         <Link 
                                             to={`/dashboard/${card.key}`}
                                             key={card.key}
-                                            className="group relative flex flex-col justify-between p-5 rounded-2xl bg-white/70 backdrop-blur-md border border-stone-200/50 hover:border-orange-500/20 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer text-stone-900 no-underline"
+                                            className="group flex min-h-26 w-full max-w-2xl flex-col items-center rounded-2xl border border-stone-200 bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer text-stone-900 no-underline sm:flex-row sm:items-center sm:p-5"
                                             style={{ textDecoration: 'none' }}
                                         >
-                                            <div className="flex items-start justify-between">
-                                                <div 
-                                                    className="w-12 h-12 rounded-2xl flex items-center justify-center border transition-all duration-300 shadow-inner group-hover:scale-110"
-                                                    style={{ 
-                                                        backgroundColor: card.bg, 
-                                                        borderColor: `${card.color}20`,
-                                                        color: card.color 
+                                            <div className="flex w-full items-center justify-center gap-4 text-center sm:justify-start sm:text-left">
+                                                <div
+                                                    className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white mx-auto sm:mx-0"
+                                                    style={{
+                                                        color: card.color,
                                                     }}
                                                 >
-                                                    <i className={`${card.icon} text-lg`} />
+                                                    <i className={`${card.icon} text-xl`} />
                                                 </div>
-                                                <span className="opacity-0 group-hover:opacity-100 text-orange-500 transition-opacity duration-300">
-                                                    <i className="fas fa-arrow-right text-xs" />
-                                                </span>
-                                            </div>
-                                            <div className="mt-5">
-                                                <h3 className="text-base font-bold text-stone-800 tracking-tight group-hover:text-orange-500 transition-colors duration-200">
-                                                    {card.label}
-                                                </h3>
-                                                <p className="text-xs font-medium text-stone-500 mt-1 leading-normal">
-                                                    {card.desc}
-                                                </p>
+
+                                                <div className="min-w-0 max-w-md space-y-1 text-center sm:text-left">
+                                                    <h3 className="text-lg font-extrabold text-stone-800 leading-tight group-hover:text-orange-500 transition-colors duration-200 wrap-break-word">
+                                                        {card.label}
+                                                    </h3>
+                                                    <p className="text-sm font-medium text-stone-500 leading-relaxed wrap-break-word max-w-sm mx-auto sm:mx-0">
+                                                        {card.desc}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </Link>
                                     ))}
@@ -223,6 +211,6 @@ export const ResumenSection = () => {
                     })}
                 </div>
             </section>
-        </>
+        </div>
     );
 };

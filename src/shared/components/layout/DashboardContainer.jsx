@@ -10,9 +10,9 @@ export const DashboardContainer = () => {
   return (
     <div className="min-h-screen bg-[#f6f6fa] flex flex-col w-full">
       <Navbar />
-      <div className="flex flex-1 w-full overflow-hidden relative">
+      <div className="flex flex-1 w-full relative flex-col lg:flex-row items-stretch">
         <Sidebar />
-        <main className="flex-1 min-w-0 overflow-y-auto bg-stone-50/40 p-4 sm:p-6 lg:p-8">
+        <main className="flex-1 min-w-0 w-full bg-stone-50/40 p-4 sm:p-6 lg:p-8">
           <Outlet />
         </main>
       </div>

@@ -492,7 +492,7 @@ body {
   margin-top: auto;
   text-decoration: none;
   color: #fff;
-  background: linear-gradient(135deg, var(--accent-red), var(--accent-orange));
+  background: linear-gradient(135deg, #f97316, #fb923c);
   padding: 13px 14px;
   border-radius: 12px;
   display: flex;
@@ -501,8 +501,8 @@ body {
   gap: 10px;
   font-size: 14px;
   font-weight: 600;
-  box-shadow: 0 10px 22px rgba(244, 58, 32, 0.35);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  box-shadow: none;
+  transition: transform 0.2s ease, filter 0.2s ease, background 0.2s ease;
   cursor: pointer;
   border: none;
   width: 100%;
@@ -510,13 +510,13 @@ body {
 
 .logout:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 30px rgba(244, 58, 32, 0.42);
-  filter: saturate(1.08);
+  background: linear-gradient(135deg, #ea580c, #f97316);
+  filter: saturate(1.05);
 }
 
 .logout:active {
   transform: translateY(1px) scale(0.992);
-  box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.14), 0 8px 16px rgba(244, 58, 32, 0.28);
+  box-shadow: none;
 }
 
 .content-shell {
@@ -573,9 +573,23 @@ body {
   flex-wrap: wrap;
 }
 
+.header {
+  padding: 18px 20px;
+  border-radius: 24px;
+  border: 1px solid #e7e5e4;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.header > div:first-child {
+  min-width: 0;
+}
+
 .topbar h2, .title h2, .head h2, .header h2 {
   font-size: 26px;
   font-weight: 700;
+  line-height: 1.1;
 }
 
 .topbar p, .title p, .head p, .header p {
@@ -706,7 +720,7 @@ body {
 
 .kpis {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 14px;
 }
@@ -1636,6 +1650,20 @@ tr:last-child td {
       border-radius: 20px;
       padding: 16px;
   }
+
+  .kpis {
+      grid-template-columns: 1fr;
+  }
+
+  .kpi strong {
+      font-size: 20px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1023px) {
+  .kpis {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 1024px) {
@@ -1648,10 +1676,10 @@ tr:last-child td {
 .field-error {
   display: block;
   color: var(--primary-red);
-  font-size: 12px;
-  margin-top: -12px;
-  margin-bottom: 10px;
-  padding-left: 20px;
+  font-size: 11px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  padding-left: 16px;
   text-align: left;
 }
 

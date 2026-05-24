@@ -131,6 +131,22 @@ export const NuevaOrdenModal = ({ isOpen, branchId, onClose }) => {
         COMBOS: "fas fa-burger"
     };
 
+    const selectedTableButtonStyle = {
+        backgroundColor: "#ea580c",
+        borderColor: "#ea580c",
+        color: "#ffffff",
+    };
+
+    const availableTableButtonStyle = {
+        backgroundColor: "#ffffff",
+        borderColor: "#e7e5e4",
+        color: "#57534e",
+    };
+
+    const submitButtonStyle = loading || basket.length === 0 || selectedTables.length === 0
+        ? { backgroundColor: "#e7e5e4", color: "#a8a29e" }
+        : { backgroundImage: "linear-gradient(to right, #ea580c, #d97706)", color: "#ffffff" };
+
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Kiosco Táctil de Comandas" subtitle="Arma comandas rápidamente e inyecta pedidos directamente a cocina">
             {/* Custom high-density layout style override inside Modal body */}
@@ -160,11 +176,10 @@ export const NuevaOrdenModal = ({ isOpen, branchId, onClose }) => {
 
                     {/* Search filter */}
                     <div className="relative mb-4 shrink-0">
-                        <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"></i>
                         <input
                             type="text"
                             placeholder="Buscar plato o postre..."
-                            className="w-full pl-10 pr-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-850 text-xs focus:outline-none focus:ring-1 focus:ring-orange-500 placeholder-stone-400"
+                            className="w-full pl-4 pr-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-850 text-xs focus:outline-none focus:ring-1 focus:ring-orange-500 placeholder-stone-400"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -227,28 +242,25 @@ export const NuevaOrdenModal = ({ isOpen, branchId, onClose }) => {
                 <div className="w-full lg:w-90 bg-stone-50 border border-stone-200 rounded-3xl p-4.5 flex flex-col overflow-hidden shrink-0 h-full">
                     
                     {/* Tables list */}
-                    <div className="mb-4 shrink-0">
-                        <span className="text-[10px] font-black uppercase text-stone-400 tracking-wider block mb-2">
+                    <div className="mb-4 shrink-0 rounded-none border border-stone-200 bg-white p-4 shadow-sm">
+                        <span className="mb-3 block text-[10px] font-black uppercase tracking-wider text-stone-500 leading-snug">
                             <i className="fas fa-chair text-orange-500 mr-1.5"></i> Mesas Disponibles
                         </span>
                         
                         {tables.length === 0 ? (
-                            <span className="text-[11px] text-stone-400 italic block py-1.5">No hay mesas libres en esta sucursal.</span>
+                            <span className="block rounded-xl border border-dashed border-stone-200 bg-stone-50 px-3 py-4 text-[11px] italic text-stone-400">No hay mesas libres en esta sucursal.</span>
                         ) : (
-                            <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto pr-1">
+                            <div className="grid max-h-28 grid-cols-2 gap-2 overflow-y-auto pr-1 sm:grid-cols-3 lg:grid-cols-2">
                                 {tables.map((t) => (
                                     <button
                                         key={t._id}
                                         type="button"
                                         onClick={() => toggleTable(t._id)}
-                                        className={`px-2.5 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5
-                                            \${selectedTables.includes(t._id)
-                                                ? "bg-orange-600 border-orange-600 text-white shadow-sm"
-                                                : "bg-white border-stone-200 text-stone-600 hover:bg-stone-100"
-                                            }`}
+                                        className="aspect-square rounded-none border p-2 text-xs font-bold transition-all cursor-pointer flex flex-col items-center justify-center gap-1 text-center hover:bg-stone-100"
+                                        style={selectedTables.includes(t._id) ? selectedTableButtonStyle : availableTableButtonStyle}
                                     >
-                                        <i className="fas fa-chair text-[9px]"></i>
-                                        M-{t.number}
+                                        <i className="fas fa-chair text-[10px]"></i>
+                                        <span className="wrap-break-word leading-tight">M-{t.number}</span>
                                     </button>
                                 ))}
                             </div>
@@ -291,7 +303,7 @@ export const NuevaOrdenModal = ({ isOpen, branchId, onClose }) => {
                                                 >
                                                     -
                                                 </button>
-                                                <span className="text-xs font-black text-stone-700 min-w-[14px] text-center">
+                                                <span className="text-center text-xs font-black text-stone-700 min-w-3.5">
                                                     {item.quantity}
                                                 </span>
                                                 <button
@@ -303,7 +315,7 @@ export const NuevaOrdenModal = ({ isOpen, branchId, onClose }) => {
                                                 </button>
                                             </div>
 
-                                            <span className="text-xs font-black text-stone-800 min-w-[50px] text-right shrink-0">
+                                            <span className="text-right text-xs font-black text-stone-800 min-w-12.5 shrink-0">
                                                 Q{(item.price * item.quantity).toFixed(2)}
                                             </span>
 
@@ -348,11 +360,8 @@ export const NuevaOrdenModal = ({ isOpen, branchId, onClose }) => {
                                 type="button"
                                 disabled={loading || basket.length === 0 || selectedTables.length === 0}
                                 onClick={handleSubmit}
-                                className={`flex-2 py-3 rounded-xl font-black uppercase tracking-wider transition-all text-xs flex items-center justify-center gap-1.5 shadow-md
-                                    \${loading || basket.length === 0 || selectedTables.length === 0
-                                        ? "bg-stone-200 border border-stone-300 text-stone-400 cursor-not-allowed"
-                                        : "bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white cursor-pointer active:scale-98"
-                                    }`}
+                                className="flex-2 py-3 rounded-xl font-black uppercase tracking-wider transition-all text-xs flex items-center justify-center gap-1.5 shadow-md cursor-pointer active:scale-98"
+                                style={submitButtonStyle}
                             >
                                 {loading ? (
                                     <>

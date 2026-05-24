@@ -42,7 +42,9 @@ export const Sidebar = () => {
     };
 
     return (
-        <aside className="sidebar w-full md:w-72 md:shrink-0 md:sticky md:top-16 md:h-[calc(100dvh-4rem)] overflow-y-auto">
+        <aside
+            className="sidebar w-full lg:w-72 lg:shrink-0 lg:sticky lg:top-16 lg:min-h-[calc(100dvh-4rem)] lg:h-auto lg:self-stretch overflow-y-visible lg:overflow-y-auto"
+        >
             <div className="brand">
                 <i className="fas fa-store"></i>
                 <h1>Restaurante Admin</h1>
@@ -50,23 +52,25 @@ export const Sidebar = () => {
 
             <p className="menu-title">Menú Principal</p>
 
-            <nav className="nav-links">
-                {visibleItems.map((item) => {
-                    const active = location.pathname.startsWith(item.to);
-                    return (
-                        <button
-                            type="button"
-                            key={item.key}
-                            className={active ? "active" : ""}
-                            onClick={() => navigate(item.to)}
-                        >
-                            <i className={item.icon}></i>
-                            {item.label}
-                        </button>
-                    );
-                })}
+            <nav className="nav-links flex-1 min-h-0">
+                <div className="flex flex-col gap-2.5">
+                    {visibleItems.map((item) => {
+                        const active = location.pathname.startsWith(item.to);
+                        return (
+                            <button
+                                type="button"
+                                key={item.key}
+                                className={active ? "active" : ""}
+                                onClick={() => navigate(item.to)}
+                            >
+                                <i className={item.icon}></i>
+                                {item.label}
+                            </button>
+                        );
+                    })}
+                </div>
 
-                <button type="button" onClick={handleLogout} style={{ marginTop: "auto" }}>
+                <button type="button" onClick={handleLogout} className="logout mt-auto">
                     <i className="fas fa-right-from-bracket"></i>
                     Cerrar sesión
                 </button>

@@ -57,14 +57,17 @@ export const SucursalesSection = () => {
     const closedCount = totalCount - activeCount - maintenanceCount;
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
             <header className="header flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h2 className="text-2xl font-extrabold text-stone-800">CRUD de Sucursales</h2>
-                    <p className="text-stone-500 text-sm">Administra sedes, gerentes, información de contacto y estado operativo.</p>
+                <div className="space-y-1 px-1 pt-1 pb-4 sm:px-0 sm:pt-2 sm:pb-5">
+                    <div className="flex items-center gap-3">
+                        <span className="h-6 w-1 rounded-full bg-linear-to-b from-orange-500 to-amber-500" />
+                        <h2 className="text-2xl font-bold text-stone-900 tracking-tight sm:text-3xl">Gestor de Sucursales</h2>
+                    </div>
+                    <p className="text-stone-500 text-sm leading-relaxed mb-4 sm:mb-6 sm:text-base">Administra sedes, gerentes, información de contacto y estado operativo.</p>
                 </div>
                 <button 
-                    className="btn primary bg-gradient-to-r from-red-500 to-orange-500 border-none font-bold shadow-md shadow-orange-500/10 hover:shadow-orange-500/25 active:scale-[0.98] transition-all cursor-pointer" 
+                    className="btn primary bg-linear-to-r from-red-500 to-orange-500 border-none font-bold shadow-md shadow-orange-500/10 hover:shadow-orange-500/25 active:scale-[0.98] transition-all cursor-pointer" 
                     type="button" 
                     onClick={handleCreate}
                 >
@@ -107,7 +110,7 @@ export const SucursalesSection = () => {
 
             {/* Cards Grid */}
             <section className="section bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
-                <div className="top border-b border-stone-100 pb-4 mb-6">
+                <div className="top border-b border-stone-100 pb-4 mb-8">
                     <h3 className="text-base font-bold text-stone-800">Sedes y Sucursales de la Empresa</h3>
                 </div>
 

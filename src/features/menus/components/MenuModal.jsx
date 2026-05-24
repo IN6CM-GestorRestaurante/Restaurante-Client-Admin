@@ -195,8 +195,8 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
             title={initialData ? "Editar producto" : "Nuevo producto"}
             subtitle="Completa la información del producto"
         >
-            <div className="flex flex-col items-center justify-center pb-2 sm:pb-4">
-                <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border bg-gray-100 shadow-inner sm:h-28 sm:w-28 md:h-32 md:w-32 relative">
+            <div className="flex flex-col items-center justify-center pb-4 pt-2 sm:pb-6 sm:pt-3">
+                <div className="relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border bg-gray-100 shadow-inner sm:h-28 sm:w-28 md:h-32 md:w-32">
                     {preview ? (
                         <img className="h-full w-full object-cover" src={preview} alt="Vista previa de producto" />
                     ) : (
@@ -221,7 +221,7 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
                 )}
             </div>
 
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6">
                 <div className="flex flex-col gap-2">
                     <label className="app-modal-fieldLabel">Tipo</label>
                     <div className="flex bg-gray-100 p-1 rounded-lg">
@@ -236,7 +236,7 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
                         <option value="">Seleccionar Sucursal</option>
                         {branches.map(b => <option key={b._id} value={b._id}>{b.name}</option>)}
                     </select>
-                    {errors.branch && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.branch}</span>}
+                    {errors.branch && <span className="-mt-1 ml-1 text-[10px] font-semibold text-red-500">{errors.branch}</span>}
                 </div>
 
                 <div className="flex flex-col gap-2">
@@ -255,13 +255,13 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
                 <div className="flex flex-col gap-2 sm:col-span-2">
                     <label className="app-modal-fieldLabel">Nombre</label>
                     <input className={`app-modal-input ${errors.name ? 'border-red-500' : ''}`} placeholder="Ej. Pasta Alfredo" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-                    {errors.name && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.name}</span>}
+                    {errors.name && <span className="-mt-1 ml-1 text-[10px] font-semibold text-red-500">{errors.name}</span>}
                 </div>
 
                 <div className="flex flex-col gap-2">
                     <label className="app-modal-fieldLabel">Precio Base</label>
                     <input type="number" min="0" step="0.01" className={`app-modal-input ${errors.price ? 'border-red-500' : ''}`} placeholder="00.00" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
-                    {errors.price && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.price}</span>}
+                    {errors.price && <span className="-mt-1 ml-1 text-[10px] font-semibold text-red-500">{errors.price}</span>}
                 </div>
 
                 <div className="flex flex-col gap-2 col-span-full">
@@ -282,13 +282,13 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
                         <div className="space-y-2">
                             {form.recipe.length === 0 && <p className="text-xs text-gray-400">No hay ingredientes. Agrega uno.</p>}
                             {form.recipe.map((row, index) => (
-                                <div key={index} className="flex gap-2 items-center">
-                                    <select className="app-modal-select flex-1" value={row.ingredientId} onChange={(e) => updateRecipeRow(index, 'ingredientId', e.target.value)}>
+                                <div key={index} className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,0.95fr)_auto] gap-1.5 items-center">
+                                    <select className="app-modal-select w-full min-w-0" value={row.ingredientId} onChange={(e) => updateRecipeRow(index, 'ingredientId', e.target.value)}>
                                         <option value="">Seleccionar ingrediente</option>
                                         {ingredients.map(i => <option key={i._id} value={i._id}>{i.name} ({i.unit})</option>)}
                                     </select>
-                                    <input type="number" step="0.01" placeholder="Cant." className="app-modal-input w-24" value={row.quantityRequired} onChange={(e) => updateRecipeRow(index, 'quantityRequired', e.target.value)} />
-                                    <button type="button" className="text-red-500 hover:text-red-700 p-2" onClick={() => removeRecipeRow(index)}><i className="fas fa-times"></i></button>
+                                    <input type="number" step="0.01" placeholder="Cantidad" className="app-modal-input w-full min-w-0" value={row.quantityRequired} onChange={(e) => updateRecipeRow(index, 'quantityRequired', e.target.value)} />
+                                    <button type="button" className="flex h-9 w-9 items-center justify-center rounded-full text-red-500 hover:bg-red-50 hover:text-red-700" onClick={() => removeRecipeRow(index)}><i className="fas fa-times text-xs"></i></button>
                                 </div>
                             ))}
                         </div>
@@ -296,13 +296,13 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
                         <div className="space-y-2">
                             {form.comboItems.length === 0 && <p className="text-xs text-gray-400">No hay items. Agrega uno.</p>}
                             {form.comboItems.map((row, index) => (
-                                <div key={index} className="flex gap-2 items-center">
-                                    <select className="app-modal-select flex-1" value={row.menuItemId} onChange={(e) => updateComboRow(index, 'menuItemId', e.target.value)}>
+                                <div key={index} className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,0.95fr)_auto] gap-1.5 items-center">
+                                    <select className="app-modal-select w-full min-w-0" value={row.menuItemId} onChange={(e) => updateComboRow(index, 'menuItemId', e.target.value)}>
                                         <option value="">Seleccionar platillo (SINGLE)</option>
                                         {singleMenus.map(m => <option key={m._id} value={m._id}>{m.name}</option>)}
                                     </select>
-                                    <input type="number" min="1" step="1" placeholder="Cant." className="app-modal-input w-24" value={row.quantity} onChange={(e) => updateComboRow(index, 'quantity', e.target.value)} />
-                                    <button type="button" className="text-red-500 hover:text-red-700 p-2" onClick={() => removeComboRow(index)}><i className="fas fa-times"></i></button>
+                                    <input type="number" min="1" step="1" placeholder="Cantidad" className="app-modal-input w-full min-w-0" value={row.quantity} onChange={(e) => updateComboRow(index, 'quantity', e.target.value)} />
+                                    <button type="button" className="flex h-9 w-9 items-center justify-center rounded-full text-red-500 hover:bg-red-50 hover:text-red-700" onClick={() => removeComboRow(index)}><i className="fas fa-times text-xs"></i></button>
                                 </div>
                             ))}
                         </div>

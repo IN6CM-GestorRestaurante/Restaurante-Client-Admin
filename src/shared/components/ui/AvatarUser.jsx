@@ -52,7 +52,7 @@ export const AvatarUser = ({ isSidebar = false, isCollapsed = false }) => {
     const initials = getInitials(displayName);
 
     // Dynamic dropdown positioning classes
-    let dropdownClasses = "absolute z-50 overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-xl animate-fadeIn w-64 ";
+    let dropdownClasses = "absolute z-50 overflow-visible rounded-2xl border border-stone-200 bg-white shadow-xl animate-fadeIn w-[min(16rem,calc(100vw-1rem))] sm:w-64 ";
     if (isSidebar) {
         if (isCollapsed) {
             // Position to the right when collapsed in sidebar
@@ -63,7 +63,7 @@ export const AvatarUser = ({ isSidebar = false, isCollapsed = false }) => {
         }
     } else {
         // Standard top-bar right alignment
-        dropdownClasses += "right-0 mt-3";
+        dropdownClasses += "right-0 sm:right-[-8px] mt-3";
     }
 
     return (
@@ -100,7 +100,7 @@ export const AvatarUser = ({ isSidebar = false, isCollapsed = false }) => {
                     
                     {/* Initials Fallback */}
                     <div 
-                        className={`initials-fallback h-9 w-9 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 text-white font-bold text-sm items-center justify-center shadow-inner ${
+                        className={`initials-fallback h-9 w-9 rounded-lg bg-linear-to-br from-orange-500 to-red-500 text-white font-bold text-sm items-center justify-center shadow-inner ${
                             avatarSrc ? "hidden" : "flex"
                         }`}
                     >
@@ -134,8 +134,8 @@ export const AvatarUser = ({ isSidebar = false, isCollapsed = false }) => {
 
             {open && (
                 <div className={dropdownClasses}>
-                    <div className="flex flex-col items-center gap-3 border-b border-stone-100 bg-gradient-to-r from-stone-50 to-white px-4 py-4 text-center">
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-orange-200 bg-orange-50 shadow-sm text-white font-bold text-base bg-gradient-to-br from-orange-500 to-red-500">
+                    <div className="flex flex-col items-center gap-3 border-b border-stone-100 bg-linear-to-r from-stone-50 to-white px-4 py-5 text-center">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-orange-200 bg-orange-50 shadow-sm text-white font-bold text-base bg-linear-to-br from-orange-500 to-red-500">
                             {initials}
                         </div>
 
@@ -148,14 +148,14 @@ export const AvatarUser = ({ isSidebar = false, isCollapsed = false }) => {
                         </div>
                     </div>
 
-                    <ul className="p-1 text-xs font-semibold text-stone-700">
+                    <ul className="px-2 py-2 pb-3 text-xs font-semibold text-stone-700 text-center">
                         <li>
                             <Link
                                 to="/dashboard"
                                 onClick={() => setOpen(false)}
-                                className="flex items-center gap-2 rounded-lg px-3 py-2.5 hover:bg-stone-50 hover:text-orange-500 transition-colors"
+                                className="flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 hover:bg-stone-50 hover:text-orange-500 transition-colors"
                             >
-                                <i className="fas fa-chart-pie text-stone-400 w-4"></i>
+                                <i className="fas fa-chart-pie text-stone-400 w-4 shrink-0"></i>
                                 Dashboard
                             </Link>
                         </li>
@@ -164,9 +164,9 @@ export const AvatarUser = ({ isSidebar = false, isCollapsed = false }) => {
                             <Link
                                 to="/dashboard/users"
                                 onClick={() => setOpen(false)}
-                                className="flex items-center gap-2 rounded-lg px-3 py-2.5 hover:bg-stone-50 hover:text-orange-500 transition-colors"
+                                className="flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 hover:bg-stone-50 hover:text-orange-500 transition-colors"
                             >
-                                <i className="fas fa-users text-stone-400 w-4"></i>
+                                <i className="fas fa-users text-stone-400 w-4 shrink-0"></i>
                                 Usuarios
                             </Link>
                         </li>
@@ -176,9 +176,9 @@ export const AvatarUser = ({ isSidebar = false, isCollapsed = false }) => {
                         <li>
                             <button
                                 onClick={handleLogout}
-                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-red-600 font-bold hover:bg-red-50 transition-colors"
+                                className="flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-red-600 font-bold hover:bg-red-50 transition-colors"
                             >
-                                <i className="fas fa-right-from-bracket w-4"></i>
+                                <i className="fas fa-right-from-bracket w-4 shrink-0"></i>
                                 Cerrar sesión
                             </button>
                         </li>
