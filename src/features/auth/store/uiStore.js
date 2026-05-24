@@ -1,6 +1,9 @@
 import { create } from "zustand";
 
 export const useUIStore = create((set) => ({
+  isMobileOpen: false,
+  toggleMobileSidebar: () => set((state) => ({ isMobileOpen: !state.isMobileOpen })),
+  setMobileSidebar: (isOpen) => set({ isMobileOpen: isOpen }),
 
   modal: null,
   confirm: null,

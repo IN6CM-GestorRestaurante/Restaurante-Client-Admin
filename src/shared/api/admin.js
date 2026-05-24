@@ -145,6 +145,10 @@ export const getAllReservations = async (params) => {
     return await axiosAdmin.get("/reservations", { params });
 };
 
+export const getSmartTableAllocation = async (params) => {
+    return await axiosAdmin.get("/reservations/smart-allocation", { params });
+};
+
 export const getReservationById = async (id) => {
     return await axiosAdmin.get(`/reservations/${id}`);
 };

@@ -106,6 +106,29 @@ const handleRefreshToken = async function (_error) {
   return Promise.reject(_error);
 };
  
+// Request interceptors to inject JWT Bearer Token if it exists in Zustand store
+axiosAuth.interceptors.request.use(
+  (config) => {
+    const token = useAuthStore.getState().token;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (err) => Promise.reject(err)
+);
+
+axiosAdmin.interceptors.request.use(
+  (config) => {
+    const token = useAuthStore.getState().token;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (err) => Promise.reject(err)
+);
+
 axiosAuth.interceptors.response.use((res) => res, handleRefreshToken);
  
 axiosAdmin.interceptors.response.use((res) => res, handleRefreshToken);
