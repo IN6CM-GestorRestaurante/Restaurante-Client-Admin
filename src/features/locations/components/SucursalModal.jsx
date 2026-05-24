@@ -37,9 +37,29 @@ export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
         if (isOpen) {
             setErrors({});
             const nextForm = initialData ? {
-// ...
+                name: initialData.name || "",
+                descripcion: initialData.descripcion || "",
+                address: initialData.address || "",
+                openingTime: initialData.openingTime || "08:00",
+                closingTime: initialData.closingTime || "22:00",
+                category: initialData.category || "",
+                averagePrice: initialData.averagePrice || "",
+                email: initialData.email || "",
+                phoneNumber: initialData.phoneNumber || "",
+                state: initialData.state || "Operativa",
+                photos: [],
             } : {
-// ...
+                name: "",
+                descripcion: "",
+                address: "",
+                openingTime: "08:00",
+                closingTime: "22:00",
+                category: "",
+                averagePrice: "",
+                email: "",
+                phoneNumber: "",
+                state: "Operativa",
+                photos: [],
             };
             setForm(nextForm);
             setPreview(initialData?.image ?? null);
@@ -114,7 +134,7 @@ export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
             subtitle="Completa la información de la sucursal"
         >
             <div className="space-y-5">
-                <div className="flex justify-center pb-2 sm:pb-4">
+                <div className="flex flex-col items-center justify-center pb-2 sm:pb-4">
                     <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border bg-gray-100 shadow-inner sm:h-28 sm:w-28 md:h-32 md:w-32">
                         {preview ? (
                             <img className="h-full w-full object-cover" src={preview} alt="Vista previa de sucursal" />
@@ -122,6 +142,21 @@ export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
                             <span className="text-xs text-gray-400 sm:text-sm">Sin imagen</span>
                         )}
                     </div>
+                    {preview && (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setForm(current => ({ ...current, photos: [] }));
+                                setPreview(null);
+                                setForm(current => ({ ...current, removePhoto: true }));
+                                const fileInput = document.querySelector('input[type="file"]');
+                                if (fileInput) fileInput.value = "";
+                            }}
+                            className="mt-2 text-xs font-semibold text-red-500 hover:text-red-700 cursor-pointer flex items-center gap-1"
+                        >
+                            <i className="fas fa-trash-alt"></i> Eliminar imagen
+                        </button>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6">
@@ -217,7 +252,7 @@ export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
                         <input
                             type="number"
                             min="0"
-                            step="0.01"
+                            step="0.5"
                             className="app-modal-input"
                             placeholder="00.00"
                             value={form.averagePrice}

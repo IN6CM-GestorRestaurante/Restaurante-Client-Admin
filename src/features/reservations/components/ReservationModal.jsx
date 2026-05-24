@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal } from "../../../shared/ui/Modal";
 import { useSaveReservation } from "../hooks/useSaveReservation";
 import { useReservationsStore } from "../store/adminStore";
+import { getRestaurants, getSmartTableAllocation } from "../../../shared/api/admin";
 import { showError, showSuccess } from "../../../shared/utils/toast";
 
 export const ReservationModal = ({ isOpen, initialData = null, onClose }) => {
@@ -9,54 +10,143 @@ export const ReservationModal = ({ isOpen, initialData = null, onClose }) => {
     const loading = useReservationsStore((s) => s.loading);
 
     const [form, setForm] = useState({
-        user: "",
-        restaurant: "",
+        guestName: "",
+        branch: "",
+        guestsCount: 1,
         date: "",
-        table: "",
-        type: "En Mesa",
-        deliveryAddress: "",
-        items: [],
+        tables: [],
         status: "Pendiente",
         notes: "",
     });
 
+    const [branches, setBranches] = useState([]);
+    const [smartTables, setSmartTables] = useState([]);
+    const [allocationStrategy, setAllocationStrategy] = useState("");
+    const [smartLoading, setSmartLoading] = useState(false);
+
     const [prevInitialData, setPrevInitialData] = useState(null);
     const [prevIsOpen, setPrevIsOpen] = useState(false);
 
+    // Initialize/Reset form on modal open or initialData change
     if (isOpen !== prevIsOpen || initialData !== prevInitialData) {
         setPrevIsOpen(isOpen);
         setPrevInitialData(initialData);
 
         if (isOpen) {
             const nextForm = initialData ? {
-                user: initialData.user ?? "",
-                restaurant: initialData.restaurant ?? "",
-                date: initialData.date ?? "",
-                table: initialData.table ?? "",
-                type: initialData.type ?? "En Mesa",
-                deliveryAddress: initialData.deliveryAddress ?? "",
-                items: initialData.items ?? [],
+                guestName: initialData.guestName ?? "",
+                branch: initialData.branch?._id ?? initialData.branch ?? "",
+                guestsCount: initialData.guestsCount ?? 1,
+                date: initialData.date ? new Date(initialData.date).toISOString().slice(0, 16) : "",
+                tables: initialData.tables?.map((t) => t._id ?? t) ?? [],
                 status: initialData.status ?? "Pendiente",
                 notes: initialData.notes ?? "",
             } : {
-                user: "",
-                restaurant: "",
+                guestName: "",
+                branch: "",
+                guestsCount: 1,
                 date: "",
-                table: "",
-                type: "En Mesa",
-                deliveryAddress: "",
-                items: [],
+                tables: [],
                 status: "Pendiente",
                 notes: "",
             };
             setForm(nextForm);
+            setSmartTables([]);
+            setAllocationStrategy("");
         }
     }
 
+    // Load active sucursales/branches on mount
+    useEffect(() => {
+        const fetchBranches = async () => {
+            try {
+                const res = await getRestaurants({ isActive: true });
+                setBranches(res.data || res || []);
+            } catch (err) {
+                console.error("Error al cargar sucursales:", err);
+            }
+        };
+        fetchBranches();
+    }, []);
+
+    // Trigger Smart Table Allocation whenever branch, guestsCount, or date changes
+    useEffect(() => {
+        if (!isOpen) return;
+        const { branch, guestsCount, date } = form;
+        if (!branch || !guestsCount || !date) {
+            setSmartTables([]);
+            setAllocationStrategy("");
+            return;
+        }
+
+        const fetchSmartAllocation = async () => {
+            setSmartLoading(true);
+            try {
+                const res = await getSmartTableAllocation({
+                    branchId: branch,
+                    guestsCount: Number(guestsCount),
+                    date: new Date(date).toISOString()
+                });
+
+                const data = res.data || res || {};
+                const available = data.availableTables || [];
+                const allocated = data.allocatedTables || [];
+                
+                setSmartTables(available);
+                setAllocationStrategy(data.strategy || "Combinación recomendada");
+
+                // Auto pre-select allocated tables for new reservations
+                if (!initialData) {
+                    setForm(prev => ({
+                        ...prev,
+                        tables: allocated.map(t => t._id || t)
+                    }));
+                }
+            } catch (err) {
+                console.error("Error en Smart Table Allocation:", err);
+                setSmartTables([]);
+                setAllocationStrategy("");
+            } finally {
+                setSmartLoading(false);
+            }
+        };
+
+        // Debounce allocation requests slightly to avoid spamming the backend
+        const timer = setTimeout(fetchSmartAllocation, 400);
+        return () => clearTimeout(timer);
+    }, [form.branch, form.guestsCount, form.date, isOpen, initialData]);
+
+    const handleTableToggle = (tableId) => {
+        setForm(prev => {
+            const isSelected = prev.tables.includes(tableId);
+            const nextTables = isSelected
+                ? prev.tables.filter(id => id !== tableId)
+                : [...prev.tables, tableId];
+            return { ...prev, tables: nextTables };
+        });
+    };
+
     const handleSubmit = async () => {
+        if (!form.guestName?.trim()) {
+            showError("El nombre del cliente es obligatorio");
+            return;
+        }
+        if (!form.branch) {
+            showError("Debe seleccionar una sucursal");
+            return;
+        }
+        if (!form.date) {
+            showError("Debe seleccionar la fecha y hora de la reservación");
+            return;
+        }
+        if (form.tables.length === 0) {
+            showError("Debe asignar al menos una mesa para la reservación");
+            return;
+        }
+
         try {
             await saveReservation(form, initialData?._id);
-            showSuccess(initialData ? "Reservación actualizada" : "Reservación creada");
+            showSuccess(initialData ? "Reservación actualizada con éxito" : "Reservación registrada con éxito");
             onClose?.();
         } catch (err) {
             showError(err?.response?.data?.message || err?.message || "Error al guardar reservación");
@@ -67,77 +157,167 @@ export const ReservationModal = ({ isOpen, initialData = null, onClose }) => {
         <Modal 
             isOpen={isOpen} 
             onClose={onClose} 
-            title={initialData ? "Editar reservación" : "Nueva reservación"} 
-            subtitle="Completa la información de la reservación"
+            title={initialData ? "Editar Reservación" : "Nueva Reservación"} 
+            subtitle="Asignación inteligente de salones y optimización de mesas."
         >
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
+                
+                {/* Cliente */}
                 <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Usuario</label>
-                    <input placeholder="MongoID" className="app-modal-input" value={form.user} onChange={(e) => setForm({ ...form, user: e.target.value })} />
+                    <label className="app-modal-fieldLabel font-semibold text-stone-700 text-sm">Cliente Legal (Nombre)</label>
+                    <input 
+                        type="text"
+                        placeholder="Ej: Oliver Mérida" 
+                        className="app-modal-input" 
+                        value={form.guestName} 
+                        onChange={(e) => setForm({ ...form, guestName: e.target.value })} 
+                    />
                 </div>
 
+                {/* Sucursal */}
                 <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Restaurante</label>
-                    <input placeholder="MongoID" className="app-modal-input" value={form.restaurant} onChange={(e) => setForm({ ...form, restaurant: e.target.value })} />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Fecha y hora</label>
-                    <input placeholder="2026-04-26T19:30:00.000Z" className="app-modal-input" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Mesa</label>
-                    <input placeholder="Requerido para En Mesa" className="app-modal-input" value={form.table} onChange={(e) => setForm({ ...form, table: e.target.value })} />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Tipo</label>
-                    <select className="app-modal-select" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
-                        <option>En Mesa</option>
-                        <option>Para llevar</option>
-                        <option>A domicilio</option>
+                    <label className="app-modal-fieldLabel font-semibold text-stone-700 text-sm">Sucursal</label>
+                    <select 
+                        className="app-modal-select" 
+                        value={form.branch} 
+                        onChange={(e) => setForm({ ...form, branch: e.target.value, tables: [] })}
+                    >
+                        <option value="">Seleccione Sucursal...</option>
+                        {branches.map(b => (
+                            <option key={b._id} value={b._id}>{b.alias || b.name}</option>
+                        ))}
                     </select>
                 </div>
 
+                {/* Personas / Comensales */}
                 <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Dirección entrega</label>
-                    <input placeholder="Requerido para A domicilio" className="app-modal-input" value={form.deliveryAddress} onChange={(e) => setForm({ ...form, deliveryAddress: e.target.value })} />
+                    <label className="app-modal-fieldLabel font-semibold text-stone-700 text-sm">Número de Comensales</label>
+                    <input 
+                        type="number" 
+                        min="1" 
+                        max="50"
+                        className="app-modal-input" 
+                        value={form.guestsCount} 
+                        onChange={(e) => setForm({ ...form, guestsCount: Math.max(1, Number(e.target.value)) })} 
+                    />
                 </div>
 
+                {/* Fecha y Hora */}
                 <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Item menú (ID)</label>
-                    <input placeholder="MongoID" className="app-modal-input" value={(form.items[0] && form.items[0].menu) || ""} onChange={(e) => setForm({ ...form, items: [{ ...form.items[0], menu: e.target.value }] })} />
+                    <label className="app-modal-fieldLabel font-semibold text-stone-700 text-sm">Fecha y Hora</label>
+                    <input 
+                        type="datetime-local" 
+                        className="app-modal-input" 
+                        value={form.date} 
+                        onChange={(e) => setForm({ ...form, date: e.target.value })} 
+                    />
                 </div>
 
-                <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Cantidad item</label>
-                    <input type="number" min="1" className="app-modal-input" value={(form.items[0] && form.items[0].quantity) || 1} onChange={(e) => setForm({ ...form, items: [{ ...form.items[0], quantity: Number(e.target.value) }] })} />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Estado</label>
-                    <select className="app-modal-select" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
-                        <option>Confirmada</option>
-                        <option>Pendiente</option>
-                        <option>En curso</option>
-                        <option>Completada</option>
-                        <option>Cancelada</option>
-                    </select>
-                </div>
-
-                <div className="flex flex-col gap-2 col-span-full">
-                    <br />
-                    <label className="app-modal-fieldLabel">Notas</label>
-                    <div className="flex justify-center w-full">
-                        <textarea className="app-modal-textarea w-full md:w-3/4 lg:w-2/3" placeholder="Observaciones..." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+                {/* Asignador de Mesas (Smart Table) */}
+                <div className="flex flex-col gap-2 col-span-full border-t border-stone-100 pt-4">
+                    <div className="flex items-center justify-between gap-4 mb-2">
+                        <label className="app-modal-fieldLabel font-bold text-stone-800 text-sm">
+                            Asignación de Mesas
+                        </label>
+                        {allocationStrategy && (
+                            <span className="px-2.5 py-0.5 text-[10px] font-bold text-orange-700 bg-orange-50 border border-orange-100 rounded-md uppercase tracking-wider">
+                                <i className="fas fa-magic mr-1" /> {allocationStrategy}
+                            </span>
+                        )}
                     </div>
+
+                    {smartLoading ? (
+                        <div className="flex flex-col items-center justify-center p-6 bg-stone-50 border border-stone-100 rounded-xl gap-2">
+                            <i className="fas fa-circle-notch fa-spin text-orange-500 text-lg" />
+                            <span className="text-xs text-stone-500 font-medium">Buscando combinación óptima...</span>
+                        </div>
+                    ) : smartTables.length === 0 ? (
+                        <div className="p-5 text-center text-stone-400 bg-stone-50 border border-stone-200/60 rounded-2xl text-xs font-semibold">
+                            {form.branch && form.date 
+                                ? "No hay mesas disponibles en esta sucursal y horario para el número de personas indicado." 
+                                : "Seleccione sucursal, comensales y horario para cargar la disponibilidad inteligente."
+                            }
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 bg-stone-50/50 p-4 border border-stone-200/80 rounded-2xl">
+                            {smartTables.map((table) => {
+                                const isChecked = form.tables.includes(table._id);
+                                return (
+                                    <label 
+                                        key={table._id}
+                                        className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none ${
+                                            isChecked 
+                                                ? "bg-orange-500/10 border-orange-500/30 shadow-xs" 
+                                                : "bg-white border-stone-200 hover:border-stone-300"
+                                        }`}
+                                    >
+                                        <input 
+                                            type="checkbox"
+                                            checked={isChecked}
+                                            onChange={() => handleTableToggle(table._id)}
+                                            className="accent-orange-500 h-4 w-4 rounded-md shrink-0 cursor-pointer"
+                                        />
+                                        <div className="min-w-0">
+                                            <span className="block text-xs font-bold text-stone-800 truncate">
+                                                Mesa {table.number || table.name}
+                                            </span>
+                                            <span className="block text-[10px] text-stone-500 font-medium leading-none mt-0.5">
+                                                Cap: {table.capacity} p.
+                                            </span>
+                                        </div>
+                                    </label>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+
+                {/* Estado */}
+                <div className="flex flex-col gap-2">
+                    <label className="app-modal-fieldLabel font-semibold text-stone-700 text-sm">Estado</label>
+                    <select 
+                        className="app-modal-select" 
+                        value={form.status} 
+                        onChange={(e) => setForm({ ...form, status: e.target.value })}
+                    >
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Confirmada">Confirmada</option>
+                        <option value="En curso">En curso</option>
+                        <option value="Completada">Completada</option>
+                        <option value="Cancelada">Cancelada</option>
+                    </select>
+                </div>
+
+                {/* Notas */}
+                <div className="flex flex-col gap-2 col-span-full">
+                    <label className="app-modal-fieldLabel font-semibold text-stone-700 text-sm">Notas u Observaciones</label>
+                    <textarea 
+                        className="app-modal-textarea" 
+                        placeholder="Ej: Cliente prefiere mesa cerca de la ventana o solicita silla para bebé..." 
+                        rows={2}
+                        value={form.notes} 
+                        onChange={(e) => setForm({ ...form, notes: e.target.value })} 
+                    />
                 </div>
             </div>
 
-            <div className="app-modal-actions">
-                <button type="button" onClick={onClose} className="app-modal-btn app-modal-btnSecondary w-full sm:w-auto">Cancelar</button>
-                <button type="button" onClick={handleSubmit} className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto" disabled={loading}>{loading ? "Guardando..." : "Guardar"}</button>
+            <div className="app-modal-actions border-t border-stone-100 pt-4 mt-6">
+                <button 
+                    type="button" 
+                    onClick={onClose} 
+                    className="app-modal-btn app-modal-btnSecondary w-full sm:w-auto"
+                >
+                    Cancelar
+                </button>
+                
+                <button 
+                    type="button" 
+                    onClick={handleSubmit} 
+                    className="app-modal-btn app-modal-btnPrimary w-full sm:w-auto bg-gradient-to-r from-red-500 to-orange-500 border-none font-bold uppercase shadow-md shadow-orange-500/10 hover:shadow-orange-500/25 active:scale-[0.98] transition-all" 
+                    disabled={loading}
+                >
+                    {loading ? "Guardando..." : "Guardar"}
+                </button>
             </div>
         </Modal>
     );

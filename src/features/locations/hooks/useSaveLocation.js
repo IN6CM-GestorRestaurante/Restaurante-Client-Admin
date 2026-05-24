@@ -16,7 +16,8 @@ export const useSaveLocation = () => {
     formData.append("averagePrice", data.averagePrice);
     formData.append("email", data.email);
     formData.append("phoneNumber", data.phoneNumber);
-    formData.append("isActive", String(data.state !== "Cerrada"));
+    formData.append("isActive", "true");
+    formData.append("state", data.state || "Operativa");
 
     // Normalize phone to E.164 when a local 7-8 digit number is provided (assume +502)
     const phone = String(data.phoneNumber || "").trim();
@@ -29,6 +30,8 @@ export const useSaveLocation = () => {
     if (data.photos?.length > 0) {
       // server expects the file field name to be 'photos' (uploadRestaurantImage.single('photos'))
       formData.append("photos", data.photos[0]);
+    } else if (data.removePhoto) {
+      formData.append("removePhoto", "true");
     }
 
     if (locationId) {

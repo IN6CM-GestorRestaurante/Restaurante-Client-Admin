@@ -12,6 +12,7 @@ import { UsuariosSection } from "../../features/users/components/UsuariosSection
 import { IngredientesSection } from "../../features/ingredients/components/IngredientesSection";
 import { StockSection } from "../../features/stocks/components/StockSection";
 import { FacturasSection } from "../../features/invoices/components/FacturasSection";
+import { CompaniasSection } from "../../features/companies/components/CompaniasSection";
 
 // Constantes de roles para legibilidad
 const ADMIN = ["SUPER_ADMIN", "ADMIN_ROLE", "COMPANY_ADMIN"];
@@ -37,6 +38,9 @@ export const AppRoutes = () => {
                 }
             >
                 <Route path="summaries" element={<ResumenSection />} />
+                <Route path="companies" element={
+                    <ProtectedRoute allowedRoles={["SUPER_ADMIN", "ADMIN_ROLE"]}><CompaniasSection /></ProtectedRoute>
+                } />
                 <Route path="locations" element={
                     <ProtectedRoute allowedRoles={ADMIN}><SucursalesSection /></ProtectedRoute>
                 } />

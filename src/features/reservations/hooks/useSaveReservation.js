@@ -6,15 +6,13 @@ export const useSaveReservation = () => {
 
   const saveReservation = async (data, reservationId = null) => {
     const payload = {
-      user: data.user,
-      branch: data.restaurant, // mapped to 'branch'
-      type: data.type,
-      table: data.table,
-      date: data.date,
-      deliveryAddress: data.deliveryAddress,
-      items: data.items,
-      status: data.status,
-      notes: data.notes,
+      guestName: data.guestName?.trim(),
+      branch: data.branch,
+      guestsCount: Number(data.guestsCount || 1),
+      date: new Date(data.date).toISOString(),
+      tables: Array.isArray(data.tables) ? data.tables : [],
+      status: data.status || "Pendiente",
+      notes: data.notes?.trim() || "",
     };
 
     if (reservationId) {
