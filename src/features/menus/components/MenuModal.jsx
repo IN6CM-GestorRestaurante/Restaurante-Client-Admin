@@ -53,9 +53,47 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
         if (isOpen) {
             setErrors({});
             const nextForm = initialData ? {
-// ...
+                branch: initialData.branch?._id || initialData.branch || "",
+                itemType: initialData.itemType || "SINGLE",
+                name: initialData.name || "",
+                description: initialData.description || "",
+                price: initialData.price || "",
+                category: initialData.category || "Entrada",
+                isActive: initialData.isActive !== false,
+                image: [],
+                recipe: Array.isArray(initialData.recipe) ? initialData.recipe.map(r => ({
+                    ingredientId: r.ingredientId?._id || r.ingredientId || "",
+                    quantityRequired: r.quantityRequired || ""
+                })) : [],
+                comboItems: Array.isArray(initialData.comboItems) ? initialData.comboItems.map(c => ({
+                    menuItemId: c.menuItemId?._id || c.menuItemId || "",
+                    quantity: c.quantity || 1
+                })) : [],
+                promotion: {
+                    isActive: initialData.promotion?.isActive || false,
+                    discountType: initialData.promotion?.discountType || "PERCENTAGE",
+                    discountValue: initialData.promotion?.discountValue || "",
+                    startsAt: initialData.promotion?.startsAt ? initialData.promotion.startsAt.substring(0, 10) : "",
+                    endsAt: initialData.promotion?.endsAt ? initialData.promotion.endsAt.substring(0, 10) : ""
+                }
             } : {
-// ...
+                branch: "",
+                itemType: "SINGLE",
+                name: "",
+                description: "",
+                price: "",
+                category: "Entrada",
+                isActive: true,
+                image: [],
+                recipe: [],
+                comboItems: [],
+                promotion: {
+                    isActive: false,
+                    discountType: "PERCENTAGE",
+                    discountValue: "",
+                    startsAt: "",
+                    endsAt: ""
+                }
             };
             setForm(nextForm);
             setShowPromo(initialData?.promotion?.isActive || false);
@@ -113,8 +151,10 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
             formData.append("category", form.category);
             formData.append("isActive", form.isActive);
 
-            if (form.image.length > 0) {
+            if (form.image?.length > 0) {
                 formData.append("image", form.image[0]); // backend expects 'image'
+            } else if (form.removeImage) {
+                formData.append("removeImage", "true");
             }
 
             if (form.itemType === "SINGLE") {
@@ -155,7 +195,7 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
             title={initialData ? "Editar producto" : "Nuevo producto"}
             subtitle="Completa la información del producto"
         >
-            <div className="flex justify-center pb-2 sm:pb-4">
+            <div className="flex flex-col items-center justify-center pb-2 sm:pb-4">
                 <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border bg-gray-100 shadow-inner sm:h-28 sm:w-28 md:h-32 md:w-32 relative">
                     {preview ? (
                         <img className="h-full w-full object-cover" src={preview} alt="Vista previa de producto" />
@@ -164,6 +204,21 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
                     )}
                     <input type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleFileChange} />
                 </div>
+                {preview && (
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setForm(current => ({ ...current, image: [] }));
+                            setPreview(null);
+                            setForm(current => ({ ...current, removeImage: true }));
+                            const fileInput = document.querySelector('input[type="file"]');
+                            if (fileInput) fileInput.value = "";
+                        }}
+                        className="mt-2 text-xs font-semibold text-red-500 hover:text-red-700 cursor-pointer flex items-center gap-1 z-10 relative"
+                    >
+                        <i className="fas fa-trash-alt"></i> Eliminar imagen
+                    </button>
+                )}
             </div>
 
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6">

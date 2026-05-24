@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuthStore } from "../../auth/store/authStore";
 import { useLocationsStore } from "../../locations/store/adminStore";
@@ -7,14 +7,37 @@ import { useOrdersStore } from "../../orders/store/adminStore";
 import { useTablesStore } from "../../tables/store/adminStore";
 
 const QUICK_ACCESS = [
+    { key: "companies",    label: "Compañías",      icon: "fas fa-building",           color: "#a855f7", bg: "#faf5ff", desc: "Empresas registradas",    roles: ["SUPER_ADMIN", "ADMIN_ROLE"] },
+    { key: "locations",    label: "Sucursales",     icon: "fas fa-store",              color: "#dc2626", bg: "#fef2f2", desc: "Sedes y datos operativos",roles: ["COMPANY_ADMIN"] },
+    { key: "users",        label: "Usuarios",       icon: "fas fa-users",              color: "#0d9488", bg: "#f0fdfa", desc: "Personal y accesos",      roles: ["SUPER_ADMIN", "ADMIN_ROLE", "COMPANY_ADMIN", "BRANCH_MANAGER"] },
     { key: "tables",       label: "Mesas",          icon: "fas fa-chair",              color: "#ea580c", bg: "#fff7ed", desc: "Disponibilidad y zonas", roles: ["COMPANY_ADMIN", "BRANCH_MANAGER", "WAITER", "WAITRESS", "RECEPTIONIST"] },
     { key: "orders",       label: "Órdenes",        icon: "fas fa-receipt",            color: "#0284c7", bg: "#f0f9ff", desc: "Comandas y cocina",       roles: ["COMPANY_ADMIN", "BRANCH_MANAGER", "WAITER", "WAITRESS", "CHEF"] },
+    { key: "reservations", label: "Reservaciones",  icon: "fas fa-calendar-check",     color: "#be185d", bg: "#fdf2f8", desc: "Turnos y atención",       roles: ["COMPANY_ADMIN", "BRANCH_MANAGER", "WAITER", "WAITRESS", "RECEPTIONIST"] },
     { key: "menus",        label: "Menú",           icon: "fas fa-utensils",           color: "#16a34a", bg: "#f0fdf4", desc: "Platillos y combos",      roles: ["COMPANY_ADMIN", "BRANCH_MANAGER", "CHEF"] },
     { key: "ingredients",  label: "Ingredientes",   icon: "fas fa-carrot",             color: "#ca8a04", bg: "#fefce8", desc: "Materia prima",           roles: ["COMPANY_ADMIN", "BRANCH_MANAGER", "CHEF"] },
+    { key: "stocks",       label: "Inventario",     icon: "fas fa-cubes",              color: "#f59e0b", bg: "#fffbeb", desc: "Stock de ingredientes",   roles: ["COMPANY_ADMIN", "BRANCH_MANAGER"] },
     { key: "invoices",     label: "Facturas",       icon: "fas fa-file-invoice-dollar",color: "#7c3aed", bg: "#f5f3ff", desc: "Facturación y pagos",     roles: ["COMPANY_ADMIN", "BRANCH_MANAGER", "CASHIER"] },
-    { key: "locations",    label: "Sucursales",     icon: "fas fa-store",              color: "#dc2626", bg: "#fef2f2", desc: "Sedes y datos operativos",roles: ["SUPER_ADMIN", "ADMIN_ROLE", "COMPANY_ADMIN"] },
-    { key: "users",        label: "Usuarios",       icon: "fas fa-users",              color: "#0d9488", bg: "#f0fdfa", desc: "Personal y accesos",      roles: ["SUPER_ADMIN", "ADMIN_ROLE", "COMPANY_ADMIN", "BRANCH_MANAGER"] },
-    { key: "reservations", label: "Reservaciones",  icon: "fas fa-calendar-check",     color: "#be185d", bg: "#fdf2f8", desc: "Turnos y atención",       roles: ["COMPANY_ADMIN", "BRANCH_MANAGER", "WAITER", "WAITRESS", "RECEPTIONIST"] },
+];
+
+const GROUPS = [
+  {
+    title: "Gestión y Control",
+    desc: "Administración global, sedes y accesos del personal",
+    keys: ["companies", "locations", "users"],
+    accentColor: "from-purple-500 to-indigo-600",
+  },
+  {
+    title: "Operaciones de Salón",
+    desc: "Servicio al cliente, control de mesas y comandas activas",
+    keys: ["tables", "orders", "reservations"],
+    accentColor: "from-blue-500 to-sky-600",
+  },
+  {
+    title: "Cocina y Finanzas",
+    desc: "Recetas, inventario de almacén y cobros de caja",
+    keys: ["menus", "ingredients", "stocks", "invoices"],
+    accentColor: "from-emerald-500 to-amber-600",
+  }
 ];
 
 export const ResumenSection = () => {
@@ -50,8 +73,8 @@ export const ResumenSection = () => {
         <>
             <header className="header">
                 <div>
-                    <h2>Dashboard</h2>
-                    <p>Bienvenido, {user?.name || user?.email || "Administrador"}.</p>
+                    <h2>Gestor de Restaurante</h2>
+                    <p>Panel de administración — Bienvenido, {user?.name || user?.email || "Administrador"}.</p>
                 </div>
                 <div className="chips" style={{ display: "flex", gap: 8 }}>
                     <span className="chip" style={{ fontSize: 12, padding: "4px 12px", borderRadius: 8, backgroundColor: "#f5f5f4", color: "#57534e", border: "1px solid #e7e5e4" }}>
@@ -140,23 +163,65 @@ export const ResumenSection = () => {
                     </div>
                 )}
 
-                {/* Acceso rápido */}
-                <h3 style={{ fontSize: 14, fontWeight: 700, color: "#292524", marginBottom: 12 }}>
-                    <i className="fas fa-bolt" style={{ color: "#ea580c", marginRight: 6 }}></i>
-                    Acceso rápido
-                </h3>
-                <section className="views">
-                    {visibleCards.map((card) => (
-                        <article className="view-card" key={card.key}>
-                            <i className={card.icon} style={{ color: card.color }}></i>
-                            <h3>{card.label}</h3>
-                            <p>{card.desc}</p>
-                            <button type="button" onClick={() => navigate(`/dashboard/${card.key}`)}>
-                                Ir a la vista <i className="fas fa-arrow-right"></i>
-                            </button>
-                        </article>
-                    ))}
-                </section>
+                {/* Acceso rápido — clickable cards grouped beautifully */}
+                <div className="mt-8 space-y-8">
+                    <h3 className="text-lg font-extrabold text-stone-800 flex items-center gap-2 border-b border-stone-200 pb-3">
+                        <i className="fas fa-grip-horizontal text-orange-500"></i>
+                        Módulos de Acceso Rápido
+                    </h3>
+                    
+                    {GROUPS.map((group) => {
+                        const groupCards = visibleCards.filter((card) => group.keys.includes(card.key));
+                        if (groupCards.length === 0) return null;
+                        
+                        return (
+                            <div key={group.title} className="space-y-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                                    <div className="flex items-center gap-2.5">
+                                        <span className={`w-1 h-6 rounded-full bg-gradient-to-b ${group.accentColor}`} />
+                                        <h4 className="text-base font-extrabold text-stone-900 tracking-tight">{group.title}</h4>
+                                    </div>
+                                    <span className="text-xs font-semibold text-stone-500 pl-3 sm:pl-0">{group.desc}</span>
+                                </div>
+                                
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+                                    {groupCards.map((card) => (
+                                        <Link 
+                                            to={`/dashboard/${card.key}`}
+                                            key={card.key}
+                                            className="group relative flex flex-col justify-between p-5 rounded-2xl bg-white/70 backdrop-blur-md border border-stone-200/50 hover:border-orange-500/20 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer text-stone-900 no-underline"
+                                            style={{ textDecoration: 'none' }}
+                                        >
+                                            <div className="flex items-start justify-between">
+                                                <div 
+                                                    className="w-12 h-12 rounded-2xl flex items-center justify-center border transition-all duration-300 shadow-inner group-hover:scale-110"
+                                                    style={{ 
+                                                        backgroundColor: card.bg, 
+                                                        borderColor: `${card.color}20`,
+                                                        color: card.color 
+                                                    }}
+                                                >
+                                                    <i className={`${card.icon} text-lg`} />
+                                                </div>
+                                                <span className="opacity-0 group-hover:opacity-100 text-orange-500 transition-opacity duration-300">
+                                                    <i className="fas fa-arrow-right text-xs" />
+                                                </span>
+                                            </div>
+                                            <div className="mt-5">
+                                                <h3 className="text-base font-bold text-stone-800 tracking-tight group-hover:text-orange-500 transition-colors duration-200">
+                                                    {card.label}
+                                                </h3>
+                                                <p className="text-xs font-medium text-stone-500 mt-1 leading-normal">
+                                                    {card.desc}
+                                                </p>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
             </section>
         </>
     );

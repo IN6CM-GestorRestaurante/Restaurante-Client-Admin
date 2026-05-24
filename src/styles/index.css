@@ -1643,3 +1643,68 @@ tr:last-child td {
     width: min(100%, 50rem);
   }
 }
+
+/* ── Inline Form Validation ── */
+.field-error {
+  display: block;
+  color: var(--primary-red);
+  font-size: 12px;
+  margin-top: -12px;
+  margin-bottom: 10px;
+  padding-left: 20px;
+  text-align: left;
+}
+
+.login-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 10px 16px;
+  margin-bottom: 8px;
+  animation: shake 0.3s ease-in-out;
+}
+
+.login-error-banner i {
+  color: #dc2626;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.login-error-banner span {
+  color: #991b1b;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* ── Password Toggle Button ── */
+.password-toggle-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #ccc;
+  font-size: 15px;
+  transition: color 0.2s ease;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle-btn:hover {
+  color: var(--primary-red);
+}
