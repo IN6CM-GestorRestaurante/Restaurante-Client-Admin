@@ -88,101 +88,135 @@ export const RegisterForm = ({ onNavigate }) => {
         }
     };
 
+    const inputBaseClass = "w-full pl-12 pr-5 py-3.5 text-sm leading-5 bg-stone-50 border rounded-full outline-none transition-all";
+    const inputValidClass = "border-stone-200 focus:border-orange-500";
+    const inputErrorClass = "border-red-400 focus:border-red-500";
+    const sectionWrapperClass = "p-0";
+    const inputIconClass = "absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center pointer-events-none";
+
     return (
-        <div className="w-full max-w-4xl mx-auto p-8 md:p-10 bg-white rounded-3xl shadow-2xl overflow-y-auto my-8 border border-stone-100" style={{ maxHeight: "92vh" }}>
-            <div className="w-full">
-                <span className="welcome-text block mb-1 text-stone-400 text-xs font-semibold uppercase tracking-wider">Crear cuenta</span>
-                <div className="logo-container mb-2 flex items-center gap-2">
-                    <i className="fas fa-utensils text-orange-500 text-2xl"></i>
-                    <span className="text-xl font-extrabold text-orange-500 tracking-wider">GESTOR RESTAURANTE</span>
+        <div className="register-card shadow-2xl relative">
+            <style>{`
+                .register-password-input::-ms-reveal,
+                .register-password-input::-ms-clear {
+                    display: none;
+                }
+
+                .register-password-input::-webkit-credentials-auto-fill-button {
+                    visibility: hidden;
+                    display: none !important;
+                    pointer-events: none;
+                    position: absolute;
+                    right: 0;
+                }
+            `}</style>
+
+            <div className="register-left flex flex-col justify-start items-center px-6 sm:px-8 md:px-10 py-9 md:py-11">
+                <span className="welcome-text tracking-widest text-xs font-semibold text-stone-400 uppercase">
+                    Bienvenido al
+                </span>
+                <div className="logo-container flex items-center gap-2.5 mt-1 mb-4">
+                    <i className="fas fa-utensils text-[1.35rem] leading-none text-orange-500"></i>
+                    <span className="text-xl leading-none font-extrabold text-orange-500 uppercase tracking-wider">
+                        GESTOR RESTAURANTE
+                    </span>
                 </div>
 
-                <p className="subtitle mb-8 text-stone-500 text-sm">Registra tu restaurante para gestionar reservas, mesas, inventario y personal en un solo lugar.</p>
+                <p className="subtitle text-stone-500 text-xs sm:text-sm max-w-xl text-center mb-6 leading-relaxed">
+                    Crea tu cuenta y configura tu empresa para administrar reservas, pedidos, inventario y personal desde un solo panel.
+                </p>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-6">
-                    
-                    {/* Sección: Datos del Administrador */}
-                    <div className="flex items-center my-6">
-                        <div className="flex-grow border-t border-stone-200"></div>
-                        <h2 className="px-4 text-sm font-bold text-stone-700 uppercase tracking-wider">Datos del Administrador</h2>
-                        <div className="flex-grow border-t border-stone-200"></div>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <form onSubmit={handleSubmit(onSubmit)} className="w-full self-stretch space-y-8" style={{ maxWidth: "none" }}>
+                    <div className={`${sectionWrapperClass} pb-2`}>
+                        <div className="flex items-center gap-3 mb-5">
+                            <div className="h-px flex-1 bg-stone-200"></div>
+                            <span className="text-[11px] font-bold uppercase tracking-widest text-stone-500">Datos del Administrador</span>
+                            <div className="h-px flex-1 bg-stone-200"></div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 md:gap-x-5 gap-y-5">
                         <div>
-                            <div className={`input-group relative ${errors.name ? 'border-red-400' : ''}`} style={{ marginBottom: 0 }}>
-                                <i className="far fa-user absolute left-5 top-1/2 -translate-y-1/2 text-stone-400"></i>
-                                <input 
-                                    type="text" 
-                                    placeholder="Nombre" 
-                                    className="w-full pl-12 pr-5 py-3 border border-stone-200 rounded-full outline-none focus:border-orange-500 transition-colors text-sm"
+                            <div className="input-group relative" style={{ marginBottom: 0 }}>
+                                <span className={inputIconClass}>
+                                    <i className="far fa-user text-stone-400 text-sm leading-none" />
+                                </span>
+                                <input
+                                    type="text"
+                                    placeholder="Nombre"
+                                    className={`${inputBaseClass} ${errors.name ? inputErrorClass : inputValidClass}`}
                                     onKeyDown={handleNameKeyDown}
-                                    {...register("name", { 
+                                    {...register("name", {
                                         required: "El nombre es obligatorio",
                                         pattern: {
                                             value: /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/,
                                             message: "El nombre no debe contener números ni símbolos"
                                         }
-                                    })} 
+                                    })}
                                 />
                             </div>
                             {errors.name && <p className="field-error text-red-500 text-xs font-semibold mt-1.5 pl-4 text-left">{errors.name.message}</p>}
                         </div>
 
                         <div>
-                            <div className={`input-group relative ${errors.surname ? 'border-red-400' : ''}`} style={{ marginBottom: 0 }}>
-                                <i className="far fa-user absolute left-5 top-1/2 -translate-y-1/2 text-stone-400"></i>
-                                <input 
-                                    type="text" 
-                                    placeholder="Apellidos" 
-                                    className="w-full pl-12 pr-5 py-3 border border-stone-200 rounded-full outline-none focus:border-orange-500 transition-colors text-sm"
+                            <div className="input-group relative" style={{ marginBottom: 0 }}>
+                                <span className={inputIconClass}>
+                                    <i className="far fa-user text-stone-400 text-sm leading-none" />
+                                </span>
+                                <input
+                                    type="text"
+                                    placeholder="Apellidos"
+                                    className={`${inputBaseClass} ${errors.surname ? inputErrorClass : inputValidClass}`}
                                     onKeyDown={handleNameKeyDown}
-                                    {...register("surname", { 
+                                    {...register("surname", {
                                         required: "Los apellidos son obligatorios",
                                         pattern: {
                                             value: /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/,
                                             message: "Los apellidos no deben contener números ni símbolos"
                                         }
-                                    })} 
+                                    })}
                                 />
                             </div>
                             {errors.surname && <p className="field-error text-red-500 text-xs font-semibold mt-1.5 pl-4 text-left">{errors.surname.message}</p>}
                         </div>
 
                         <div>
-                            <div className={`input-group relative ${errors.email ? 'border-red-400' : ''}`} style={{ marginBottom: 0 }}>
-                                <i className="far fa-envelope absolute left-5 top-1/2 -translate-y-1/2 text-stone-400"></i>
-                                <input 
-                                    type="email" 
-                                    placeholder="Correo electrónico" 
-                                    className="w-full pl-12 pr-5 py-3 border border-stone-200 rounded-full outline-none focus:border-orange-500 transition-colors text-sm"
-                                    {...register("email", { 
+                            <div className="input-group relative" style={{ marginBottom: 0 }}>
+                                <span className={inputIconClass}>
+                                    <i className="far fa-envelope text-stone-400 text-sm leading-none" />
+                                </span>
+                                <input
+                                    type="email"
+                                    placeholder="Correo electrónico"
+                                    className={`${inputBaseClass} ${errors.email ? inputErrorClass : inputValidClass}`}
+                                    {...register("email", {
                                         required: "El correo es obligatorio",
                                         pattern: {
                                             value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                                             message: "Ingresa un correo electrónico válido"
                                         }
-                                    })} 
+                                    })}
                                 />
                             </div>
                             {errors.email && <p className="field-error text-red-500 text-xs font-semibold mt-1.5 pl-4 text-left">{errors.email.message}</p>}
                         </div>
 
                         <div>
-                            <div className={`input-group relative ${errors.phone ? 'border-red-400' : ''}`} style={{ marginBottom: 0 }}>
-                                <i className="fas fa-phone absolute left-5 top-1/2 -translate-y-1/2 text-stone-400"></i>
-                                <input 
-                                    type="tel" 
-                                    placeholder="Teléfono (8 dígitos)" 
-                                    className="w-full pl-12 pr-5 py-3 border border-stone-200 rounded-full outline-none focus:border-orange-500 transition-colors text-sm"
+                            <div className="input-group relative" style={{ marginBottom: 0 }}>
+                                <span className={inputIconClass}>
+                                    <i className="fas fa-phone text-stone-400 text-sm leading-none" />
+                                </span>
+                                <input
+                                    type="tel"
+                                    placeholder="Teléfono (8 dígitos)"
+                                    className={`${inputBaseClass} ${errors.phone ? inputErrorClass : inputValidClass}`}
                                     onKeyDown={handlePhoneKeyDown}
-                                    {...register("phone", { 
+                                    {...register("phone", {
                                         required: "El teléfono es obligatorio",
                                         pattern: {
                                             value: /^\d{8}$/,
                                             message: "El teléfono debe contener exactamente 8 números"
                                         }
-                                    })} 
+                                    })}
                                 />
                             </div>
                             {errors.phone && <p className="field-error text-red-500 text-xs font-semibold mt-1.5 pl-4 text-left">{errors.phone.message}</p>}
@@ -190,122 +224,140 @@ export const RegisterForm = ({ onNavigate }) => {
 
                         <div>
                             <div className="input-group relative" style={{ marginBottom: 0 }}>
-                                <i className="fas fa-at absolute left-5 top-1/2 -translate-y-1/2 text-stone-400"></i>
-                                <input 
-                                    type="text" 
-                                    placeholder="Usuario (opcional)" 
-                                    className="w-full pl-12 pr-5 py-3 border border-stone-200 rounded-full outline-none focus:border-orange-500 transition-colors text-sm"
-                                    {...register("username")} 
+                                <span className={inputIconClass}>
+                                    <i className="fas fa-at text-stone-400 text-sm leading-none" />
+                                </span>
+                                <input
+                                    type="text"
+                                    placeholder="Usuario (opcional)"
+                                    className={`${inputBaseClass} ${inputValidClass}`}
+                                    {...register("username")}
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <div className={`input-group relative ${errors.password ? 'border-red-400' : ''}`} style={{ marginBottom: 0 }}>
-                                <i className="fas fa-lock absolute left-5 top-1/2 -translate-y-1/2 text-stone-400"></i>
-                                <input 
-                                    type={showPassword ? "text" : "password"} 
-                                    placeholder="Contraseña" 
-                                    className="w-full pl-12 pr-12 py-3 border border-stone-200 rounded-full outline-none focus:border-orange-500 transition-colors text-sm"
-                                    {...register("password", { 
-                                        required: "La contraseña es obligatoria",
-                                        minLength: {
-                                            value: 6,
-                                            message: "La contraseña debe tener al menos 6 caracteres"
-                                        }
-                                    })} 
-                                />
+                            <div className="flex items-center gap-2">
+                                <div className="input-group relative flex-1">
+                                    <span className={inputIconClass}>
+                                        <i className="fas fa-lock text-stone-400 text-sm leading-none" />
+                                    </span>
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        placeholder="Contraseña"
+                                        className={`register-password-input ${inputBaseClass} ${errors.password ? inputErrorClass : inputValidClass}`}
+                                        {...register("password", {
+                                            required: "La contraseña es obligatoria",
+                                            minLength: {
+                                                value: 6,
+                                                message: "La contraseña debe tener al menos 6 caracteres"
+                                            }
+                                        })}
+                                    />
+                                </div>
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 cursor-pointer"
+                                    className="login-password-toggle-btn h-11 w-11 shrink-0 self-center -translate-y-2 rounded-full bg-stone-100 border border-stone-200 inline-flex items-center justify-center text-stone-500 hover:text-stone-700 hover:bg-stone-200 transition-colors focus:outline-none cursor-pointer"
+                                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                                 >
-                                    <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`} />
+                                    <i className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"} text-sm leading-none`} />
                                 </button>
                             </div>
                             {errors.password && <p className="field-error text-red-500 text-xs font-semibold mt-1.5 pl-4 text-left">{errors.password.message}</p>}
                         </div>
                     </div>
-
-                    {/* Sección: Datos de la Empresa */}
-                    <div className="flex items-center my-6">
-                        <div className="flex-grow border-t border-stone-200"></div>
-                        <h2 className="px-4 text-sm font-bold text-stone-700 uppercase tracking-wider">Datos de la Empresa</h2>
-                        <div className="flex-grow border-t border-stone-200"></div>
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <div className={`${sectionWrapperClass} pt-6 pb-6`}>
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="h-px flex-1 bg-stone-200"></div>
+                            <span className="text-[11px] font-bold uppercase tracking-widest text-stone-500">Datos de la Empresa</span>
+                            <div className="h-px flex-1 bg-stone-200"></div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 md:gap-x-5 gap-y-6">
                         <div>
-                            <div className={`input-group relative ${errors.legalName ? 'border-red-400' : ''}`} style={{ marginBottom: 0 }}>
-                                <i className="far fa-building absolute left-5 top-1/2 -translate-y-1/2 text-stone-400"></i>
-                                <input 
-                                    type="text" 
-                                    placeholder="Razón Social (Legal)" 
-                                    className="w-full pl-12 pr-5 py-3 border border-stone-200 rounded-full outline-none focus:border-orange-500 transition-colors text-sm"
-                                    {...register("legalName", { required: "La razón social es obligatoria" })} 
+                            <div className="input-group relative" style={{ marginBottom: 0 }}>
+                                <span className={inputIconClass}>
+                                    <i className="far fa-building text-stone-400 text-sm leading-none" />
+                                </span>
+                                <input
+                                    type="text"
+                                    placeholder="Razón Social (Legal)"
+                                    className={`${inputBaseClass} ${errors.legalName ? inputErrorClass : inputValidClass}`}
+                                    {...register("legalName", { required: "La razón social es obligatoria" })}
                                 />
                             </div>
                             {errors.legalName && <p className="field-error text-red-500 text-xs font-semibold mt-1.5 pl-4 text-left">{errors.legalName.message}</p>}
                         </div>
 
                         <div>
-                            <div className={`input-group relative ${errors.alias ? 'border-red-400' : ''}`} style={{ marginBottom: 0 }}>
-                                <i className="fas fa-store absolute left-5 top-1/2 -translate-y-1/2 text-stone-400"></i>
-                                <input 
-                                    type="text" 
-                                    placeholder="Nombre Comercial" 
-                                    className="w-full pl-12 pr-5 py-3 border border-stone-200 rounded-full outline-none focus:border-orange-500 transition-colors text-sm"
-                                    {...register("alias", { required: "El nombre comercial es obligatorio" })} 
+                            <div className="input-group relative" style={{ marginBottom: 0 }}>
+                                <span className={inputIconClass}>
+                                    <i className="fas fa-store text-stone-400 text-sm leading-none" />
+                                </span>
+                                <input
+                                    type="text"
+                                    placeholder="Nombre Comercial"
+                                    className={`${inputBaseClass} ${errors.alias ? inputErrorClass : inputValidClass}`}
+                                    {...register("alias", { required: "El nombre comercial es obligatorio" })}
                                 />
                             </div>
                             {errors.alias && <p className="field-error text-red-500 text-xs font-semibold mt-1.5 pl-4 text-left">{errors.alias.message}</p>}
                         </div>
 
                         <div>
-                            <div className={`input-group relative ${errors.taxId ? 'border-red-400' : ''}`} style={{ marginBottom: 0 }}>
-                                <i className="fas fa-id-card absolute left-5 top-1/2 -translate-y-1/2 text-stone-400"></i>
-                                <input 
-                                    type="text" 
-                                    placeholder="NIT / Código Fiscal (ej: 1234567-8)" 
-                                    className="w-full pl-12 pr-5 py-3 border border-stone-200 rounded-full outline-none focus:border-orange-500 transition-colors text-sm"
+                            <div className="input-group relative" style={{ marginBottom: 0 }}>
+                                <span className={inputIconClass}>
+                                    <i className="fas fa-id-card text-stone-400 text-sm leading-none" />
+                                </span>
+                                <input
+                                    type="text"
+                                    placeholder="NIT / Código Fiscal (ej: 1234567-8)"
+                                    className={`${inputBaseClass} ${errors.taxId ? inputErrorClass : inputValidClass}`}
                                     onKeyDown={handleNitKeyDown}
-                                    {...register("taxId", { 
+                                    {...register("taxId", {
                                         required: "El código fiscal/NIT es obligatorio",
                                         pattern: {
                                             value: /^[a-zA-Z0-9-]+$/,
                                             message: "Ingresa un NIT/Código fiscal válido"
                                         }
-                                    })} 
+                                    })}
                                 />
                             </div>
                             {errors.taxId && <p className="field-error text-red-500 text-xs font-semibold mt-1.5 pl-4 text-left">{errors.taxId.message}</p>}
                         </div>
 
                         <div>
-                            <div className={`input-group relative ${errors.subdomain ? 'border-red-400' : ''}`} style={{ marginBottom: 0 }}>
-                                <i className="fas fa-globe absolute left-5 top-1/2 -translate-y-1/2 text-stone-400"></i>
-                                <input 
-                                    type="text" 
-                                    placeholder="Subdominio (ej: elsabor)" 
-                                    className="w-full pl-12 pr-5 py-3 border border-stone-200 rounded-full outline-none focus:border-orange-500 transition-colors text-sm"
-                                    {...register("subdomain", { 
+                            <div className="input-group relative" style={{ marginBottom: 0 }}>
+                                <span className={inputIconClass}>
+                                    <i className="fas fa-globe text-stone-400 text-sm leading-none" />
+                                </span>
+                                <input
+                                    type="text"
+                                    placeholder="Subdominio (ej: elsabor)"
+                                    className={`${inputBaseClass} ${errors.subdomain ? inputErrorClass : inputValidClass}`}
+                                    {...register("subdomain", {
                                         required: "El subdominio es obligatorio",
                                         pattern: {
                                             value: /^[a-z0-9-]+$/,
                                             message: "El subdominio solo admite minúsculas, números y guiones"
                                         }
-                                    })} 
+                                    })}
                                 />
                             </div>
                             {errors.subdomain && <p className="field-error text-red-500 text-xs font-semibold mt-1.5 pl-4 text-left">{errors.subdomain.message}</p>}
                         </div>
 
                         <div>
-                            <div className={`input-group relative ${errors.sector ? 'border-red-400' : ''}`} style={{ marginBottom: 0 }}>
-                                <i className="fas fa-utensils absolute left-5 top-1/2 -translate-y-1/2 text-stone-400"></i>
-                                <select 
-                                    className="w-full pl-12 pr-5 py-3 border border-stone-200 rounded-full outline-none focus:border-orange-500 transition-colors text-sm bg-stone-50"
-                                    {...register("sector", { required: "El sector es obligatorio" })} 
+                            <div className="input-group relative" style={{ marginBottom: 0 }}>
+                                <span className={inputIconClass}>
+                                    <i className="fas fa-utensils text-stone-400 text-sm leading-none" />
+                                </span>
+                                <select
+                                    className={`${inputBaseClass} appearance-none ${errors.sector ? inputErrorClass : inputValidClass}`}
+                                    {...register("sector", { required: "El sector es obligatorio" })}
                                     defaultValue=""
                                 >
                                     <option value="" disabled>Seleccione Sector</option>
@@ -322,11 +374,13 @@ export const RegisterForm = ({ onNavigate }) => {
                         </div>
 
                         <div>
-                            <div className={`input-group relative ${errors.companySize ? 'border-red-400' : ''}`} style={{ marginBottom: 0 }}>
-                                <i className="fas fa-users absolute left-5 top-1/2 -translate-y-1/2 text-stone-400"></i>
-                                <select 
-                                    className="w-full pl-12 pr-5 py-3 border border-stone-200 rounded-full outline-none focus:border-orange-500 transition-colors text-sm bg-stone-50"
-                                    {...register("companySize", { required: "El tamaño es obligatorio" })} 
+                            <div className="input-group relative" style={{ marginBottom: 0 }}>
+                                <span className={inputIconClass}>
+                                    <i className="fas fa-users text-stone-400 text-sm leading-none" />
+                                </span>
+                                <select
+                                    className={`${inputBaseClass} appearance-none ${errors.companySize ? inputErrorClass : inputValidClass}`}
+                                    {...register("companySize", { required: "El tamaño es obligatorio" })}
                                     defaultValue=""
                                 >
                                     <option value="" disabled>Tamaño de empresa</option>
@@ -340,11 +394,13 @@ export const RegisterForm = ({ onNavigate }) => {
                         </div>
 
                         <div>
-                            <div className={`input-group relative ${errors.country ? 'border-red-400' : ''}`} style={{ marginBottom: 0 }}>
-                                <i className="fas fa-map-marker-alt absolute left-5 top-1/2 -translate-y-1/2 text-stone-400"></i>
-                                <select 
-                                    className="w-full pl-12 pr-5 py-3 border border-stone-200 rounded-full outline-none focus:border-orange-500 transition-colors text-sm bg-stone-50"
-                                    {...register("country", { required: "El país es obligatorio" })} 
+                            <div className="input-group relative" style={{ marginBottom: 0 }}>
+                                <span className={inputIconClass}>
+                                    <i className="fas fa-map-marker-alt text-stone-400 text-sm leading-none" />
+                                </span>
+                                <select
+                                    className={`${inputBaseClass} appearance-none ${errors.country ? inputErrorClass : inputValidClass}`}
+                                    {...register("country", { required: "El país es obligatorio" })}
                                     defaultValue=""
                                 >
                                     <option value="" disabled>Seleccione País</option>
@@ -360,11 +416,13 @@ export const RegisterForm = ({ onNavigate }) => {
                         </div>
 
                         <div>
-                            <div className={`input-group relative ${errors.timezone ? 'border-red-400' : ''}`} style={{ marginBottom: 0 }}>
-                                <i className="fas fa-clock absolute left-5 top-1/2 -translate-y-1/2 text-stone-400"></i>
-                                <select 
-                                    className="w-full pl-12 pr-5 py-3 border border-stone-200 rounded-full outline-none focus:border-orange-500 transition-colors text-sm bg-stone-50"
-                                    {...register("timezone", { required: "La zona horaria es obligatoria" })} 
+                            <div className="input-group relative" style={{ marginBottom: 0 }}>
+                                <span className={inputIconClass}>
+                                    <i className="fas fa-clock text-stone-400 text-sm leading-none" />
+                                </span>
+                                <select
+                                    className={`${inputBaseClass} appearance-none ${errors.timezone ? inputErrorClass : inputValidClass}`}
+                                    {...register("timezone", { required: "La zona horaria es obligatoria" })}
                                     defaultValue=""
                                 >
                                     <option value="" disabled>Zona Horaria</option>
@@ -378,11 +436,13 @@ export const RegisterForm = ({ onNavigate }) => {
                         </div>
 
                         <div>
-                            <div className={`input-group relative ${errors.currency ? 'border-red-400' : ''}`} style={{ marginBottom: 0 }}>
-                                <i className="fas fa-coins absolute left-5 top-1/2 -translate-y-1/2 text-stone-400"></i>
-                                <select 
-                                    className="w-full pl-12 pr-5 py-3 border border-stone-200 rounded-full outline-none focus:border-orange-500 transition-colors text-sm bg-stone-50"
-                                    {...register("currency", { required: "La moneda es obligatoria" })} 
+                            <div className="input-group relative" style={{ marginBottom: 0 }}>
+                                <span className={inputIconClass}>
+                                    <i className="fas fa-coins text-stone-400 text-sm leading-none" />
+                                </span>
+                                <select
+                                    className={`${inputBaseClass} appearance-none ${errors.currency ? inputErrorClass : inputValidClass}`}
+                                    {...register("currency", { required: "La moneda es obligatoria" })}
                                     defaultValue=""
                                 >
                                     <option value="" disabled>Moneda</option>
@@ -396,31 +456,43 @@ export const RegisterForm = ({ onNavigate }) => {
                             {errors.currency && <p className="field-error text-red-500 text-xs font-semibold mt-1.5 pl-4 text-left">{errors.currency.message}</p>}
                         </div>
 
-                        <div className="input-group relative md:col-span-2" style={{ marginBottom: 0 }}>
-                            <i className="fas fa-image absolute left-5 top-1/2 -translate-y-1/2 text-stone-400"></i>
-                            <input 
-                                type="file" 
-                                accept="image/*" 
-                                className="w-full pl-12 pr-5 py-3 border border-stone-200 rounded-full outline-none focus:border-orange-500 transition-colors text-sm"
-                                style={{ paddingTop: '10px' }} 
-                                {...register("logo")} 
-                            />
+                        <div className="md:col-span-2 lg:col-span-3 mb-6 lg:mb-8">
+                            <div className="input-group relative" style={{ marginBottom: 0 }}>
+                                <span className={inputIconClass}>
+                                    <i className="fas fa-image text-stone-400 text-sm leading-none pointer-events-none" />
+                                </span>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className={`${inputBaseClass} ${inputValidClass} file:mr-3 file:rounded-full file:border-0 file:bg-orange-100 file:px-3 file:py-1 file:text-xs file:font-semibold file:text-orange-700 hover:file:bg-orange-200`}
+                                    {...register("logo")}
+                                />
+                            </div>
                         </div>
                     </div>
-
-                    <div className="pt-6">
-                        <button 
-                            type="submit" 
-                            disabled={isSubmitting} 
-                            className={`auth-btn action-btn w-full py-4 text-sm font-bold shadow-lg shadow-orange-500/20 hover:shadow-orange-500/35 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all cursor-pointer bg-gradient-to-r from-red-500 to-orange-500 uppercase flex items-center justify-center gap-2 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
-                        >
-                            {isSubmitting ? <Spinner size="sm" /> : 'Registrarme'}
-                        </button>
                     </div>
+
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className={`auth-btn action-btn w-full mt-8 py-4 text-sm font-bold shadow-lg shadow-orange-500/20 hover:shadow-orange-500/35 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all cursor-pointer bg-linear-to-r from-red-500 to-orange-500 uppercase flex items-center justify-center gap-2 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
+                    >
+                        {isSubmitting ? (
+                            <>
+                                <Spinner size="sm" />
+                                Cargando...
+                            </>
+                        ) : (
+                            "Registrarme"
+                        )}
+                    </button>
                 </form>
 
-                <p className="mt-8 text-center text-stone-500 text-sm">
-                    ¿Ya tienes una cuenta? <button type="button" onClick={() => onNavigate("login")} className="text-orange-500 font-bold ml-1 hover:underline cursor-pointer">Iniciar Sesión</button>
+                <p className="signin-link text-stone-500 text-xs sm:text-sm mt-6">
+                    ¿Ya tienes una cuenta?
+                    <button type="button" onClick={() => onNavigate("login")} className="text-orange-500 font-bold hover:underline cursor-pointer ml-1">
+                        Iniciar Sesión
+                    </button>
                 </p>
             </div>
         </div>

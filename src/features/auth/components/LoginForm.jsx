@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import loginImg from "../../../assets/img/login.jpg";
 import { useAuthStore } from "../store/authStore";
-import { Spinner } from "../../../shared/components/ui/Spinner";
 
 export const LoginForm = ({ onNavigate }) => {
     const navigate = useNavigate();
@@ -29,6 +28,20 @@ export const LoginForm = ({ onNavigate }) => {
 
     return (
         <div className="login-card shadow-2xl relative">
+            <style>{`
+                .login-password-input::-ms-reveal,
+                .login-password-input::-ms-clear {
+                    display: none;
+                }
+
+                .login-password-input::-webkit-credentials-auto-fill-button {
+                    visibility: hidden;
+                    display: none !important;
+                    pointer-events: none;
+                    position: absolute;
+                    right: 0;
+                }
+            `}</style>
             <div className="login-left flex flex-col justify-center items-center px-8 sm:px-12 md:px-16">
                 <span className="welcome-text tracking-widest text-xs font-semibold text-stone-400 uppercase">
                     Bienvenido al
@@ -54,11 +67,13 @@ export const LoginForm = ({ onNavigate }) => {
                 <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-[330px] space-y-4">
                     <div className="relative w-full">
                         <div className="input-group relative">
-                            <i className="far fa-user text-stone-400 absolute left-5 top-1/2 -translate-y-1/2" />
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center pointer-events-none">
+                                <i className="far fa-user text-stone-400 text-sm leading-none" />
+                            </span>
                             <input
                                 type="text"
                                 placeholder="Usuario o correo"
-                                className={`w-full pl-12 pr-5 py-3.5 text-sm bg-stone-50 border rounded-full outline-none transition-all ${
+                                className={`w-full pl-12 pr-5 py-3.5 text-sm leading-5 bg-stone-50 border rounded-full outline-none transition-all ${
                                     errors.emailOrUsername ? 'border-red-400 focus:border-red-500' : 'border-stone-200 focus:border-orange-500'
                                 }`}
                                 {...register("emailOrUsername", { 
@@ -74,24 +89,29 @@ export const LoginForm = ({ onNavigate }) => {
                     </div>
 
                     <div className="relative w-full">
-                        <div className="input-group relative">
-                            <i className="fas fa-lock text-stone-400 absolute left-5 top-1/2 -translate-y-1/2" />
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                placeholder="Contraseña"
-                                className={`w-full pl-12 pr-12 py-3.5 text-sm bg-stone-50 border rounded-full outline-none transition-all ${
-                                    errors.password ? 'border-red-400 focus:border-red-500' : 'border-stone-200 focus:border-orange-500'
-                                }`}
-                                {...register("password", { 
-                                    required: "La contraseña es obligatoria" 
-                                })}
-                            />
+                        <div className="flex items-center gap-2">
+                            <div className="input-group relative flex-1">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center pointer-events-none">
+                                    <i className="fas fa-lock text-stone-400 text-sm leading-none" />
+                                </span>
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Contraseña"
+                                    className={`login-password-input w-full pl-12 pr-5 py-3.5 text-sm leading-5 bg-stone-50 border rounded-full outline-none transition-all ${
+                                        errors.password ? 'border-red-400 focus:border-red-500' : 'border-stone-200 focus:border-orange-500'
+                                    }`}
+                                    {...register("password", { 
+                                        required: "La contraseña es obligatoria" 
+                                    })}
+                                />
+                            </div>
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="password-toggle-btn absolute right-5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 focus:outline-none cursor-pointer"
+                                className="login-password-toggle-btn h-11 w-11 shrink-0 self-center -translate-y-2 rounded-full bg-stone-100 border border-stone-200 inline-flex items-center justify-center text-stone-500 hover:text-stone-700 hover:bg-stone-200 transition-colors focus:outline-none cursor-pointer"
+                                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                             >
-                                <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`} />
+                                <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'} text-sm leading-none`} />
                             </button>
                         </div>
                         {errors.password && (
@@ -116,7 +136,7 @@ export const LoginForm = ({ onNavigate }) => {
                         className="sign-in-btn w-full py-4 rounded-full text-white font-bold tracking-wider text-sm shadow-lg shadow-orange-500/20 hover:shadow-orange-500/35 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all cursor-pointer bg-gradient-to-r from-red-500 to-orange-500 uppercase flex items-center justify-center gap-2" 
                         disabled={loading}
                     >
-                        {loading ? <Spinner size="sm" /> : "Iniciar Sesión"}
+                        {loading ? "Cargando..." : "Iniciar Sesión"}
                     </button>
                 </form>
 
