@@ -5,6 +5,7 @@ import { useAuthStore } from "../../auth/store/authStore";
 import { NuevaOrdenModal } from "./NuevaOrdenModal";
 import { AuditoriaModal } from "./AuditoriaModal";
 import { Modal } from "../../../shared/ui/Modal";
+import { useInvoicesStore } from "../../invoices/store/adminStore";
 import { showError, showSuccess } from "../../../shared/utils/toast";
 
 const ITEM_STATUS_STYLE = {
@@ -37,11 +38,21 @@ export const OrdenesSection = () => {
     const { orders, loading, error, getOrders, updateItemStatus, updateOrderStatus } = useOrdersStore();
     const branches = useLocationsStore((s) => s.locations);
     const getBranches = useLocationsStore((s) => s.getLocations);
+    const createInvoice = useInvoicesStore((s) => s.createFromOrder);
 
     const [selectedBranch, setSelectedBranch] = useState("");
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [auditOrderId, setAuditOrderId] = useState(null);
     const [cancelOrderId, setCancelOrderId] = useState(null);
+
+    const handleCreateInvoice = async (orderId) => {
+        try {
+            await createInvoice(orderId);
+            showSuccess("Borrador de factura generado con éxito. Ve a la sección de Facturas para confirmar y cobrar.");
+        } catch (err) {
+            showError(err?.response?.data?.message || err?.message || "Error al generar factura");
+        }
+    };
 
     // Cargar sucursales al montar
     useEffect(() => { getBranches?.(); }, [getBranches]);
@@ -157,8 +168,21 @@ export const OrdenesSection = () => {
                                                 className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
                                                 aria-label="Ver auditoría"
                                                 onClick={() => setAuditOrderId(order._id)}
+                                                title="Ver historial de auditoría"
                                             >
                                                 <i className="fas fa-clipboard-list"></i>
+                                            </button>
+                                        )}
+                                        {canManage && !["paid", "cancelled"].includes(order.status) && (
+                                            <button
+                                                type="button"
+                                                className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
+                                                style={{ backgroundColor: "#22c55e", color: "#fff" }}
+                                                aria-label="Facturar orden"
+                                                onClick={() => handleCreateInvoice(order._id)}
+                                                title="Generar factura borrador"
+                                            >
+                                                <i className="fas fa-file-invoice-dollar"></i>
                                             </button>
                                         )}
                                         {canManage && !["paid", "cancelled"].includes(order.status) && (
@@ -167,6 +191,7 @@ export const OrdenesSection = () => {
                                                 className="crud-cardAction crud-cardActionDelete crud-cardOverlayAction"
                                                 aria-label="Cancelar orden"
                                                 onClick={() => setCancelOrderId(order._id)}
+                                                title="Cancelar orden"
                                             >
                                                 <i className="fas fa-ban"></i>
                                             </button>

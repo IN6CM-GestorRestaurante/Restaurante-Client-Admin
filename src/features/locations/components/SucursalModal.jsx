@@ -38,7 +38,7 @@ export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
             setErrors({});
             const nextForm = initialData ? {
                 name: initialData.name || "",
-                descripcion: initialData.descripcion || "",
+                descripcion: initialData.description || initialData.descripcion || "",
                 address: initialData.address || "",
                 openingTime: initialData.openingTime || "08:00",
                 closingTime: initialData.closingTime || "22:00",
@@ -62,7 +62,7 @@ export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
                 photos: [],
             };
             setForm(nextForm);
-            setPreview(initialData?.image ?? null);
+            setPreview(initialData?.photos?.[0] || initialData?.image || null);
         }
     }
 
@@ -101,6 +101,9 @@ export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
         
         if (form.email && !/\S+@\S+\.\S+/.test(form.email)) newErrors.email = "Email inválido";
         if (!form.address) newErrors.address = "Obligatorio";
+        if (!form.descripcion) newErrors.descripcion = "La descripción es obligatoria";
+        else if (form.descripcion.length < 10) newErrors.descripcion = "Mínimo 10 caracteres";
+        if (!form.averagePrice) newErrors.averagePrice = "Obligatorio";
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;

@@ -4,6 +4,18 @@ import { Modal } from "../../../shared/ui/Modal";
 import { useUsersStore } from "../store/adminStore";
 import { showError, showSuccess } from "../../../shared/utils/toast";
 
+const ROLE_LABELS = {
+    COMPANY_ADMIN: "Administrador",
+    BRANCH_MANAGER: "Gerente de Sucursal",
+    WAITER: "Mesero",
+    WAITRESS: "Mesera",
+    CHEF: "Chef",
+    CASHIER: "Cajero",
+    RECEPTIONIST: "Recepcionista",
+    SUPER_ADMIN: "Super Admin",
+    ADMIN_ROLE: "Admin",
+};
+
 export const UsuariosSection = () => {
     const { users, loading, getUsers, deleteUser } = useUsersStore();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -87,7 +99,7 @@ export const UsuariosSection = () => {
                             <div className="crud-cardHeader">
                                 <div className="crud-cardTitleGroup">
                                     <span className="crud-cardEyebrow"><i className="fas fa-user"></i> Usuario</span>
-                                    <h3 className="crud-cardTitle">{user.name} {user.surname}</h3>
+                                    <h3 className="crud-cardTitle">{user.username || user.name || "Sin datos"}</h3>
                                 </div>
                                 <span className="crud-cardBadge">{user.status ? "Activo" : "Inactivo"}</span>
                             </div>
@@ -95,19 +107,19 @@ export const UsuariosSection = () => {
                             <div className="crud-cardBody crud-cardPostBodyCols">
                                 <div className="crud-cardField">
                                     <span className="crud-cardFieldLabel">Usuario</span>
-                                    <div className="crud-cardFieldValue">{user.username}</div>
+                                    <div className="crud-cardFieldValue">{user.username || "Sin datos"}</div>
                                 </div>
                                 <div className="crud-cardField">
                                     <span className="crud-cardFieldLabel">Correo</span>
-                                    <div className="crud-cardFieldValue">{user.email}</div>
+                                    <div className="crud-cardFieldValue">{user.email || "Sin datos"}</div>
                                 </div>
                                 <div className="crud-cardField">
                                     <span className="crud-cardFieldLabel">Teléfono</span>
-                                    <div className="crud-cardFieldValue">{user.phone}</div>
+                                    <div className="crud-cardFieldValue">{user.phone || "Sin datos"}</div>
                                 </div>
                                 <div className="crud-cardField">
                                     <span className="crud-cardFieldLabel">Rol</span>
-                                    <div className="crud-cardFieldValue">{user.role}</div>
+                                    <div className="crud-cardFieldValue">{ROLE_LABELS[user.role] || user.role || "Sin datos"}</div>
                                 </div>
                             </div>
                         </article>
@@ -135,3 +147,4 @@ export const UsuariosSection = () => {
         </>
     );
 };
+

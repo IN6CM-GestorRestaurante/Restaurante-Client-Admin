@@ -61,13 +61,13 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
                 category: initialData.category || "Entrada",
                 isActive: initialData.isActive !== false,
                 image: [],
-                recipe: Array.isArray(initialData.recipe) ? initialData.recipe.map(r => ({
-                    ingredientId: r.ingredientId?._id || r.ingredientId || "",
+                recipe: Array.isArray(initialData.recipe) && (initialData.itemType || "SINGLE") === "SINGLE" ? initialData.recipe.map(r => ({
+                    ingredientId: r.componentId?._id || r.componentId || r.ingredientId?._id || r.ingredientId || "",
                     quantityRequired: r.quantityRequired || ""
                 })) : [],
-                comboItems: Array.isArray(initialData.comboItems) ? initialData.comboItems.map(c => ({
-                    menuItemId: c.menuItemId?._id || c.menuItemId || "",
-                    quantity: c.quantity || 1
+                comboItems: Array.isArray(initialData.recipe) && initialData.itemType === "COMBO" ? initialData.recipe.map(c => ({
+                    menuItemId: c.componentId?._id || c.componentId || c.menuItemId?._id || c.menuItemId || "",
+                    quantity: c.quantityRequired || c.quantity || 1
                 })) : [],
                 promotion: {
                     isActive: initialData.promotion?.isActive || false,
@@ -133,6 +133,8 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
         if (!form.branch) newErrors.branch = "Obligatorio";
         if (!form.name) newErrors.name = "Obligatorio";
         else if (form.name.length > 25) newErrors.name = "Máx 25 carac.";
+        if (!form.description) newErrors.description = "Obligatorio";
+        else if (form.description.length < 10) newErrors.description = "Mínimo 10 caracteres";
         if (!form.price) newErrors.price = "Obligatorio";
 
         setErrors(newErrors);
@@ -173,12 +175,12 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
             showSuccess(initialData ? "Producto actualizado correctamente" : "Producto creado correctamente");
             onClose?.();
         } catch (error) {
-            const serverErrors = error?.response?.data?.errors;
+            const serverErrors = error?.response?.data?.errors || error?.response?.data?.error;
             if (serverErrors && Array.isArray(serverErrors)) {
                 const newErrors = {};
                 serverErrors.forEach(e => {
-                    const field = e.path || e.param;
-                    if (field) newErrors[field] = e.msg;
+                    const field = e.path || e.param || e.field;
+                    if (field) newErrors[field] = e.msg || e.message;
                 });
                 setErrors(newErrors);
             }
@@ -266,7 +268,8 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
 
                 <div className="flex flex-col gap-2 col-span-full">
                     <label className="app-modal-fieldLabel">Descripción</label>
-                    <textarea className="app-modal-textarea" placeholder="Detalles del producto..." value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+                    <textarea className={`app-modal-textarea ${errors.description ? 'border-red-500' : ''}`} placeholder="Detalles del producto..." value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+                    {errors.description && <span className="-mt-1 ml-1 text-[10px] font-semibold text-red-500">{errors.description}</span>}
                 </div>
 
                 {/* DYNAMIC SECTION: RECIPE OR COMBO */}

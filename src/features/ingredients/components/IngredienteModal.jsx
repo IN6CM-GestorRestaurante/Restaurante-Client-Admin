@@ -24,9 +24,13 @@ export const IngredienteModal = ({ isOpen, initialData = null, onClose }) => {
         if (isOpen) {
             setErrors({});
             const nextForm = initialData ? {
-// ...
+                name: initialData.name ?? "",
+                unit: initialData.unit ?? "kg",
+                costPrice: initialData.costPrice ?? "",
             } : {
-// ...
+                name: "",
+                unit: "kg",
+                costPrice: "",
             };
             setForm(nextForm);
         }

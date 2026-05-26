@@ -4,6 +4,16 @@ import { useSaveUser } from "../hooks/useSaveUser";
 import { useUsersStore } from "../store/adminStore";
 import { showError, showSuccess } from "../../../shared/utils/toast";
 
+const ROLE_OPTIONS = [
+    { value: "COMPANY_ADMIN", label: "Administrador" },
+    { value: "BRANCH_MANAGER", label: "Gerente de Sucursal" },
+    { value: "WAITER", label: "Mesero" },
+    { value: "WAITRESS", label: "Mesera" },
+    { value: "CHEF", label: "Chef" },
+    { value: "CASHIER", label: "Cajero" },
+    { value: "RECEPTIONIST", label: "Recepcionista" },
+];
+
 export const UserModal = ({ isOpen, initialData = null, onClose }) => {
     const { saveUser } = useSaveUser();
     const loading = useUsersStore((s) => s.loading);
@@ -14,7 +24,7 @@ export const UserModal = ({ isOpen, initialData = null, onClose }) => {
         phone: "",
         username: "",
         email: "",
-        role: "ADMIN_ROLE",
+        role: "WAITER",
         password: "",
         status: "Activo",
     });
@@ -33,20 +43,22 @@ export const UserModal = ({ isOpen, initialData = null, onClose }) => {
                 name: initialData.name ?? "",
                 surname: initialData.surname ?? "",
                 phone: initialData.phone ?? "",
-                username: initialData.username ?? "",
+                username: initialData.username ?? initialData.name ?? "",
                 email: initialData.email ?? "",
-                role: initialData.role ?? "ADMIN_ROLE",
+                role: initialData.role ?? "WAITER",
                 password: "",
-                status: initialData.status ?? "Activo",
+                status: initialData.status === true || initialData.status === "Activo" ? "Activo" : initialData.status === false || initialData.status === "Inactivo" ? "Inactivo" : (initialData.status ?? "Activo"),
+                branchId: initialData.branchId ?? "",
             } : {
                 name: "",
                 surname: "",
                 phone: "",
                 username: "",
                 email: "",
-                role: "ADMIN_ROLE",
+                role: "WAITER",
                 password: "",
                 status: "Activo",
+                branchId: "",
             };
             setForm(nextForm);
         }
@@ -54,21 +66,13 @@ export const UserModal = ({ isOpen, initialData = null, onClose }) => {
 
     const validate = () => {
         const newErrors = {};
-        if (!form.name) newErrors.name = "Obligatorio";
-        else if (form.name.length > 25) newErrors.name = "Máx 25 carac.";
-
-        if (!form.surname) newErrors.surname = "Obligatorio";
-        else if (form.surname.length > 25) newErrors.surname = "Máx 25 carac.";
+        if (!form.username) newErrors.username = "Obligatorio";
 
         if (!form.email) newErrors.email = "Obligatorio";
         else if (!/\S+@\S+\.\S+/.test(form.email)) newErrors.email = "Email inválido";
 
-        if (!form.phone) newErrors.phone = "Obligatorio";
-        else if (form.phone.length !== 8) newErrors.phone = "8 dígitos";
-
-        if (!form.username) newErrors.username = "Obligatorio";
-
         if (!initialData && !form.password) newErrors.password = "Obligatorio";
+        if (form.password && form.password.length < 6) newErrors.password = "Mínimo 6 caracteres";
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -90,7 +94,7 @@ export const UserModal = ({ isOpen, initialData = null, onClose }) => {
                 });
                 setErrors(newErrors);
             }
-            showError(err?.response?.data?.message || err?.message || "Error al guardar usuario");
+            showError(err?.response?.data?.message || err?.response?.data?.details || err?.message || "Error al guardar usuario");
         }
     };
 
@@ -104,42 +108,47 @@ export const UserModal = ({ isOpen, initialData = null, onClose }) => {
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6">
                 <div className="flex flex-col gap-2">
                     <label className="app-modal-fieldLabel">Nombre</label>
-                    <input className={`app-modal-input ${errors.name ? 'border-red-500' : ''}`} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+                    <input className={`app-modal-input ${errors.name ? 'border-red-500' : ''}`} placeholder="Ej. Juan" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
                     {errors.name && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.name}</span>}
                 </div>
 
                 <div className="flex flex-col gap-2">
                     <label className="app-modal-fieldLabel">Apellido</label>
-                    <input className={`app-modal-input ${errors.surname ? 'border-red-500' : ''}`} value={form.surname} onChange={(e) => setForm({ ...form, surname: e.target.value })} />
+                    <input className={`app-modal-input ${errors.surname ? 'border-red-500' : ''}`} placeholder="Ej. Pérez" value={form.surname} onChange={(e) => setForm({ ...form, surname: e.target.value })} />
                     {errors.surname && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.surname}</span>}
                 </div>
 
                 <div className="flex flex-col gap-2">
                     <label className="app-modal-fieldLabel">Teléfono</label>
-                    <input maxLength="8" className={`app-modal-input ${errors.phone ? 'border-red-500' : ''}`} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                    <input maxLength="8" className={`app-modal-input ${errors.phone ? 'border-red-500' : ''}`} placeholder="Ej. 55551234" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
                     {errors.phone && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.phone}</span>}
                 </div>
 
                 <div className="flex flex-col gap-2">
                     <label className="app-modal-fieldLabel">Usuario</label>
-                    <input className={`app-modal-input ${errors.username ? 'border-red-500' : ''}`} value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} />
+                    <input className={`app-modal-input ${errors.username ? 'border-red-500' : ''}`} placeholder="Ej. jperez" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} />
                     {errors.username && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.username}</span>}
                 </div>
 
                 <div className="flex flex-col gap-2">
                     <label className="app-modal-fieldLabel">Correo</label>
-                    <input type="email" className={`app-modal-input ${errors.email ? 'border-red-500' : ''}`} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+                    <input type="email" className={`app-modal-input ${errors.email ? 'border-red-500' : ''}`} placeholder="Ej. juan@correo.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
                     {errors.email && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.email}</span>}
                 </div>
 
                 <div className="flex flex-col gap-2">
                     <label className="app-modal-fieldLabel">Rol</label>
-                    <input placeholder="ADMIN_ROLE" className="app-modal-input" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} />
+                    <select className={`app-modal-select ${errors.role ? 'border-red-500' : ''}`} value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
+                        {ROLE_OPTIONS.map(opt => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                    </select>
+                    {errors.role && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.role}</span>}
                 </div>
 
                 <div className="flex flex-col gap-2">
-                    <label className="app-modal-fieldLabel">Contraseña</label>
-                    <input type="password" className={`app-modal-input ${errors.password ? 'border-red-500' : ''}`} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
+                    <label className="app-modal-fieldLabel">Contraseña {initialData ? "(dejar vacío para no cambiar)" : ""}</label>
+                    <input type="password" className={`app-modal-input ${errors.password ? 'border-red-500' : ''}`} placeholder={initialData ? "••••••••" : "Mínimo 6 caracteres"} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
                     {errors.password && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.password}</span>}
                 </div>
 
@@ -159,3 +168,4 @@ export const UserModal = ({ isOpen, initialData = null, onClose }) => {
         </Modal>
     );
 };
+
