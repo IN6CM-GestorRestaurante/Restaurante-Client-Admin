@@ -42,7 +42,7 @@ export const AppRoutes = () => {
                     <ProtectedRoute allowedRoles={["SUPER_ADMIN", "ADMIN_ROLE"]}><CompaniasSection /></ProtectedRoute>
                 } />
                 <Route path="locations" element={
-                    <ProtectedRoute allowedRoles={ADMIN}><SucursalesSection /></ProtectedRoute>
+                    <ProtectedRoute allowedRoles={["COMPANY_ADMIN"]}><SucursalesSection /></ProtectedRoute>
                 } />
                 <Route path="users" element={
                     <ProtectedRoute allowedRoles={ADMIN}><UsuariosSection /></ProtectedRoute>

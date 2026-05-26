@@ -19,11 +19,15 @@ export const getRestaurantById = async (id) => {
 };
 
 export const createRestaurant = async (data) => {
-    return await axiosAdmin.post("/branches", data);
+    return await axiosAdmin.post("/branches", data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    });
 };
 
 export const updateRestaurant = async (id, data) => {
-    return await axiosAdmin.put(`/branches/${id}`, data);
+    return await axiosAdmin.put(`/branches/${id}`, data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    });
 };
 
 export const changeRestaurantStatus = async (id, activate = true) => {
@@ -106,11 +110,15 @@ export const getMenuById = async (id) => {
 };
 
 export const createMenu = async (data) => {
-    return await axiosAdmin.post("/menus", data);
+    return await axiosAdmin.post("/menus", data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    });
 };
 
 export const updateMenu = async (id, data) => {
-    return await axiosAdmin.put(`/menus/${id}`, data);
+    return await axiosAdmin.put(`/menus/${id}`, data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    });
 };
 
 export const changeMenuStatus = async (id, activate = true) => {

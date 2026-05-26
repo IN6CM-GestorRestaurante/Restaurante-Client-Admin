@@ -1608,14 +1608,6 @@ tr:last-child td {
     height: auto;
     min-height: calc(100dvh - 4rem);
   }
-  .sidebar {
-      gap: 14px;
-    position: static;
-    width: 100%;
-    height: auto;
-    min-height: auto;
-    overflow: visible;
-  }
   .content-shell {
     padding: 16px;
   }
