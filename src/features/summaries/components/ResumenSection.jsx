@@ -5,6 +5,7 @@ import { useLocationsStore } from "../../locations/store/adminStore";
 import { useUsersStore } from "../../users/store/adminStore";
 import { useOrdersStore } from "../../orders/store/adminStore";
 import { useTablesStore } from "../../tables/store/adminStore";
+import { useCompaniesStore } from "../../companies/store/adminStore";
 
 const QUICK_ACCESS = [
     { key: "companies",    label: "Compañías",      icon: "fas fa-building",           color: "#a855f7", bg: "#faf5ff", desc: "Empresas registradas",    roles: ["SUPER_ADMIN", "ADMIN_ROLE"] },
@@ -49,16 +50,23 @@ export const ResumenSection = () => {
     const users = useUsersStore((s) => s.users || []);
     const orders = useOrdersStore((s) => s.orders || []);
     const tables = useTablesStore((s) => s.tables || []);
+    const companies = useCompaniesStore((s) => s.companies || []);
 
     const getLocations = useLocationsStore((s) => s.getLocations);
     const getUsers = useUsersStore((s) => s.getUsers);
     const getTables = useTablesStore((s) => s.getTables);
+    const getCompanies = useCompaniesStore((s) => s.getCompanies);
 
     useEffect(() => {
-        getLocations?.();
-        getUsers?.();
-        getTables?.();
-    }, [getLocations, getUsers, getTables]);
+        if (role === "SUPER_ADMIN" || role === "ADMIN_ROLE") {
+            getCompanies?.();
+            getUsers?.();
+        } else {
+            getLocations?.();
+            getUsers?.();
+            getTables?.();
+        }
+    }, [role, getCompanies, getLocations, getUsers, getTables]);
 
     const totalRevenue = orders.reduce((acc, o) => acc + (o.total || 0), 0);
     const availableTables = tables.filter((t) => t.status === "Disponible").length;
@@ -78,46 +86,67 @@ export const ResumenSection = () => {
                         <span className="h-6 w-1 rounded-full bg-linear-to-b from-orange-500 to-amber-500" />
                         <h3 className="text-2xl font-bold text-stone-900 tracking-tight sm:text-3xl">Gestor de Restaurante</h3>
                     </div>
-                    <p className="text-sm font-semibold text-stone-500 leading-relaxed mb-4 sm:mb-6 sm:text-base">Panel de administración — Bienvenido, {user?.name || user?.email || "Administrador"}.</p>
+                    <p className="text-sm font-semibold text-stone-500 leading-relaxed mb-4 sm:mb-6 sm:text-base">
+                        {role === "SUPER_ADMIN" || role === "ADMIN_ROLE" 
+                            ? `Panel de administración global — Bienvenido, ${user?.name || user?.email || "Administrador Global"}.`
+                            : `Panel de administración — Bienvenido, ${user?.name || user?.email || "Administrador"}.`}
+                    </p>
                 </div>
 
                 <section className="kpis">
-                    <article className="kpi">
-                        <span><i className="fas fa-store" style={{ color: "#ea580c", marginRight: 6 }}></i>Sucursales</span>
-                        <strong>{locations.length}</strong>
-                    </article>
-                    <article className="kpi">
-                        <span><i className="fas fa-users" style={{ color: "#0d9488", marginRight: 6 }}></i>Empleados</span>
-                        <strong>{users.length}</strong>
-                    </article>
-                    <article className="kpi">
-                        <span><i className="fas fa-receipt" style={{ color: "#0284c7", marginRight: 6 }}></i>Órdenes activas</span>
-                        <strong>{activeOrders}</strong>
-                    </article>
-                    <article className="kpi">
-                        <span><i className="fas fa-coins" style={{ color: "#ca8a04", marginRight: 6 }}></i>Ingresos</span>
-                        <strong>{formatQ(totalRevenue)}</strong>
-                    </article>
+                    {role === "SUPER_ADMIN" || role === "ADMIN_ROLE" ? (
+                        <>
+                            <article className="kpi">
+                                <span><i className="fas fa-building" style={{ color: "#a855f7", marginRight: 6 }}></i>Compañías</span>
+                                <strong>{companies.length}</strong>
+                            </article>
+                            <article className="kpi">
+                                <span><i className="fas fa-users" style={{ color: "#0d9488", marginRight: 6 }}></i>Usuarios</span>
+                                <strong>{users.length}</strong>
+                            </article>
+                        </>
+                    ) : (
+                        <>
+                            <article className="kpi">
+                                <span><i className="fas fa-store" style={{ color: "#ea580c", marginRight: 6 }}></i>Sucursales</span>
+                                <strong>{locations.length}</strong>
+                            </article>
+                            <article className="kpi">
+                                <span><i className="fas fa-users" style={{ color: "#0d9488", marginRight: 6 }}></i>Empleados</span>
+                                <strong>{users.length}</strong>
+                            </article>
+                            <article className="kpi">
+                                <span><i className="fas fa-receipt" style={{ color: "#0284c7", marginRight: 6 }}></i>Órdenes activas</span>
+                                <strong>{activeOrders}</strong>
+                            </article>
+                            <article className="kpi">
+                                <span><i className="fas fa-coins" style={{ color: "#ca8a04", marginRight: 6 }}></i>Ingresos</span>
+                                <strong>{formatQ(totalRevenue)}</strong>
+                            </article>
+                        </>
+                    )}
                 </section>
 
                 {/* Resumen de mesas */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12, marginBottom: 24 }}>
-                    <div style={{ padding: 20, borderRadius: 18, backgroundColor: "#dcfce7", border: "1px solid #bbf7d0" }}>
-                        <span style={{ fontSize: 12, color: "#166534", fontWeight: 600 }}>Mesas disponibles</span>
-                        <strong style={{ display: "block", fontSize: 28, color: "#166534", marginTop: 4 }}>{availableTables}</strong>
+                {role !== "SUPER_ADMIN" && role !== "ADMIN_ROLE" && (
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12, marginBottom: 24 }}>
+                        <div style={{ padding: 20, borderRadius: 18, backgroundColor: "#dcfce7", border: "1px solid #bbf7d0" }}>
+                            <span style={{ fontSize: 12, color: "#166534", fontWeight: 600 }}>Mesas disponibles</span>
+                            <strong style={{ display: "block", fontSize: 28, color: "#166534", marginTop: 4 }}>{availableTables}</strong>
+                        </div>
+                        <div style={{ padding: 20, borderRadius: 18, backgroundColor: "#fee2e2", border: "1px solid #fecaca" }}>
+                            <span style={{ fontSize: 12, color: "#991b1b", fontWeight: 600 }}>Mesas ocupadas</span>
+                            <strong style={{ display: "block", fontSize: 28, color: "#991b1b", marginTop: 4 }}>{occupiedTables}</strong>
+                        </div>
+                        <div style={{ padding: 20, borderRadius: 18, backgroundColor: "#f0f9ff", border: "1px solid #bae6fd" }}>
+                            <span style={{ fontSize: 12, color: "#0369a1", fontWeight: 600 }}>Total mesas</span>
+                            <strong style={{ display: "block", fontSize: 28, color: "#0369a1", marginTop: 4 }}>{tables.length}</strong>
+                        </div>
                     </div>
-                    <div style={{ padding: 20, borderRadius: 18, backgroundColor: "#fee2e2", border: "1px solid #fecaca" }}>
-                        <span style={{ fontSize: 12, color: "#991b1b", fontWeight: 600 }}>Mesas ocupadas</span>
-                        <strong style={{ display: "block", fontSize: 28, color: "#991b1b", marginTop: 4 }}>{occupiedTables}</strong>
-                    </div>
-                    <div style={{ padding: 20, borderRadius: 18, backgroundColor: "#f0f9ff", border: "1px solid #bae6fd" }}>
-                        <span style={{ fontSize: 12, color: "#0369a1", fontWeight: 600 }}>Total mesas</span>
-                        <strong style={{ display: "block", fontSize: 28, color: "#0369a1", marginTop: 4 }}>{tables.length}</strong>
-                    </div>
-                </div>
+                )}
 
                 {/* Últimas órdenes */}
-                {orders.length > 0 && (
+                {role !== "SUPER_ADMIN" && role !== "ADMIN_ROLE" && orders.length > 0 && (
                     <div style={{ marginBottom: 24 }}>
                         <h3 style={{ fontSize: 14, fontWeight: 700, color: "#292524", marginBottom: 12 }}>
                             <i className="fas fa-clock-rotate-left" style={{ color: "#ea580c", marginRight: 6 }}></i>

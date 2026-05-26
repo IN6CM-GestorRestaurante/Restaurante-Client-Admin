@@ -7,6 +7,7 @@ export const useSaveUser = () => {
   const normalizeRole = (role) => {
     const value = String(role || "").trim().toUpperCase();
 
+    // Legacy mappings for backward compatibility
     if (value === "ADMIN_ROLE" || value === "ADMIN") return "COMPANY_ADMIN";
     if (value === "USER_ROLE" || value === "CLIENT_ROLE") return "CLIENT";
     if (value === "WAITER_ROLE") return "WAITER";
@@ -35,6 +36,11 @@ export const useSaveUser = () => {
       status: normalizeStatus(data.status),
     };
 
+    // Include password only if provided (non-empty)
+    if (data.password && data.password.trim().length > 0) {
+      payload.password = data.password;
+    }
+
     if (userId) {
       await updateUser(userId, payload);
     } else {
@@ -44,3 +50,4 @@ export const useSaveUser = () => {
 
   return { saveUser };
 };
+

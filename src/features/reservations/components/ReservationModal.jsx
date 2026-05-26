@@ -61,7 +61,7 @@ export const ReservationModal = ({ isOpen, initialData = null, onClose }) => {
         const fetchBranches = async () => {
             try {
                 const res = await getRestaurants({ isActive: true });
-                setBranches(res.data || res || []);
+                setBranches(res.data?.data || res.data || res || []);
             } catch (err) {
                 console.error("Error al cargar sucursales:", err);
             }
