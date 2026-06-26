@@ -8,9 +8,7 @@ export const login = async (data) => {
 export const register = async (data) => {
   // When sending FormData (including file uploads) we must not send the default
   // 'application/json' header. Let the browser set the multipart boundary.
-  return await axiosAdmin.post("/companies/register", data, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  });
+  return await axiosAdmin.post("/companies/register", data);
 };
 
 export const forgotPassword = async (email) => {
