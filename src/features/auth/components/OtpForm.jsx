@@ -40,13 +40,13 @@ export const OtpForm = ({ onNavigate, otpPayload }) => {
                     Introduce el código enviado a tu correo electrónico para verificar tu cuenta.
                 </p>
                 {otpPayload?.email && (
-                    <p className="mb-5 text-center text-sm text-stone-600">
+                    <p className="mb-10 text-center text-sm text-stone-600">
                         Código enviado a <strong className="text-stone-800">{otpPayload.email}</strong>
                     </p>
                 )}
 
                 <form onSubmit={handleSubmit(onSubmit)} className="w-full" style={{ maxWidth: 420 }}>
-                    <div className="mb-5">
+                    <div className="mb-10" style={{ marginTop: "45px", marginBottom: "45px" }}>
                         <input
                             type="text"
                             placeholder="Código OTP"
@@ -71,7 +71,8 @@ export const OtpForm = ({ onNavigate, otpPayload }) => {
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className={`auth-btn action-btn mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-linear-to-r from-red-500 to-orange-500 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:shadow-orange-500/20 ${isSubmitting ? "cursor-not-allowed opacity-70" : ""}`}
+                        style={{ marginTop: "40px", marginBottom: "30px" }}
+                        className={`auth-btn action-btn flex w-full items-center justify-center gap-2 rounded-full bg-linear-to-r from-red-500 to-orange-500 py-3 text-sm font-bold text-white transition-all hover:shadow-lg hover:shadow-orange-500/20 ${isSubmitting ? "cursor-not-allowed opacity-70" : ""}`}
                     >
                         {isSubmitting ? (<><Spinner size="sm"/>Verificando...</>) : ("Verificar código")}
                     </button>

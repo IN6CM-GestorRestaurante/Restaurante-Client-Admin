@@ -4,14 +4,16 @@ import { useStocksStore } from "../store/adminStore";
 import { getRestaurants, getIngredients } from "../../../shared/api/admin";
 import { showError, showSuccess } from "../../../shared/utils/toast";
 
-export const StockModal = ({ isOpen, onClose }) => {
+export const StockModal = ({ isOpen, onClose, editingStock }) => {
     const upsertStock = useStocksStore((state) => state.upsertStock);
+    const updateStock = useStocksStore((state) => state.updateStock);
     const loading = useStocksStore((state) => state.loading);
     const [form, setForm] = useState({
         branchId: "",
         ingredientId: "",
         quantity: "",
         minStock: "",
+        reason: "",
     });
     const [branches, setBranches] = useState([]);
     const [ingredients, setIngredients] = useState([]);
@@ -22,12 +24,24 @@ export const StockModal = ({ isOpen, onClose }) => {
         if (!isOpen) return;
 
         setErrors({});
-        setForm({
-            branchId: "",
-            ingredientId: "",
-            quantity: "",
-            minStock: "",
-        });
+        
+        if (editingStock) {
+            setForm({
+                branchId: editingStock.branchId?._id || editingStock.branchId || "",
+                ingredientId: editingStock.ingredientId?._id || editingStock.ingredientId || "",
+                quantity: editingStock.quantity ?? "",
+                minStock: editingStock.minStock ?? "",
+                reason: "",
+            });
+        } else {
+            setForm({
+                branchId: "",
+                ingredientId: "",
+                quantity: "",
+                minStock: "",
+                reason: "",
+            });
+        }
 
         const fetchDependencies = async () => {
             setFetchingDeps(true);
@@ -47,7 +61,7 @@ export const StockModal = ({ isOpen, onClose }) => {
         };
 
         fetchDependencies();
-    }, [isOpen]);
+    }, [isOpen, editingStock]);
 
     const validate = () => {
         const newErrors = {};
@@ -55,6 +69,9 @@ export const StockModal = ({ isOpen, onClose }) => {
         if (!form.ingredientId) newErrors.ingredientId = "Obligatorio";
         if (form.quantity === "") newErrors.quantity = "Obligatorio";
         if (form.minStock === "") newErrors.minStock = "Obligatorio";
+        if (editingStock && !form.reason.trim()) {
+            newErrors.reason = "Obligatorio para auditar el cambio";
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -63,13 +80,22 @@ export const StockModal = ({ isOpen, onClose }) => {
     const handleSubmit = async () => {
         if (!validate()) return;
         try {
-            await upsertStock({
-                branchId: form.branchId,
-                ingredientId: form.ingredientId,
-                quantity: Number(form.quantity),
-                minStock: Number(form.minStock)
-            });
-            showSuccess("Stock actualizado correctamente");
+            if (editingStock) {
+                await updateStock(editingStock._id, {
+                    quantity: Number(form.quantity),
+                    minStock: Number(form.minStock),
+                    reason: form.reason.trim()
+                });
+                showSuccess("Stock editado y auditado exitosamente");
+            } else {
+                await upsertStock({
+                    branchId: form.branchId,
+                    ingredientId: form.ingredientId,
+                    quantity: Number(form.quantity),
+                    minStock: Number(form.minStock)
+                });
+                showSuccess("Stock asignado exitosamente");
+            }
             onClose?.();
         } catch (error) {
             const serverErrors = error?.response?.data?.errors;
@@ -80,6 +106,8 @@ export const StockModal = ({ isOpen, onClose }) => {
                     if (field) newErrors[field] = e.msg;
                 });
                 setErrors(newErrors);
+            } else {
+                showError(error?.response?.data?.message || "Error al guardar stock");
             }
         }
     };
@@ -88,8 +116,8 @@ export const StockModal = ({ isOpen, onClose }) => {
         <Modal
             isOpen={isOpen}
             onClose={onClose}
-            title="Asignar / Actualizar Stock"
-            subtitle="Modifica el inventario de un ingrediente en una sucursal"
+            title={editingStock ? "Editar Registro de Stock" : "Asignar / Crear Stock"}
+            subtitle={editingStock ? "Modifica y audita los valores del inventario de este ingrediente" : "Modifica el inventario de un ingrediente en una sucursal"}
             compact
         >
             <div className="space-y-5">
@@ -100,7 +128,8 @@ export const StockModal = ({ isOpen, onClose }) => {
                         <div className="flex flex-col gap-2">
                             <label className="app-modal-fieldLabel">Sucursal</label>
                             <select
-                                className={`app-modal-select ${errors.branchId ? 'border-red-500' : ''}`}
+                                disabled={!!editingStock}
+                                className={`app-modal-select ${errors.branchId ? 'border-red-500' : ''} ${editingStock ? 'bg-stone-100 cursor-not-allowed opacity-80' : ''}`}
                                 value={form.branchId}
                                 onChange={(e) => setForm({ ...form, branchId: e.target.value })}
                             >
@@ -115,7 +144,8 @@ export const StockModal = ({ isOpen, onClose }) => {
                         <div className="flex flex-col gap-2">
                             <label className="app-modal-fieldLabel">Ingrediente</label>
                             <select
-                                className={`app-modal-select ${errors.ingredientId ? 'border-red-500' : ''}`}
+                                disabled={!!editingStock}
+                                className={`app-modal-select ${errors.ingredientId ? 'border-red-500' : ''} ${editingStock ? 'bg-stone-100 cursor-not-allowed opacity-80' : ''}`}
                                 value={form.ingredientId}
                                 onChange={(e) => setForm({ ...form, ingredientId: e.target.value })}
                             >
@@ -154,6 +184,20 @@ export const StockModal = ({ isOpen, onClose }) => {
                             />
                             {errors.minStock && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.minStock}</span>}
                         </div>
+
+                        {!!editingStock && (
+                            <div className="flex flex-col gap-2">
+                                <label className="app-modal-fieldLabel">Motivo del Cambio</label>
+                                <input
+                                    type="text"
+                                    className={`app-modal-input ${errors.reason ? 'border-red-500' : ''}`}
+                                    placeholder="Ej. Conteo físico semanal, merma, error de registro..."
+                                    value={form.reason}
+                                    onChange={(e) => setForm({ ...form, reason: e.target.value })}
+                                />
+                                {errors.reason && <span className="text-[10px] text-red-500 font-semibold mt-[-4px] ml-1">{errors.reason}</span>}
+                            </div>
+                        )}
                     </div>
                 )}
 

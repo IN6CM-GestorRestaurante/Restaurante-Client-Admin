@@ -167,8 +167,8 @@ export const TableModal = ({ isOpen, onClose, initialData }) => {
                 </div>
 
                 {/* Horarios de disponibilidad */}
-                <div className="flex flex-col gap-3">
-                    <div className="flex items-center justify-between">
+                <div className="flex flex-col" style={{ gap: "20px", marginTop: "35px" }}>
+                    <div className="flex items-center justify-between" style={{ marginBottom: "35px" }}>
                         <label className="app-modal-fieldLabel">Horarios de disponibilidad</label>
                         <button
                             type="button"

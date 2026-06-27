@@ -232,26 +232,26 @@ export const OrdenesSection = () => {
                                             return (
                                                 <div
                                                     key={item._id}
-                                                    className="flex items-center justify-between gap-2 rounded-lg px-3 py-2"
+                                                    className="flex items-center justify-between gap-3 rounded-xl px-3.5 py-2.5 shadow-sm"
                                                     style={{ backgroundColor: s.bg + "66", border: `1px solid ${s.color}22` }}
                                                 >
                                                     <div className="flex-1 min-w-0">
-                                                        <span className="text-sm font-semibold text-stone-800 block truncate">
+                                                        <span className="text-sm font-extrabold text-stone-850 block truncate">
                                                             {item.quantity}× {menuName}
                                                         </span>
-                                                        <span className="text-xs" style={{ color: s.color }}>
+                                                        <span className="text-xs font-semibold" style={{ color: s.color }}>
                                                             <i className={`fas ${s.icon} mr-1`}></i>{s.label}
                                                         </span>
                                                     </div>
-                                                    <div className="flex items-center gap-2 shrink-0">
-                                                        <span className="text-xs font-bold text-stone-600">
+                                                    <div className="flex items-center gap-3 shrink-0">
+                                                        <span className="text-xs font-black text-stone-750">
                                                             {formatTotal(item.priceAtTime * item.quantity)}
                                                         </span>
                                                         {next && (
                                                             <button
                                                                 type="button"
                                                                 onClick={() => handleItemStatusChange(order._id, item._id, next)}
-                                                                className="text-xs font-semibold px-2 py-1 rounded-md transition"
+                                                                className="text-xs font-bold px-3 py-1.5 rounded-lg transition-all duration-150 cursor-pointer hover:scale-102 active:scale-98"
                                                                 style={{ backgroundColor: ITEM_STATUS_STYLE[next]?.bg, color: ITEM_STATUS_STYLE[next]?.color, border: `1px solid ${ITEM_STATUS_STYLE[next]?.color}33` }}
                                                                 title={NEXT_LABEL[item.status]}
                                                             >

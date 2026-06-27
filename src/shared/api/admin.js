@@ -96,6 +96,14 @@ export const upsertStock = async (data) => {
     return await axiosAdmin.post("/stocks", data);
 };
 
+export const updateStock = async (id, data) => {
+    return await axiosAdmin.put(`/stocks/${id}`, data);
+};
+
+export const getStockAuditLog = async (stockId) => {
+    return await axiosAdmin.get(`/stocks/${stockId}/audit`);
+};
+
 // ================= MENUS =================
 export const getMenus = async (params) => {
     return await axiosAdmin.get("/menus", { params });

@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { useStocksStore } from "../store/adminStore";
 import { StockModal } from "./StockModal";
+import { StockAuditLog } from "./StockAuditLog";
 import { showError } from "../../../shared/utils/toast";
 
 export const StockSection = () => {
     const { stocks, loading, error, getStocks } = useStocksStore();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingStock, setEditingStock] = useState(null);
+    
+    const [isAuditOpen, setIsAuditOpen] = useState(false);
+    const [auditStock, setAuditStock] = useState(null);
 
     useEffect(() => {
         getStocks?.();
@@ -14,6 +19,26 @@ export const StockSection = () => {
     useEffect(() => {
         if (error) showError(error);
     }, [error]);
+
+    const handleEditStock = (stock) => {
+        setEditingStock(stock);
+        setIsModalOpen(true);
+    };
+
+    const handleViewHistory = (stock) => {
+        setAuditStock(stock);
+        setIsAuditOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setEditingStock(null);
+    };
+
+    const handleCloseAudit = () => {
+        setIsAuditOpen(false);
+        setAuditStock(null);
+    };
 
     const stockRows = stocks || [];
     const lowStockCount = stockRows.filter(s => s.quantity < s.minStock).length;
@@ -49,6 +74,24 @@ export const StockSection = () => {
                                     {isLow && (
                                         <span style={{ position: 'absolute', top: '8px', right: '8px', backgroundColor: '#ef4444', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>¡Bajo!</span>
                                     )}
+                                    <div className="crud-cardOverlayActions">
+                                        <button
+                                            type="button"
+                                            className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
+                                            onClick={() => handleEditStock(stock)}
+                                            title="Editar Stock"
+                                        >
+                                            <i className="fas fa-edit"></i>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="crud-cardAction crud-cardActionEdit crud-cardOverlayAction"
+                                            onClick={() => handleViewHistory(stock)}
+                                            title="Ver Historial de Cambios"
+                                        >
+                                            <i className="fas fa-history"></i>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div className="crud-cardHeader">
@@ -77,7 +120,14 @@ export const StockSection = () => {
 
             <StockModal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                editingStock={editingStock}
+                onClose={handleCloseModal}
+            />
+
+            <StockAuditLog
+                isOpen={isAuditOpen}
+                stock={auditStock}
+                onClose={handleCloseAudit}
             />
 
             <div className="toast-zone"></div>

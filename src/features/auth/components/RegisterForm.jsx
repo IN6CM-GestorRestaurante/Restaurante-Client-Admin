@@ -134,7 +134,7 @@ export const RegisterForm = ({ onNavigate }) => {
                             <div className="h-px flex-1 bg-stone-200"></div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 md:gap-x-5 gap-y-5">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 md:gap-x-8 gap-y-8" style={{ gap: "35px" }}>
                         <div>
                             <div className="input-group relative" style={{ marginBottom: 0 }}>
                                 <span className={inputIconClass}>
@@ -276,7 +276,7 @@ export const RegisterForm = ({ onNavigate }) => {
                             <div className="h-px flex-1 bg-stone-200"></div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 md:gap-x-5 gap-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 md:gap-x-8 gap-y-10" style={{ gap: "35px" }}>
                         <div>
                             <div className="input-group relative" style={{ marginBottom: 0 }}>
                                 <span className={inputIconClass}>
@@ -475,7 +475,8 @@ export const RegisterForm = ({ onNavigate }) => {
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className={`auth-btn action-btn w-full mt-8 py-4 text-sm font-bold shadow-lg shadow-orange-500/20 hover:shadow-orange-500/35 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all cursor-pointer bg-linear-to-r from-red-500 to-orange-500 uppercase flex items-center justify-center gap-2 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
+                        style={{ marginTop: "60px" }}
+                        className={`auth-btn action-btn w-full py-4 text-sm font-bold shadow-lg shadow-orange-500/20 hover:shadow-orange-500/35 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all cursor-pointer bg-linear-to-r from-red-500 to-orange-500 uppercase flex items-center justify-center gap-2 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
                     >
                         {isSubmitting ? (
                             <>

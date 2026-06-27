@@ -137,7 +137,7 @@ export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
             subtitle="Completa la información de la sucursal"
         >
             <div className="space-y-5">
-                <div className="flex flex-col items-center justify-center pb-2 sm:pb-4">
+                <div className="flex flex-col items-center justify-center" style={{ marginBottom: "60px", paddingBottom: "20px" }}>
                     <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border bg-gray-100 shadow-inner sm:h-28 sm:w-28 md:h-32 md:w-32">
                         {preview ? (
                             <img className="h-full w-full object-cover" src={preview} alt="Vista previa de sucursal" />
@@ -276,7 +276,7 @@ export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
                         </select>
                     </div>
 
-                    <div className="flex flex-col gap-2 col-span-full">
+                    <div className="flex flex-col col-span-full" style={{ gap: "8px", marginTop: "50px", marginBottom: "30px" }}>
                         <label className="app-modal-fieldLabel">Imagen</label>
                         <div className="flex w-full justify-center">
                             <input

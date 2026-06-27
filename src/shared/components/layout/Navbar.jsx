@@ -23,7 +23,7 @@ export const Navbar = () => {
           </div>
         </div>
 
-        <div className="mr-1 flex shrink-0 items-center justify-end">
+        <div className="flex shrink-0 items-center justify-end" style={{ marginRight: "60px" }}>
           <AvatarUser />
         </div>
       </div>
