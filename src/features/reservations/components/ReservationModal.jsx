@@ -205,12 +205,28 @@ export const ReservationModal = ({ isOpen, initialData = null, onClose }) => {
                 {/* Fecha y Hora */}
                 <div className="flex flex-col gap-2">
                     <label className="app-modal-fieldLabel font-semibold text-stone-700 text-sm">Fecha y Hora</label>
-                    <input 
-                        type="datetime-local" 
-                        className="app-modal-input" 
-                        value={form.date} 
-                        onChange={(e) => setForm({ ...form, date: e.target.value })} 
-                    />
+                    <div className="flex gap-3">
+                        <input 
+                            type="date" 
+                            className="app-modal-input flex-1" 
+                            value={form.date ? form.date.split("T")[0] : ""} 
+                            onChange={(e) => {
+                                const newDate = e.target.value;
+                                const currentTime = (form.date && form.date.includes("T")) ? form.date.split("T")[1] : "12:00";
+                                setForm({ ...form, date: `${newDate}T${currentTime}` });
+                            }} 
+                        />
+                        <input 
+                            type="time" 
+                            className="app-modal-input flex-1" 
+                            value={form.date && form.date.includes("T") ? form.date.split("T")[1] : ""} 
+                            onChange={(e) => {
+                                const newTime = e.target.value;
+                                const currentDate = form.date ? form.date.split("T")[0] : new Date().toISOString().split("T")[0];
+                                setForm({ ...form, date: `${currentDate}T${newTime}` });
+                            }} 
+                        />
+                    </div>
                 </div>
 
                 {/* Asignador de Mesas (Smart Table) */}

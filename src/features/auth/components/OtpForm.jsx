@@ -31,8 +31,8 @@ export const OtpForm = ({ onNavigate, otpPayload }) => {
 
     return (
         <div className="otp-card shadow-2xl relative overflow-hidden rounded-4xl border border-stone-200 bg-white/95">
-            <div className="otp-left flex flex-col justify-start items-center px-6 py-10 sm:px-8 md:px-10 md:py-12">
-                <div className="mb-5 flex items-center gap-3">
+            <div className="otp-left flex flex-col justify-start items-center px-6 py-10 sm:px-8 md:px-10 md:py-12" style={{ paddingTop: "2rem" }}>
+                <div className="mb-5 flex items-center gap-3" style={{ marginTop: "0.5rem" }}>
                     <span className="h-6 w-1 rounded-full bg-linear-to-b from-orange-500 to-amber-500" />
                     <h2 className="text-xl font-extrabold text-stone-800 sm:text-2xl">Verificación OTP</h2>
                 </div>

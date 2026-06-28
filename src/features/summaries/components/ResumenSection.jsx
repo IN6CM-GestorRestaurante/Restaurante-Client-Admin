@@ -86,7 +86,7 @@ export const ResumenSection = () => {
                         <span className="h-6 w-1 rounded-full bg-linear-to-b from-orange-500 to-amber-500" />
                         <h3 className="text-2xl font-bold text-stone-900 tracking-tight sm:text-3xl">Gestor de Restaurante</h3>
                     </div>
-                    <p className="text-sm font-semibold text-stone-500 leading-relaxed mb-4 sm:mb-6 sm:text-base">
+                    <p className="text-sm font-semibold text-stone-500 leading-relaxed mb-4 sm:mb-6 sm:text-base mt-4" style={{ marginTop: "1rem" }}>
                         {role === "SUPER_ADMIN" || role === "ADMIN_ROLE" 
                             ? `Panel de administración global — Bienvenido, ${user?.name || user?.email || "Administrador Global"}.`
                             : `Panel de administración — Bienvenido, ${user?.name || user?.email || "Administrador"}.`}
@@ -129,7 +129,7 @@ export const ResumenSection = () => {
 
                 {/* Resumen de mesas */}
                 {role !== "SUPER_ADMIN" && role !== "ADMIN_ROLE" && (
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 24, marginBottom: 40 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 24, marginBottom: 24 }}>
                         <div style={{ padding: 20, borderRadius: 18, backgroundColor: "#dcfce7", border: "1px solid #bbf7d0" }}>
                             <span style={{ fontSize: 12, color: "#166534", fontWeight: 600 }}>Mesas disponibles</span>
                             <strong style={{ display: "block", fontSize: 28, color: "#166534", marginTop: 4 }}>{availableTables}</strong>
@@ -147,7 +147,7 @@ export const ResumenSection = () => {
 
                 {/* Últimas órdenes */}
                 {role !== "SUPER_ADMIN" && role !== "ADMIN_ROLE" && orders.length > 0 && (
-                    <div style={{ marginBottom: 40 }}>
+                    <div style={{ marginBottom: 24 }}>
                         <h3 style={{ fontSize: 14, fontWeight: 700, color: "#292524", marginBottom: 12 }}>
                             <i className="fas fa-clock-rotate-left" style={{ color: "#ea580c", marginRight: 6 }}></i>
                             Últimas órdenes
@@ -189,7 +189,7 @@ export const ResumenSection = () => {
                 )}
 
                 {/* Acceso rápido — clickable cards grouped beautifully */}
-                <div className="rounded-3xl bg-transparent p-0 sm:p-1 lg:p-2" style={{ marginTop: "60px", marginBottom: "40px", display: "flex", flexDirection: "column", gap: "40px" }}>
+                <div className="rounded-3xl bg-transparent p-0 sm:p-1 lg:p-2" style={{ marginTop: "10px", marginBottom: "40px", display: "flex", flexDirection: "column", gap: "40px" }}>
                     
                     {GROUPS.map((group) => {
                         const groupCards = visibleCards.filter((card) => group.keys.includes(card.key));

@@ -221,12 +221,14 @@ export const NuevaOrdenModal = ({ isOpen, branchId, onClose }) => {
                                 ))}
                             </div>
                             {/* Search filter */}
-                            <div className="relative w-full sm:w-56 shrink-0 flex items-center">
-                                <i className="fas fa-search absolute left-3.5 text-stone-400 text-xs"></i>
+                            <div className="flex items-center gap-2.5 w-full sm:w-64 shrink-0">
+                                <div className="bg-stone-100 border border-stone-200/60 rounded-xl w-9 h-9 flex items-center justify-center shrink-0">
+                                    <i className="fas fa-search text-stone-500 text-xs"></i>
+                                </div>
                                 <input
                                     type="text"
                                     placeholder="Buscar platillo..."
-                                    className="w-full pl-8 pr-4 py-2 bg-stone-50 border border-stone-200 rounded-xl text-stone-800 text-xs focus:outline-none focus:ring-1 focus:ring-orange-500 placeholder-stone-400"
+                                    className="w-full px-4 py-2 bg-stone-50 border border-stone-200 rounded-xl text-stone-800 text-xs focus:outline-none focus:ring-1 focus:ring-orange-500 placeholder-stone-400"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
