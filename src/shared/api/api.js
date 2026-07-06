@@ -109,9 +109,17 @@ const handleRefreshToken = async function (_error) {
 // Request interceptors to inject JWT Bearer Token if it exists in Zustand store
 axiosAuth.interceptors.request.use(
   (config) => {
+    config._axiosClient = "auth";
     const token = useAuthStore.getState().token;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    if (config.data instanceof FormData) {
+      if (config.headers && typeof config.headers.set === "function") {
+        config.headers.set("Content-Type", "multipart/form-data");
+      } else if (config.headers) {
+        config.headers["Content-Type"] = "multipart/form-data";
+      }
     }
     return config;
   },
@@ -120,9 +128,17 @@ axiosAuth.interceptors.request.use(
 
 axiosAdmin.interceptors.request.use(
   (config) => {
+    config._axiosClient = "admin";
     const token = useAuthStore.getState().token;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    if (config.data instanceof FormData) {
+      if (config.headers && typeof config.headers.set === "function") {
+        config.headers.set("Content-Type", "multipart/form-data");
+      } else if (config.headers) {
+        config.headers["Content-Type"] = "multipart/form-data";
+      }
     }
     return config;
   },

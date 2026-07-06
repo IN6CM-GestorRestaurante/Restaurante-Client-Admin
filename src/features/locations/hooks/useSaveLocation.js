@@ -7,25 +7,24 @@ export const useSaveLocation = () => {
   const saveLocation = async (data, locationId = null) => {
     const formData = new FormData();
 
-    formData.append("name", data.name);
-    formData.append("description", data.descripcion); // mapped to 'description' as expected by Model
-    formData.append("address", data.address);
-    formData.append("openingTime", data.openingTime);
-    formData.append("closingTime", data.closingTime);
-    formData.append("category", data.category);
-    formData.append("averagePrice", data.averagePrice);
-    formData.append("email", data.email);
-    formData.append("phoneNumber", data.phoneNumber);
+    formData.append("name", String(data.name || "").trim());
+    formData.append("description", String(data.descripcion || "").trim()); // mapped to 'description' as expected by Model
+    formData.append("address", String(data.address || "").trim());
+    formData.append("openingTime", String(data.openingTime || "").trim());
+    formData.append("closingTime", String(data.closingTime || "").trim());
+    formData.append("category", String(data.category || "").trim());
+    formData.append("averagePrice", String(data.averagePrice !== undefined && data.averagePrice !== null ? data.averagePrice : "0").trim());
+    formData.append("email", String(data.email || "").trim());
     formData.append("isActive", "true");
-    formData.append("state", data.state || "Operativa");
+    formData.append("state", String(data.state || "Operativa").trim());
 
-    // Normalize phone to E.164 when a local 7-8 digit number is provided (assume +502)
-    const phone = String(data.phoneNumber || "").trim();
+    // Normalize phone to E.164 when a local 6-8 digit number is provided (assume +502)
+    const phone = String(data.phoneNumber || "").replace(/[\s\-\(\)]/g, "").trim();
     let phoneNormalized = phone;
-    if (/^\d{7,8}$/.test(phone)) {
+    if (/^\d{6,8}$/.test(phone)) {
       phoneNormalized = `+502${phone}`;
     }
-    formData.set("phoneNumber", phoneNormalized);
+    formData.append("phoneNumber", phoneNormalized);
 
     if (data.photos?.length > 0) {
       // server expects the file field name to be 'photos' (uploadRestaurantImage.single('photos'))
