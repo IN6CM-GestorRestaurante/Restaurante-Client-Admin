@@ -10,6 +10,7 @@ export const RegisterForm = ({ onNavigate }) => {
     const { 
         register, 
         handleSubmit, 
+        setError,
         formState: { errors, isSubmitting } 
     } = useForm({
         mode: "onTouched"
@@ -84,7 +85,19 @@ export const RegisterForm = ({ onNavigate }) => {
             toast.success("Registro exitoso. Introduce el código OTP enviado a tu correo electrónico.");
             onNavigate("otp", { email: data.email, server: res?.data });
         } catch (error) {
-            toast.error(error.response?.data?.message || "Error al registrar la empresa");
+            const errData = error.response?.data;
+            if (errData?.errors && Array.isArray(errData.errors)) {
+                errData.errors.forEach(errItem => {
+                    const fieldName = errItem.field || errItem.param || errItem.path;
+                    if (fieldName) {
+                        setError(fieldName, { type: "server", message: errItem.message || errItem.msg });
+                    }
+                });
+                const firstMsg = errData.errors[0]?.message || errData.errors[0]?.msg;
+                toast.error(firstMsg || errData.message || "Errores de validación en el formulario");
+            } else {
+                toast.error(errData?.message || errData?.error || "Error al registrar la empresa");
+            }
         }
     };
 

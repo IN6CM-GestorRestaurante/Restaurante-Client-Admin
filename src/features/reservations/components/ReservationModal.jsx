@@ -5,6 +5,8 @@ import { useReservationsStore } from "../store/adminStore";
 import { getRestaurants, getSmartTableAllocation } from "../../../shared/api/admin";
 import { showError, showSuccess } from "../../../shared/utils/toast";
 
+const TABLE_LOCATIONS = ["Todos", "Terraza", "Sala Principal", "VIP", "Bar", "Ventana", "Balcón", "Otro"];
+
 export const ReservationModal = ({ isOpen, initialData = null, onClose }) => {
     const { saveReservation } = useSaveReservation();
     const loading = useReservationsStore((s) => s.loading);
@@ -13,6 +15,7 @@ export const ReservationModal = ({ isOpen, initialData = null, onClose }) => {
         guestName: "",
         branch: "",
         guestsCount: 1,
+        location: "Todos",
         date: "",
         tables: [],
         status: "Pendiente",
@@ -37,6 +40,7 @@ export const ReservationModal = ({ isOpen, initialData = null, onClose }) => {
                 guestName: initialData.guestName ?? "",
                 branch: initialData.branch?._id ?? initialData.branch ?? "",
                 guestsCount: initialData.guestsCount ?? 1,
+                location: initialData.location ?? "Todos",
                 date: initialData.date ? new Date(initialData.date).toISOString().slice(0, 16) : "",
                 tables: initialData.tables?.map((t) => t._id ?? t) ?? [],
                 status: initialData.status ?? "Pendiente",
@@ -45,6 +49,7 @@ export const ReservationModal = ({ isOpen, initialData = null, onClose }) => {
                 guestName: "",
                 branch: "",
                 guestsCount: 1,
+                location: "Todos",
                 date: "",
                 tables: [],
                 status: "Pendiente",
@@ -69,10 +74,10 @@ export const ReservationModal = ({ isOpen, initialData = null, onClose }) => {
         fetchBranches();
     }, []);
 
-    // Trigger Smart Table Allocation whenever branch, guestsCount, or date changes
+    // Trigger Smart Table Allocation whenever branch, guestsCount, location, or date changes
     useEffect(() => {
         if (!isOpen) return;
-        const { branch, guestsCount, date } = form;
+        const { branch, guestsCount, location, date } = form;
         if (!branch || !guestsCount || !date) {
             setSmartTables([]);
             setAllocationStrategy("");
@@ -85,6 +90,7 @@ export const ReservationModal = ({ isOpen, initialData = null, onClose }) => {
                 const res = await getSmartTableAllocation({
                     branchId: branch,
                     guestsCount: Number(guestsCount),
+                    location: location || "Todos",
                     date: new Date(date).toISOString()
                 });
 
@@ -114,7 +120,7 @@ export const ReservationModal = ({ isOpen, initialData = null, onClose }) => {
         // Debounce allocation requests slightly to avoid spamming the backend
         const timer = setTimeout(fetchSmartAllocation, 400);
         return () => clearTimeout(timer);
-    }, [form.branch, form.guestsCount, form.date, isOpen, initialData]);
+    }, [form.branch, form.guestsCount, form.location, form.date, isOpen, initialData]);
 
     const handleTableToggle = (tableId) => {
         setForm(prev => {
@@ -200,6 +206,20 @@ export const ReservationModal = ({ isOpen, initialData = null, onClose }) => {
                         value={form.guestsCount} 
                         onChange={(e) => setForm({ ...form, guestsCount: Math.max(1, Number(e.target.value)) })} 
                     />
+                </div>
+
+                {/* Tipo de Mesa / Ubicación */}
+                <div className="flex flex-col gap-2">
+                    <label className="app-modal-fieldLabel font-semibold text-stone-700 text-sm">Tipo de Mesa</label>
+                    <select 
+                        className="app-modal-select" 
+                        value={form.location} 
+                        onChange={(e) => setForm({ ...form, location: e.target.value })}
+                    >
+                        {TABLE_LOCATIONS.map(loc => (
+                            <option key={loc} value={loc}>{loc === "Todos" ? "Todos los tipos" : loc}</option>
+                        ))}
+                    </select>
                 </div>
 
                 {/* Fecha y Hora */}

@@ -85,16 +85,29 @@ export const UserModal = ({ isOpen, initialData = null, onClose }) => {
             showSuccess(initialData ? "Usuario actualizado" : "Usuario creado");
             onClose?.();
         } catch (err) {
-            const serverErrors = err?.response?.data?.errors;
-            if (serverErrors && Array.isArray(serverErrors)) {
-                const newErrors = {};
-                serverErrors.forEach(e => {
-                    if (e.path) newErrors[e.path] = e.msg;
-                    else if (e.param) newErrors[e.param] = e.msg;
-                });
-                setErrors(newErrors);
+            const errData = err?.response?.data || {};
+            const serverErrors = errData.errors || errData.error;
+            const newErrors = {};
+            let firstErrMsg = null;
+            if (serverErrors) {
+                if (Array.isArray(serverErrors)) {
+                    serverErrors.forEach(e => {
+                        const field = e.field || e.param || e.path;
+                        const msg = e.message || e.msg;
+                        if (field) newErrors[field.toLowerCase()] = msg;
+                        if (!firstErrMsg) firstErrMsg = msg;
+                    });
+                } else if (typeof serverErrors === 'object') {
+                    Object.keys(serverErrors).forEach(key => {
+                        const val = serverErrors[key];
+                        const msg = Array.isArray(val) ? val[0] : val;
+                        newErrors[key.toLowerCase()] = msg;
+                        if (!firstErrMsg) firstErrMsg = msg;
+                    });
+                }
+                if (Object.keys(newErrors).length > 0) setErrors(prev => ({ ...prev, ...newErrors }));
             }
-            showError(err?.response?.data?.message || err?.response?.data?.details || err?.message || "Error al guardar usuario");
+            showError(firstErrMsg || errData.message || errData.details || err?.message || "Error al guardar usuario");
         }
     };
 

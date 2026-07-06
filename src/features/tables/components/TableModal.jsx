@@ -6,6 +6,7 @@ import { useLocationsStore } from "../../locations/store/adminStore";
 import { showError, showSuccess } from "../../../shared/utils/toast";
 
 const LOCATIONS = ["Terraza", "Sala Principal", "VIP", "Bar", "Ventana", "Balcón", "Otro"];
+const STATUSES = ["Disponible", "Ocupada", "Reservada", "Mantenimiento"];
 const DAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
 const emptySchedule = () => ({ day: "Lunes", startTime: "08:00", endTime: "22:00" });
@@ -15,6 +16,7 @@ const defaultForm = {
     number: "",
     capacity: "",
     location: "Sala Principal",
+    status: "Disponible",
     description: "",
     schedules: [emptySchedule()],
 };
@@ -54,6 +56,7 @@ export const TableModal = ({ isOpen, onClose, initialData }) => {
                 number: initialData.number ?? "",
                 capacity: initialData.capacity ?? "",
                 location: initialData.location ?? "Sala Principal",
+                status: initialData.status ?? "Disponible",
                 description: initialData.description ?? "",
                 schedules,
             } : { ...defaultForm, schedules: [emptySchedule()] };
@@ -148,6 +151,20 @@ export const TableModal = ({ isOpen, onClose, initialData }) => {
                         >
                             {LOCATIONS.map((loc) => (
                                 <option key={loc} value={loc}>{loc}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Estado */}
+                    <div className="flex flex-col gap-2">
+                        <label className="app-modal-fieldLabel">Estado</label>
+                        <select
+                            className="app-modal-select"
+                            value={form.status}
+                            onChange={(e) => setForm({ ...form, status: e.target.value })}
+                        >
+                            {STATUSES.map((st) => (
+                                <option key={st} value={st}>{st}</option>
                             ))}
                         </select>
                     </div>

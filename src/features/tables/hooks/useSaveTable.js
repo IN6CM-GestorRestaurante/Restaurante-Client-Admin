@@ -10,6 +10,7 @@ export const useSaveTable = () => {
       number: data.number,
       capacity: Number(data.capacity),
       location: data.location,
+      status: data.status || "Disponible",
       description: data.description || undefined,
       availabilitySchedules: (data.schedules || []).map((s) => ({
         day: s.day,

@@ -213,8 +213,8 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
                             setForm(current => ({ ...current, image: [] }));
                             setPreview(null);
                             setForm(current => ({ ...current, removeImage: true }));
-                            const fileInput = document.querySelector('input[type="file"]');
-                            if (fileInput) fileInput.value = "";
+                            const fileInputs = document.querySelectorAll('input[type="file"]');
+                            fileInputs.forEach(input => input.value = "");
                         }}
                         className="mt-2 text-xs font-semibold text-red-500 hover:text-red-700 cursor-pointer flex items-center gap-1 z-10 relative"
                     >
@@ -270,6 +270,18 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
                     <label className="app-modal-fieldLabel">Descripción</label>
                     <textarea className={`app-modal-textarea ${errors.description ? 'border-red-500' : ''}`} placeholder="Detalles del producto..." value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
                     {errors.description && <span className="-mt-1 ml-1 text-[10px] font-semibold text-red-500">{errors.description}</span>}
+                </div>
+
+                <div className="flex flex-col col-span-full" style={{ gap: "8px", marginTop: "10px", marginBottom: "15px" }}>
+                    <label className="app-modal-fieldLabel">Agregar una imagen</label>
+                    <div className="flex w-full justify-center">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="app-modal-input w-full cursor-pointer border-dashed md:w-3/4 lg:w-2/3"
+                            onChange={handleFileChange}
+                        />
+                    </div>
                 </div>
 
                 {/* DYNAMIC SECTION: RECIPE OR COMBO */}
@@ -331,7 +343,7 @@ export const MenuModal = ({ isOpen, initialData = null, onClose }) => {
                                         <label className="app-modal-fieldLabel">Tipo Descuento</label>
                                         <select className="app-modal-select" value={form.promotion.discountType} onChange={(e) => setForm(f => ({ ...f, promotion: { ...f.promotion, discountType: e.target.value } }))}>
                                             <option value="PERCENTAGE">Porcentaje (%)</option>
-                                            <option value="FIXED">Fijo ($)</option>
+                                            <option value="FIXED_PRICE">Fijo ($)</option>
                                         </select>
                                     </div>
                                     <div className="flex flex-col gap-2">

@@ -166,8 +166,8 @@ export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
                                 setForm(current => ({ ...current, photos: [] }));
                                 setPreview(null);
                                 setForm(current => ({ ...current, removePhoto: true }));
-                                const fileInput = document.querySelector('input[type="file"]');
-                                if (fileInput) fileInput.value = "";
+                                const fileInputs = document.querySelectorAll('input[type="file"]');
+                                fileInputs.forEach(input => input.value = "");
                             }}
                             className="mt-2 text-xs font-semibold text-red-500 hover:text-red-700 cursor-pointer flex items-center gap-1"
                         >
@@ -293,7 +293,7 @@ export const SucursalModal = ({ isOpen, initialData = null, onClose }) => {
                     </div>
 
                     <div className="flex flex-col col-span-full" style={{ gap: "8px", marginTop: "50px", marginBottom: "30px" }}>
-                        <label className="app-modal-fieldLabel">Imagen</label>
+                        <label className="app-modal-fieldLabel">Agregar una imagen</label>
                         <div className="flex w-full justify-center">
                             <input
                                 type="file"
