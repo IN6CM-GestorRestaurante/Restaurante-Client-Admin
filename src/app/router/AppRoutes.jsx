@@ -1,5 +1,6 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 import { AuthPage } from "../../features/auth/pages/AuthPage";
+import { ResetPasswordForm } from "../../features/auth/components/ResetPasswordForm";
 import { DashboardPage } from "../layouts/DashboardPage";
 import { ProtectedRoute } from "../../shared/components/layout/ProtectedRoute";
 import { SucursalesSection } from "../../features/locations/components/SucursalesSection";
@@ -27,6 +28,7 @@ export const AppRoutes = () => {
         <Routes>
             {/* PUBLIC */}
             <Route path="/" element={<AuthPage />} />
+            <Route path="/reset-password" element={<ResetPasswordForm />} />
 
             {/* PROTECTED + ROLE */}
             <Route

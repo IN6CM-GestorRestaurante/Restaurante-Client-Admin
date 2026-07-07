@@ -1,6 +1,27 @@
+import { useForm } from "react-hook-form";
+import { useState } from "react";
 import loginImg from "../../../assets/img/login.jpg"; // <-- Importar la imagen
+import { forgotPassword } from "../../../shared/api/auth";
 
 export const ForgotPasswordForm = ({ onNavigate }) => {
+    const [sent, setSent] = useState(false);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+    } = useForm({ mode: "onTouched" });
+
+    const onSubmit = async ({ email }) => {
+        try {
+            await forgotPassword(email);
+        } catch {
+            // El backend responde 200 incluso si el correo no existe (no revela cuentas),
+            // asi que cualquier error aqui es de red/servidor, no de "correo no encontrado".
+        } finally {
+            setSent(true);
+        }
+    };
+
     return (
         <div className="recover-card">
             <section className="panel panel-white">
@@ -11,16 +32,34 @@ export const ForgotPasswordForm = ({ onNavigate }) => {
                         <span>GESTOR RESTAURANTE</span>
                     </div>
 
-                    <p className="subtitle">Ingresa tu correo y te enviaremos un enlace para restablecer tu contrasena.</p>
+                    {sent ? (
+                        <p className="subtitle">
+                            Si el correo existe en el sistema, te enviamos un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada.
+                        </p>
+                    ) : (
+                        <>
+                            <p className="subtitle">Ingresa tu correo y te enviaremos un enlace para restablecer tu contrasena.</p>
 
-                    <form>
-                        <div className="input-group">
-                            <i className="far fa-envelope"></i>
-                            <input type="email" placeholder="Correo electronico" required />
-                        </div>
+                            <form onSubmit={handleSubmit(onSubmit)}>
+                                <div className="input-group">
+                                    <i className="far fa-envelope"></i>
+                                    <input
+                                        type="email"
+                                        placeholder="Correo electronico"
+                                        {...register("email", {
+                                            required: "El correo es obligatorio",
+                                            pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: "Correo inválido" },
+                                        })}
+                                    />
+                                </div>
+                                {errors.email && <p className="field-error">{errors.email.message}</p>}
 
-                        <button type="button" className="auth-btn action-btn">Enviar enlace</button>
-                    </form>
+                                <button type="submit" className="auth-btn action-btn" disabled={isSubmitting}>
+                                    {isSubmitting ? "Enviando..." : "Enviar enlace"}
+                                </button>
+                            </form>
+                        </>
+                    )}
 
                     <p className="back-link">Volver al inicio de sesion <button type="button" onClick={() => onNavigate("login")}>Iniciar Sesion</button></p>
                 </div>
